@@ -1,0 +1,22 @@
+name: ci
+
+on: push
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify checksums
+        run: sha256sum -c SHA256SUMS.txt
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install test dependencies
+        run: |
+          pip install numpy scikit-learn pytest
+          pip install -r tools/sheet_spacing_check/requirements.txt
+      - name: Run tests
+        run: python -m pytest -p no:cacheprovider tests -v
