@@ -24,6 +24,7 @@ class Mesh:
     meta: dict = field(default_factory=dict)
     scale: tuple | None = None       # meta.json "scale" (grid steps per voxel)
     voxel_um: float | None = None    # meta.json voxel size, if present
+    n_invalid: int = 0               # cells marked no-data (any of x/y/z == invalid value)
 
     @property
     def shape(self):
@@ -40,12 +41,13 @@ def _first_number(meta, keys):
 
 def build_mesh(name, x, y, z, meta=None, invalid_value=-1.0, transpose=False):
     """Make a Mesh from three (H, W) arrays (used by load_mesh and tests)."""
-    x, y, z = (np.asarray(a, dtype=np.float64) for a in (x, y, z))
+    x, y, z = (np.array(a, dtype=np.float64) for a in (x, y, z))   # copies
     if x.ndim != 2 or not (x.shape == y.shape == z.shape):
         raise InputError(f"{name}: x/y/z grids must be 2-D and the same shape, got "
                          f"{x.shape}, {y.shape}, {z.shape}")
     valid = np.isfinite(x) & np.isfinite(y) & np.isfinite(z)
-    valid &= ~((x == invalid_value) & (y == invalid_value) & (z == invalid_value))
+    valid &= ~((x == invalid_value) | (y == invalid_value) | (z == invalid_value))
+    n_invalid = int((~valid).sum())
     for a in (x, y, z):
         a[~valid] = np.nan
     if transpose:
@@ -57,8 +59,10 @@ def build_mesh(name, x, y, z, meta=None, invalid_value=-1.0, transpose=False):
         scale = (float(scale[0]), float(scale[1]))
     else:
         scale = None
+    if transpose and scale:
+        scale = (scale[1], scale[0])
     vox = _first_number(meta, ("voxelsize", "voxel_size", "voxel_size_um", "voxelsize_um"))
-    return Mesh(name, x, y, z, valid, meta, scale, vox)
+    return Mesh(name, x, y, z, valid, meta, scale, vox, n_invalid)
 
 
 def load_mesh(path, invalid_value=-1.0, transpose=False):
@@ -90,6 +94,12 @@ def load_mesh(path, invalid_value=-1.0, transpose=False):
 
 
 # ---------------------------------------------------------------- volumes
+def to_px(xy, ct_scale):
+    """Level-0 voxel coords -> CT pixel coords. A pixel covers `ct_scale` voxels and its
+    centre sits at voxel (ct_scale - 1) / 2 within it, so px = (v - (sc - 1) / 2) / sc."""
+    return (np.asarray(xy, float) - (ct_scale - 1) / 2) / ct_scale
+
+
 class ArrayVolume:
     """CT volume held in memory, indexed [z, y, x]. `ct_scale` = mesh voxels per CT pixel."""
 
@@ -101,7 +111,7 @@ class ArrayVolume:
         self.shape_yx = data.shape[1:]
 
     def slice_index(self, z):
-        zi = int(round(z / self.ct_scale))
+        zi = int(math.floor(z / self.ct_scale))
         if not 0 <= zi < self.data.shape[0]:
             raise InputError(f"height z={z} maps to slice {zi}, outside the volume "
                              f"(0..{self.data.shape[0] - 1})")
@@ -134,7 +144,7 @@ class ZarrVolume(ArrayVolume):
 
 
 class PngVolume:
-    """Directory of 2-D slice PNGs. Slice file index = round(z / ct_scale)."""
+    """Directory of 2-D slice PNGs. Slice file index = floor(z / ct_scale)."""
 
     def __init__(self, directory, pixel_um, voxel_um, pattern="{z:05d}.png"):
         if not os.path.isdir(str(directory)):
@@ -154,7 +164,7 @@ class PngVolume:
 
     def _load(self, z):
         from PIL import Image
-        zi = int(round(z / self.ct_scale))
+        zi = int(math.floor(z / self.ct_scale))
         f = os.path.join(self.dir, self.pattern.format(z=zi))
         if not os.path.isfile(f):
             raise InputError(f"slice PNG not found for z={z}: {f}")

@@ -41,7 +41,7 @@ For each height z:
    B's point is its nearest point to the A point.
 5. **Smoothing.** Running median of `--median-window` (5) pair-clean flags along each run.
 6. **Report** per height: clean fraction (smoothed), shared fraction (ratio < 0.5), skipped
-   fraction (ratio > 1.5), median ratio, CT pitch, mesh-derived pitch, and a mismatch flag if
+   fraction (ratio > 1.5), `b_missing_fraction` (see below), median ratio, CT pitch, mesh-derived pitch, and a mismatch flag if
    they differ by more than `--pitch-flag-frac` (25%) of the CT pitch. Fractions are over A's cut points.
    Shared/skipped are raw (not smoothed). Mesh-derived pitch = median of the pair distances
    (so for a "shared" pair it is ~0 and the flag fires, which is intended).
@@ -54,6 +54,15 @@ sqrt(1 - nz^2) (nz = z-component of the surface normal; clamped by `--area-min-c
 thickness = height spacing (`--band-height-vox` to override; required for one height). Converted
 to cm^2 with the voxel size from `meta.json` (`voxelsize`, `voxel_size`, ...) or
 `--voxel-size-um`. Also reported: the total sampled area for context.
+
+**Missing B trace.** An A point is `b_missing`, not `skipped`, when B has no cut point within
++/- `--missing-cols` (1) grid columns of it **and** its nearest B point is farther than
+`ratio_max` pitches. These points are not clean and are excluded from shared/skipped, so a hole or
+early end in B is not mistaken for a skipped sheet. Points near the edge of a hole are still
+measured against the nearest B point.
+
+**Pixel convention.** A CT pixel at level L covers `2^L` voxels; voxel coordinates map to pixels as
+`(v - (s-1)/2) / s` (s = voxels per pixel) and the slice index is `floor(z / s)`.
 
 ## Constants
 Every constant above is a CLI flag with its default shown by `--help` and is echoed in the
@@ -68,14 +77,21 @@ JSON report under `params`.
 - If a point has no CT pitch (< 3 peaks) the height's median CT pitch is used (fraction reported
   as `pitch_fallback_fraction`). If no pitch exists at all, the points are counted as `no_pitch`
   and are not clean.
+- Invalid cells: a cell is no-data if **any** of x, y, z equals `--invalid-value`; the count is
+  reported as a warning. Cut points next to a hole use the nearest finite surface normal in the
+  same run for the area tilt factor; points with none use factor 1 and are counted in a warning.
+- Not handled yet: a height outside the CT volume aborts the run rather than being reported
+  uncovered; single-point runs contribute no area; closed rings are two runs at the seam; PNG slices
+  are read twice per height.
 - Heights outside a mesh's z range: that mesh has zero cut points; A points (if any) count as not
   clean, `uncovered_a/b` are set and `uncovered_fraction` is reported. The height still counts in M.
 - Multiple crossings in one column are all kept, but the run logic assumes about one crossing per
   column; strongly folded meshes give fragmented runs and noisier tangents and smoothing.
 - Cut lines of neighbouring sheets that pass between A and B (shared/skipped) are detected only
   through distance/pitch; the tool cannot tell which sheet a point belongs to.
-- The pitch is estimated from a short 1-D profile; in noisy or compressed regions it is
-  noisy. Otsu on a tile dominated by background or by papyrus gives a poor threshold.
+- The pitch is the median over a +/- `--profile-halflen-vox` window, not a purely local value, so
+  a neighbour that departs from that window median by more than about 1.5x (or below 0.5x) is
+  flagged even if it is truly adjacent. The pitch estimate is also noisy in compressed regions. Otsu on a tile dominated by background or by papyrus gives a poor threshold.
 - Distances are in-plane only; the z-direction is ignored.
 - Needs a roughly vertical sheet orientation (axis ~ z); sheets lying near-horizontal give long,
   ill-defined cut lines.

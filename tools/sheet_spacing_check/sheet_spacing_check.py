@@ -19,7 +19,7 @@ from scipy.spatial import cKDTree
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from ssc_io import (ArrayVolume, InputError, PngVolume, ZarrVolume, load_mesh,  # noqa: E402
-                    mesh_voxel_um)
+                    mesh_voxel_um, to_px)
 
 __version__ = "0.1.0"
 
@@ -46,6 +46,7 @@ class Params:
     min_clean_heights: int | None = None  # area rule N (default ceil(M/2))
     band_height_vox: float | None = None  # area band thickness (default: height spacing)
     area_min_cos: float = 0.1           # clamp on sqrt(1 - nz^2) in the area band factor
+    missing_cols: int = 1               # A point is 'b_missing' if B has no cut point within +/- this many columns
 
 
 # ----------------------------------------------------------- step 1: cut line
@@ -70,6 +71,18 @@ def _nz2_grid(mesh):
         return n[..., 2] ** 2 / np.sum(n ** 2, axis=-1)
 
 
+def _fill_nan_in_runs(v, run):
+    """Replace NaN by the nearest finite value (by index) within the same run."""
+    v = v.copy()
+    for s, e in _run_bounds(run):
+        seg = v[s:e]
+        good = np.flatnonzero(np.isfinite(seg))
+        if len(good) and len(good) < len(seg):
+            nearest = good[np.abs(np.arange(len(seg))[:, None] - good[None, :]).argmin(axis=1)]
+            v[s:e] = seg[nearest]
+    return v
+
+
 def cut_line(mesh, z0, p: Params) -> Line:
     """Points where the mesh grid crosses z0, interpolated along grid columns."""
     z = mesh.z
@@ -90,6 +103,7 @@ def cut_line(mesh, z0, p: Params) -> Line:
     step = np.hypot(*np.diff(xy, axis=0).T) if len(c) > 1 else np.zeros(0)
     brk = (np.diff(c) != 1) | (step > p.max_gap_vox)
     run = np.concatenate([[0], np.cumsum(brk)])
+    nz2 = _fill_nan_in_runs(nz2, run)
     return Line(xy, c, run, nz2)
 
 
@@ -161,7 +175,7 @@ def ct_pitches(tile, origin, line: Line, ct_scale, p: Params):
     nrm = normals(line, p)
     half_px = p.profile_halflen_vox / ct_scale
     s = np.arange(-half_px, half_px + 1e-9, p.profile_step_px)
-    pts = line.xy / ct_scale - np.asarray(origin, float)       # tile pixel coords (x, y)
+    pts = to_px(line.xy, ct_scale) - np.asarray(origin, float)  # tile pixel coords (x, y)
     xs = pts[:, 0:1] + nrm[:, 0:1] * s[None, :]
     ys = pts[:, 1:2] + nrm[:, 1:2] * s[None, :]
     prof = map_coordinates(tile, [ys.ravel(), xs.ravel()], order=1, mode="nearest")
@@ -212,7 +226,7 @@ def _empty_result(z, na, nb, reason):
     return dict(z=float(z), n_points_a=na, n_points_b=nb, uncovered_a=na == 0,
                 uncovered_b=nb == 0, uncovered_fraction=1.0, clean_fraction=0.0,
                 shared_fraction=0.0, skipped_fraction=0.0, no_pitch_fraction=0.0,
-                median_ratio=None, ct_pitch_vox=None, mesh_pitch_vox=None,
+                b_missing_fraction=0.0, median_ratio=None, ct_pitch_vox=None, mesh_pitch_vox=None,
                 pitch_mismatch_flag=True, onsheet_fraction_a=0.0, onsheet_fraction_b=0.0,
                 otsu_threshold=None, pitch_fallback_fraction=0.0, note=reason)
 
@@ -228,12 +242,12 @@ def analyse_height(A, B, vol, z0, p: Params, want_overlay=False):
         who = [n for n, l in (("A", la), ("B", lb)) if l.n == 0]
         res = _empty_result(z0, la.n, lb.n, f"height outside z range of mesh {' and '.join(who)}")
         if la.n:     # A points exist: they count as not clean, area still sampled
-            pts = dict(col=la.col, clean=np.zeros(la.n, bool), area=_arc_weights(la))
+            pts = dict(col=la.col, clean=np.zeros(la.n, bool), area=_arc_weights(la), nz2=la.nz2)
         return res, pts, None
 
     sc = vol.ct_scale
     H, W = vol.probe_shape(z0)
-    allp = np.concatenate([la.xy, lb.xy]) / sc
+    allp = to_px(np.concatenate([la.xy, lb.xy]), sc)
     pad = int(math.ceil(p.profile_halflen_vox / sc + p.onsheet_radius_px + 2)) + p.tile_pad_px
     x0, y0 = max(0, int(math.floor(allp[:, 0].min())) - pad), max(0, int(math.floor(allp[:, 1].min())) - pad)
     x1, y1 = min(W, int(math.ceil(allp[:, 0].max())) + pad + 1), min(H, int(math.ceil(allp[:, 1].max())) + pad + 1)
@@ -253,15 +267,21 @@ def analyse_height(A, B, vol, z0, p: Params, want_overlay=False):
 
     dense = densify(lb, p.densify_step_vox)
     d, idx = cKDTree(dense).query(la.xy)
-    on_a = _lookup(onmask, la.xy / sc, origin)
-    on_b = _lookup(onmask, dense[idx] / sc, origin)
+    on_a = _lookup(onmask, to_px(la.xy, sc), origin)
+    on_b = _lookup(onmask, to_px(dense[idx], sc), origin)
 
     with np.errstate(invalid="ignore", divide="ignore"):
         ratio = d / pa_used
     nopitch = ~np.isfinite(ratio)
-    shared = ~nopitch & (ratio < p.ratio_min)
-    skipped = ~nopitch & (ratio > p.ratio_max)
-    inrange = ~nopitch & ~shared & ~skipped
+    # B has no cut point near this column (hole / mesh ends) AND is too far: a missing trace,
+    # not a skipped sheet.
+    bcols = np.unique(lb.col)
+    near_b = (np.searchsorted(bcols, la.col + p.missing_cols, "right")
+              > np.searchsorted(bcols, la.col - p.missing_cols, "left"))
+    bmissing = ~nopitch & ~near_b & (ratio > p.ratio_max)
+    shared = ~nopitch & ~bmissing & (ratio < p.ratio_min)
+    skipped = ~nopitch & ~bmissing & (ratio > p.ratio_max)
+    inrange = ~nopitch & ~bmissing & ~shared & ~skipped
     raw = inrange & on_a & on_b
 
     clean = np.zeros(la.n, bool)                               # step 5, per run
@@ -274,7 +294,8 @@ def analyse_height(A, B, vol, z0, p: Params, want_overlay=False):
     res = dict(z=float(z0), n_points_a=la.n, n_points_b=lb.n, uncovered_a=False,
                uncovered_b=False, uncovered_fraction=0.0, clean_fraction=float(clean.mean()),
                shared_fraction=float(shared.mean()), skipped_fraction=float(skipped.mean()),
-               no_pitch_fraction=float(nopitch.mean()), median_ratio=_num(np.nanmedian(ratio)) if (~nopitch).any() else None,
+               no_pitch_fraction=float(nopitch.mean()), b_missing_fraction=float(bmissing.mean()),
+               median_ratio=_num(np.nanmedian(ratio)) if (~nopitch).any() else None,
                ct_pitch_vox=_num(ct_pitch), mesh_pitch_vox=_num(mesh_pitch),
                pitch_mismatch_flag=bool(mism), onsheet_fraction_a=float(on_a.mean()),
                onsheet_fraction_b=float(on_b.mean()), otsu_threshold=_num(thr),
@@ -319,6 +340,7 @@ def run_check(A, B, vol, heights, p: Params, voxel_um=None, overlay_cb=None):
     clean_count = np.zeros(W, int)
     area_col = np.zeros(W)                                     # voxel^2, sampled area per column
     rows = []
+    nz_unknown = 0
     for k, z0 in enumerate(heights):
         res, pts, ov = analyse_height(A, B, vol, z0, p, want_overlay=overlay_cb is not None)
         rows.append(res)
@@ -326,8 +348,11 @@ def run_check(A, B, vol, heights, p: Params, voxel_um=None, overlay_cb=None):
             flag = np.zeros(W, bool)
             flag[pts["col"][pts["clean"]]] = True
             clean_count += flag
-            nz2 = pts.get("nz2", np.zeros(len(pts["col"])))
-            fac = 1.0 / np.maximum(np.sqrt(np.clip(1 - np.nan_to_num(nz2), 0, 1)), p.area_min_cos)
+            nz2 = pts["nz2"]
+            unknown = ~np.isfinite(nz2)                    # no finite normal anywhere in the run
+            nz_unknown += int(unknown.sum())
+            fac = 1.0 / np.maximum(np.sqrt(np.clip(1 - np.where(unknown, 0.0, nz2), 0, 1)),
+                                   p.area_min_cos)
             np.add.at(area_col, pts["col"], pts["area"] * bands[k] * fac)
         if ov is not None:
             overlay_cb(res, *ov)
@@ -342,6 +367,13 @@ def run_check(A, B, vol, heights, p: Params, voxel_um=None, overlay_cb=None):
                 clean_area_cm2=float(area_col[qual].sum() * to_cm2) if to_cm2 else None,
                 sampled_area_cm2=float(area_col.sum() * to_cm2) if to_cm2 else None)
     warnings = []
+    for m in (A, B):
+        if m.n_invalid:
+            warnings.append(f"mesh {m.name}: {m.n_invalid} grid cells are no-data "
+                            f"(any of x/y/z == invalid value) and were ignored")
+    if nz_unknown:
+        warnings.append(f"{nz_unknown} cut points had no finite surface normal; "
+                        "their area uses tilt factor 1 (flat)")
     if A.scale:
         # cross-check meta.json scale (grid steps per voxel) against measured column spacing
         dx = np.hypot(np.diff(A.x, axis=1), np.diff(A.y, axis=1))
@@ -361,12 +393,12 @@ def text_summary(report):
     inp, rows, area = report["inputs"], report["result"]["heights"], report["result"]["area"]
     out = [f"sheet_spacing_check {report['tool_version']}",
            f"A: {inp['mesh_a']}   B: {inp['mesh_b']}   CT: {inp['ct']}", "",
-           "     z  nA   clean% shared% skipped% uncov%  med.ratio  CTpitch  meshpitch  flag"]
+           "     z  nA   clean% shared% skipped% uncov% Bmiss%  med.ratio  CTpitch  meshpitch  flag"]
     for r in rows:
         f = lambda v, fmt: "   n/a" if v is None else fmt % v  # noqa: E731
         out.append(f"{r['z']:6.0f} {r['n_points_a']:4d}  {_pc(r['clean_fraction'])}  "
                    f"{_pc(r['shared_fraction'])}  {_pc(r['skipped_fraction'])}   "
-                   f"{_pc(r['uncovered_fraction'])}  {f(r['median_ratio'], '%8.2f')}  "
+                   f"{_pc(r['uncovered_fraction'])} {_pc(r['b_missing_fraction'])}  {f(r['median_ratio'], '%8.2f')}  "
                    f"{f(r['ct_pitch_vox'], '%7.2f')}  {f(r['mesh_pitch_vox'], '%9.2f')}  "
                    f"{'PITCH-MISMATCH' if r['pitch_mismatch_flag'] else ''}"
                    f"{' UNCOVERED' if r['uncovered_a'] or r['uncovered_b'] else ''}")
@@ -386,7 +418,7 @@ def write_overlay(path, res, tile, origin, la, lb, clean, ct_scale):
     img = np.repeat((g * 255).astype(np.uint8)[..., None], 3, axis=2)
 
     def dot(xy, col):
-        px = np.rint(xy / ct_scale - np.asarray(origin)).astype(int)
+        px = np.rint(to_px(xy, ct_scale) - np.asarray(origin)).astype(int)
         for dx in (0, 1):
             for dy in (0, 1):
                 ix, iy = px[:, 0] + dx, px[:, 1] + dy
