@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from ssc_io import (ArrayVolume, InputError, PngVolume, ZarrVolume, load_mesh,  # noqa: E402
                     mesh_voxel_um, to_px)
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 
 @dataclass
@@ -41,12 +41,13 @@ class Params:
     tangent_halfwidth: int = 3          # step 3: points each side for the local tangent
     max_gap_vox: float = 20.0           # line is split into runs at gaps above this
     densify_step_vox: float = 0.5       # step 2: B line resampling for nearest distance
+    b_missing_cols: int = 5             # step 2: A point is 'uncovered' if B has no cut point within
+                                        #         this many grid columns
     tile_pad_px: int = 32               # extra margin around the lines for the Otsu tile
     invalid_value: float = -1.0         # tifxyz "no data" marker
     min_clean_heights: int | None = None  # area rule N (default ceil(M/2))
     band_height_vox: float | None = None  # area band thickness (default: height spacing)
     area_min_cos: float = 0.1           # clamp on sqrt(1 - nz^2) in the area band factor
-    missing_cols: int = 1               # A point is 'b_missing' if B has no cut point within +/- this many columns
 
 
 # ----------------------------------------------------------- step 1: cut line
@@ -71,18 +72,6 @@ def _nz2_grid(mesh):
         return n[..., 2] ** 2 / np.sum(n ** 2, axis=-1)
 
 
-def _fill_nan_in_runs(v, run):
-    """Replace NaN by the nearest finite value (by index) within the same run."""
-    v = v.copy()
-    for s, e in _run_bounds(run):
-        seg = v[s:e]
-        good = np.flatnonzero(np.isfinite(seg))
-        if len(good) and len(good) < len(seg):
-            nearest = good[np.abs(np.arange(len(seg))[:, None] - good[None, :]).argmin(axis=1)]
-            v[s:e] = seg[nearest]
-    return v
-
-
 def cut_line(mesh, z0, p: Params) -> Line:
     """Points where the mesh grid crosses z0, interpolated along grid columns."""
     z = mesh.z
@@ -103,7 +92,6 @@ def cut_line(mesh, z0, p: Params) -> Line:
     step = np.hypot(*np.diff(xy, axis=0).T) if len(c) > 1 else np.zeros(0)
     brk = (np.diff(c) != 1) | (step > p.max_gap_vox)
     run = np.concatenate([[0], np.cumsum(brk)])
-    nz2 = _fill_nan_in_runs(nz2, run)
     return Line(xy, c, run, nz2)
 
 
@@ -209,6 +197,13 @@ def densify(line: Line, step):
     return np.concatenate(pts) if pts else np.zeros((0, 2))
 
 
+def _no_nearby_col(cols, ref_cols, w):
+    """True where no entry of the sorted `ref_cols` lies within +/- w of `cols`."""
+    lo = np.searchsorted(ref_cols, cols - w, side="left")
+    hi = np.searchsorted(ref_cols, cols + w, side="right")
+    return hi <= lo
+
+
 def _arc_weights(line: Line):
     """Per-point arc length (half of each adjacent segment) within runs, voxels."""
     w = np.zeros(line.n)
@@ -226,7 +221,7 @@ def _empty_result(z, na, nb, reason):
     return dict(z=float(z), n_points_a=na, n_points_b=nb, uncovered_a=na == 0,
                 uncovered_b=nb == 0, uncovered_fraction=1.0, clean_fraction=0.0,
                 shared_fraction=0.0, skipped_fraction=0.0, no_pitch_fraction=0.0,
-                b_missing_fraction=0.0, median_ratio=None, ct_pitch_vox=None, mesh_pitch_vox=None,
+                median_ratio=None, ct_pitch_vox=None, mesh_pitch_vox=None,
                 pitch_mismatch_flag=True, onsheet_fraction_a=0.0, onsheet_fraction_b=0.0,
                 otsu_threshold=None, pitch_fallback_fraction=0.0, note=reason)
 
@@ -237,7 +232,8 @@ def _num(v):
 
 def analyse_height(A, B, vol, z0, p: Params, want_overlay=False):
     la, lb = cut_line(A, z0, p), cut_line(B, z0, p)
-    pts = dict(col=la.xy[:0, 0].astype(int), clean=np.zeros(0, bool), area=np.zeros(0))
+    pts = dict(col=la.xy[:0, 0].astype(int), clean=np.zeros(0, bool), area=np.zeros(0),
+               nz2=np.zeros(0))
     if la.n == 0 or lb.n == 0:
         who = [n for n, l in (("A", la), ("B", lb)) if l.n == 0]
         res = _empty_result(z0, la.n, lb.n, f"height outside z range of mesh {' and '.join(who)}")
@@ -267,21 +263,17 @@ def analyse_height(A, B, vol, z0, p: Params, want_overlay=False):
 
     dense = densify(lb, p.densify_step_vox)
     d, idx = cKDTree(dense).query(la.xy)
+    # A points with no B data nearby (hole / B ends early) are 'uncovered', not 'skipped'
+    bmiss = _no_nearby_col(la.col, lb.col, p.b_missing_cols)
     on_a = _lookup(onmask, to_px(la.xy, sc), origin)
     on_b = _lookup(onmask, to_px(dense[idx], sc), origin)
 
     with np.errstate(invalid="ignore", divide="ignore"):
-        ratio = d / pa_used
-    nopitch = ~np.isfinite(ratio)
-    # B has no cut point near this column (hole / mesh ends) AND is too far: a missing trace,
-    # not a skipped sheet.
-    bcols = np.unique(lb.col)
-    near_b = (np.searchsorted(bcols, la.col + p.missing_cols, "right")
-              > np.searchsorted(bcols, la.col - p.missing_cols, "left"))
-    bmissing = ~nopitch & ~near_b & (ratio > p.ratio_max)
-    shared = ~nopitch & ~bmissing & (ratio < p.ratio_min)
-    skipped = ~nopitch & ~bmissing & (ratio > p.ratio_max)
-    inrange = ~nopitch & ~bmissing & ~shared & ~skipped
+        ratio = np.where(bmiss, np.nan, d / pa_used)
+    nopitch = ~bmiss & ~np.isfinite(ratio)
+    shared = ~nopitch & (ratio < p.ratio_min)
+    skipped = ~nopitch & (ratio > p.ratio_max)
+    inrange = ~bmiss & ~nopitch & ~shared & ~skipped
     raw = inrange & on_a & on_b
 
     clean = np.zeros(la.n, bool)                               # step 5, per run
@@ -289,13 +281,12 @@ def analyse_height(A, B, vol, z0, p: Params, want_overlay=False):
         clean[s:e] = median_filter(raw[s:e].astype(np.uint8), size=p.median_window,
                                    mode="nearest") >= 1
 
-    mesh_pitch = float(np.median(d))
-    mism = (not np.isfinite(ct_pitch)) or abs(ct_pitch - mesh_pitch) / ct_pitch > p.pitch_flag_frac
+    mesh_pitch = float(np.median(d[~bmiss])) if (~bmiss).any() else float("nan")
+    mism = (not np.isfinite(ct_pitch)) or (not np.isfinite(mesh_pitch)) or abs(ct_pitch - mesh_pitch) / ct_pitch > p.pitch_flag_frac
     res = dict(z=float(z0), n_points_a=la.n, n_points_b=lb.n, uncovered_a=False,
-               uncovered_b=False, uncovered_fraction=0.0, clean_fraction=float(clean.mean()),
+               uncovered_b=False, uncovered_fraction=float(bmiss.mean()), clean_fraction=float(clean.mean()),
                shared_fraction=float(shared.mean()), skipped_fraction=float(skipped.mean()),
-               no_pitch_fraction=float(nopitch.mean()), b_missing_fraction=float(bmissing.mean()),
-               median_ratio=_num(np.nanmedian(ratio)) if (~nopitch).any() else None,
+               no_pitch_fraction=float(nopitch.mean()), median_ratio=_num(np.nanmedian(ratio)) if np.isfinite(ratio).any() else None,
                ct_pitch_vox=_num(ct_pitch), mesh_pitch_vox=_num(mesh_pitch),
                pitch_mismatch_flag=bool(mism), onsheet_fraction_a=float(on_a.mean()),
                onsheet_fraction_b=float(on_b.mean()), otsu_threshold=_num(thr),
@@ -340,20 +331,21 @@ def run_check(A, B, vol, heights, p: Params, voxel_um=None, overlay_cb=None):
     clean_count = np.zeros(W, int)
     area_col = np.zeros(W)                                     # voxel^2, sampled area per column
     rows = []
-    nz_unknown = 0
+    excl_pts, excl_arc = 0, 0.0
     for k, z0 in enumerate(heights):
         res, pts, ov = analyse_height(A, B, vol, z0, p, want_overlay=overlay_cb is not None)
         rows.append(res)
         if len(pts["col"]):
+            # Undefined normals (NaN, next to holes) are NOT treated as vertical: such points are
+            # excluded from the area and cannot make a column clean; they are counted instead.
+            fin = np.isfinite(pts["nz2"])
             flag = np.zeros(W, bool)
-            flag[pts["col"][pts["clean"]]] = True
+            flag[pts["col"][pts["clean"] & fin]] = True
             clean_count += flag
-            nz2 = pts["nz2"]
-            unknown = ~np.isfinite(nz2)                    # no finite normal anywhere in the run
-            nz_unknown += int(unknown.sum())
-            fac = 1.0 / np.maximum(np.sqrt(np.clip(1 - np.where(unknown, 0.0, nz2), 0, 1)),
-                                   p.area_min_cos)
-            np.add.at(area_col, pts["col"], pts["area"] * bands[k] * fac)
+            fac = 1.0 / np.maximum(np.sqrt(np.clip(1 - pts["nz2"][fin], 0, 1)), p.area_min_cos)
+            np.add.at(area_col, pts["col"][fin], pts["area"][fin] * bands[k] * fac)
+            excl_pts += int((~fin).sum())
+            excl_arc += float(pts["area"][~fin].sum())
         if ov is not None:
             overlay_cb(res, *ov)
 
@@ -364,16 +356,18 @@ def run_check(A, B, vol, heights, p: Params, voxel_um=None, overlay_cb=None):
                 clean_columns=int(qual.sum()), columns_with_data=int((area_col > 0).sum()),
                 clean_area_vox2=float(area_col[qual].sum()),
                 sampled_area_vox2=float(area_col.sum()),
+                excluded_nan_normal_points=excl_pts, excluded_nan_normal_arc_vox=excl_arc,
                 clean_area_cm2=float(area_col[qual].sum() * to_cm2) if to_cm2 else None,
                 sampled_area_cm2=float(area_col.sum() * to_cm2) if to_cm2 else None)
     warnings = []
     for m in (A, B):
         if m.n_invalid:
-            warnings.append(f"mesh {m.name}: {m.n_invalid} grid cells are no-data "
-                            f"(any of x/y/z == invalid value) and were ignored")
-    if nz_unknown:
-        warnings.append(f"{nz_unknown} cut points had no finite surface normal; "
-                        "their area uses tilt factor 1 (flat)")
+            warnings.append(f"mesh {m.name}: {m.n_invalid} of {m.valid.size} grid cells have no valid "
+                            f"data (a coordinate equals {p.invalid_value:g} or is non-finite); "
+                            "cut lines skip them")
+    if excl_pts:
+        warnings.append(f"{excl_pts} cut points (arc {excl_arc:.1f} vox) have an undefined surface "
+                        "normal next to holes; they are excluded from the area and count as not clean")
     if A.scale:
         # cross-check meta.json scale (grid steps per voxel) against measured column spacing
         dx = np.hypot(np.diff(A.x, axis=1), np.diff(A.y, axis=1))
@@ -393,12 +387,12 @@ def text_summary(report):
     inp, rows, area = report["inputs"], report["result"]["heights"], report["result"]["area"]
     out = [f"sheet_spacing_check {report['tool_version']}",
            f"A: {inp['mesh_a']}   B: {inp['mesh_b']}   CT: {inp['ct']}", "",
-           "     z  nA   clean% shared% skipped% uncov% Bmiss%  med.ratio  CTpitch  meshpitch  flag"]
+           "     z  nA   clean% shared% skipped% uncov%  med.ratio  CTpitch  meshpitch  flag"]
     for r in rows:
         f = lambda v, fmt: "   n/a" if v is None else fmt % v  # noqa: E731
         out.append(f"{r['z']:6.0f} {r['n_points_a']:4d}  {_pc(r['clean_fraction'])}  "
                    f"{_pc(r['shared_fraction'])}  {_pc(r['skipped_fraction'])}   "
-                   f"{_pc(r['uncovered_fraction'])} {_pc(r['b_missing_fraction'])}  {f(r['median_ratio'], '%8.2f')}  "
+                   f"{_pc(r['uncovered_fraction'])}  {f(r['median_ratio'], '%8.2f')}  "
                    f"{f(r['ct_pitch_vox'], '%7.2f')}  {f(r['mesh_pitch_vox'], '%9.2f')}  "
                    f"{'PITCH-MISMATCH' if r['pitch_mismatch_flag'] else ''}"
                    f"{' UNCOVERED' if r['uncovered_a'] or r['uncovered_b'] else ''}")

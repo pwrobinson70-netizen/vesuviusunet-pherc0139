@@ -24,7 +24,7 @@ class Mesh:
     meta: dict = field(default_factory=dict)
     scale: tuple | None = None       # meta.json "scale" (grid steps per voxel)
     voxel_um: float | None = None    # meta.json voxel size, if present
-    n_invalid: int = 0               # cells marked no-data (any of x/y/z == invalid value)
+    n_invalid: int = 0               # grid cells with no usable data
 
     @property
     def shape(self):
@@ -41,15 +41,16 @@ def _first_number(meta, keys):
 
 def build_mesh(name, x, y, z, meta=None, invalid_value=-1.0, transpose=False):
     """Make a Mesh from three (H, W) arrays (used by load_mesh and tests)."""
-    x, y, z = (np.array(a, dtype=np.float64) for a in (x, y, z))   # copies
+    x, y, z = (np.array(a, dtype=np.float64) for a in (x, y, z))   # copies: never mutate the caller's arrays
     if x.ndim != 2 or not (x.shape == y.shape == z.shape):
         raise InputError(f"{name}: x/y/z grids must be 2-D and the same shape, got "
                          f"{x.shape}, {y.shape}, {z.shape}")
     valid = np.isfinite(x) & np.isfinite(y) & np.isfinite(z)
+    # a cell is invalid if ANY coordinate carries the no-data marker (partial sentinels exist)
     valid &= ~((x == invalid_value) | (y == invalid_value) | (z == invalid_value))
-    n_invalid = int((~valid).sum())
     for a in (x, y, z):
         a[~valid] = np.nan
+    n_invalid = int((~valid).sum())
     if transpose:
         x, y, z, valid = x.T.copy(), y.T.copy(), z.T.copy(), valid.T.copy()
     meta = dict(meta or {})
@@ -60,7 +61,7 @@ def build_mesh(name, x, y, z, meta=None, invalid_value=-1.0, transpose=False):
     else:
         scale = None
     if transpose and scale:
-        scale = (scale[1], scale[0])
+        scale = (scale[1], scale[0])       # the axes were swapped, so the scale pair must be too
     vox = _first_number(meta, ("voxelsize", "voxel_size", "voxel_size_um", "voxelsize_um"))
     return Mesh(name, x, y, z, valid, meta, scale, vox, n_invalid)
 
@@ -94,10 +95,16 @@ def load_mesh(path, invalid_value=-1.0, transpose=False):
 
 
 # ---------------------------------------------------------------- volumes
+# Convention: a CT pixel/slice at level L (ct_scale = 2**L mesh voxels per pixel) covers the
+# voxels [k*sc, k*sc + sc - 1]; its centre is k*sc + (sc - 1)/2 in level-0 voxel coordinates.
+def slice_index_for(z, ct_scale):
+    """Slice holding level-0 height z: floor(z / sc) (the epsilon absorbs float noise)."""
+    return int(math.floor(z / ct_scale + 1e-9))
+
+
 def to_px(xy, ct_scale):
-    """Level-0 voxel coords -> CT pixel coords. A pixel covers `ct_scale` voxels and its
-    centre sits at voxel (ct_scale - 1) / 2 within it, so px = (v - (sc - 1) / 2) / sc."""
-    return (np.asarray(xy, float) - (ct_scale - 1) / 2) / ct_scale
+    """Level-0 voxel coordinates -> CT pixel coordinates (pixel centres at integers)."""
+    return (np.asarray(xy, dtype=np.float64) - (ct_scale - 1) / 2) / ct_scale
 
 
 class ArrayVolume:
@@ -111,7 +118,7 @@ class ArrayVolume:
         self.shape_yx = data.shape[1:]
 
     def slice_index(self, z):
-        zi = int(math.floor(z / self.ct_scale))
+        zi = slice_index_for(z, self.ct_scale)
         if not 0 <= zi < self.data.shape[0]:
             raise InputError(f"height z={z} maps to slice {zi}, outside the volume "
                              f"(0..{self.data.shape[0] - 1})")
@@ -164,7 +171,7 @@ class PngVolume:
 
     def _load(self, z):
         from PIL import Image
-        zi = int(math.floor(z / self.ct_scale))
+        zi = slice_index_for(z, self.ct_scale)
         f = os.path.join(self.dir, self.pattern.format(z=zi))
         if not os.path.isfile(f):
             raise InputError(f"slice PNG not found for z={z}: {f}")
