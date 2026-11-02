@@ -1,0 +1,7 @@
+# Install PyTorch first, matching your CUDA version (https://pytorch.org/get-started/locally/).
+numpy>=1.24
+scipy>=1.10
+tifffile>=2023.7.10
+pillow>=10.0
+zarr>=2.16
+pytest>=7
