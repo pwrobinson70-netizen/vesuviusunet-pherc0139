@@ -73,6 +73,21 @@ Mesh coordinates are level-0 voxels. For a CT level with `ct_scale` = `sc` voxel
 (pixel centres at integers). At `sc = 1` this is the identity.
 
 ## Limits and deviations to know about
+- **A and B must share column indexing.** "Uncovered" is decided from grid columns: an A point is
+  uncovered when B has no cut point within `--b-missing-cols` columns of A's column. If B's
+  columns are offset from A's (same shape, but traced starting elsewhere round the ring) and B
+  has holes, some points are mislabelled: spatially covered points can be reported as uncovered,
+  and points inside the hole as skipped. Both count as not clean, so this costs area but never
+  gives a false pass.
+- **A height outside the CT volume aborts the whole run** (an input error), unlike a height
+  outside a mesh's z range, which is reported as uncovered.
+- **Single-point runs give no area.** A run of one cut point has zero arc length.
+- **A closed ring is split at its seam.** The first and last columns are separate runs, so the
+  running median does not wrap round the seam.
+- **PNG slices are read twice per height** (once to get the shape, once for the tile), and a whole
+  slice is read each time; zarr reads only the tile.
+- **Fractional heights are floored to a slice.** `slice = floor(z / sc)`, so z = 49.6 at scale 1
+  uses slice 49 although the nearest voxel centre is 50. Use integer heights.
 - **Pitch tolerance.** The pitch is the median over a +/-`--profile-halflen-vox` window, not a
   strictly local value. Treat the ratio window as roughly "within 1.5x of the window-median
   pitch"; a sharper local compression or stretch than that can push a true neighbour outside it.
