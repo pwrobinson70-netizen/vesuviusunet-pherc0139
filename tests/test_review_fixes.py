@@ -1,5 +1,9 @@
-"""Regression tests for the PR #1 review: off-centre scroll, z-varying CT, scale handling,
-run splitting, ratio edges, and the area / input-handling fixes. Synthetic data only."""
+"""Complementary regression tests for the PR #1 review (kept from the first review-fix commit).
+
+These use an independent CT generator (lazy cone, slope 1) and different scenarios from
+test_sheet_spacing_check.py: slice index floor on the volume class, cone area / wrong slice /
+tilt kept when B is uncovered, an isolated *failing* one-point run, and the median-ratio check at
+the ratio edges. Synthetic data only."""
 import numpy as np
 import pytest
 
@@ -40,25 +44,6 @@ def run(a, b, vol, heights=(30.0, 50.0, 70.0), **kw):
     if len(heights) < 2:
         kw.setdefault("band_height_vox", 10.0)
     return ssc.run_check(a, b, vol, list(heights), ssc.Params(**kw), voxel_um=10.0)
-
-
-def test_off_centre_scroll_clean_and_swapped_xy_is_not(ct):
-    vol = ArrayVolume(ct)
-    good = run(cyl(R0), cyl(R0 + PITCH), vol)
-    bad = run(cyl(R0, swap_xy=True), cyl(R0 + PITCH, swap_xy=True), vol)
-    for g, b in zip(good["heights"], bad["heights"]):
-        assert g["clean_fraction"] > 0.98
-        assert b["clean_fraction"] < 0.5          # swapped mesh x/y vs the CT: must fail
-
-
-def test_half_resolution_volume_agrees_with_full(ct):
-    half = ct.reshape(NZ // 2, 2, NY // 2, 2, NX // 2, 2).mean(axis=(1, 3, 5)).astype(np.float32)
-    full = run(cyl(R0), cyl(R0 + PITCH), ArrayVolume(ct))
-    low = run(cyl(R0), cyl(R0 + PITCH), ArrayVolume(half, ct_scale=2))
-    for f, h in zip(full["heights"], low["heights"]):
-        assert h["clean_fraction"] > 0.95
-        assert h["ct_pitch_vox"] == pytest.approx(f["ct_pitch_vox"], rel=0.1)
-        assert h["median_ratio"] == pytest.approx(f["median_ratio"], abs=0.1)
 
 
 def test_slice_index_floors_not_rounds():
@@ -139,61 +124,3 @@ def test_ratio_edges(ct, off, shared, skipped):
     assert h["median_ratio"] == pytest.approx(off / PITCH, abs=0.02)
     assert h["shared_fraction"] == pytest.approx(shared, abs=0.01)
     assert h["skipped_fraction"] == pytest.approx(skipped, abs=0.01)
-
-
-# ---- R3: missing B trace is not 'skipped' -----------------------------------------------------
-def test_hole_in_b_is_reported_as_missing_not_skipped(ct):
-    b = cyl(R0 + PITCH)
-    b.valid[:, 300:421] = False
-    for g in (b.x, b.y, b.z):
-        g[:, 300:421] = np.nan
-    h = run(cyl(R0), b, ArrayVolume(ct), [50.0])["heights"][0]
-    # only A points farther than 1.5 pitches from any B point count as missing: the deep part
-    # of the 121-column hole, not its edges (those are still measured against the edge of B)
-    assert 0.11 < h["b_missing_fraction"] < 0.14
-    assert h["skipped_fraction"] == 0.0
-    assert h["clean_fraction"] > 0.8
-
-
-# ---- R1 / R2 / R4 / N2 -------------------------------------------------------------------
-def test_transpose_swaps_meta_scale():
-    g = np.arange(24, dtype=float).reshape(4, 6)
-    m = build_mesh("t", g, g, g, {"scale": [0.1, 0.5]}, transpose=True)
-    assert m.shape == (6, 4) and m.scale == (0.5, 0.1)
-
-
-def test_partial_sentinel_marks_cell_invalid_and_input_not_mutated():
-    x = np.arange(12, dtype=float).reshape(3, 4) + 5
-    z = x.copy()
-    z[1, 2] = -1                                  # only z carries the sentinel
-    z0 = z.copy()
-    m = build_mesh("p", x, x.copy(), z)
-    assert not m.valid[1, 2] and m.n_invalid == 1
-    assert np.array_equal(z, z0)                  # caller's array untouched
-
-
-def test_nan_normals_next_to_a_hole_take_nearest_finite_value():
-    m = cone(100.0)
-    m.valid[51, 100] = False
-    for g in (m.x, m.y, m.z):
-        g[51, 100] = np.nan
-    line = ssc.cut_line(m, 52.5, ssc.Params())   # rows 52-53: row 52's gradient touches the hole
-    i = int(np.flatnonzero(line.col == 100)[0])
-    assert np.isfinite(line.nz2).all()
-    assert line.nz2[i] == pytest.approx(S ** 2 / (1 + S ** 2), abs=0.01)
-
-
-def test_invalid_cells_warning_in_report(ct):
-    a = cyl(R0)
-    a = build_mesh("a", np.where(np.arange(NZ)[:, None] == 5, -1.0, a.x), a.y, a.z)
-    assert a.n_invalid == 720
-    r = run(a, cyl(R0 + PITCH), ArrayVolume(ct), [50.0])
-    assert any("no-data" in w for w in r["warnings"])
-
-
-def test_pixel_centre_convention():
-    from ssc_io import to_px
-    # level-1 pixel i covers voxels 2i and 2i+1, centre at voxel 2i + 0.5
-    assert to_px([[0.5, 2.5]], 2.0)[0].tolist() == [0.0, 1.0]
-    assert to_px([[7.0, 3.0]], 1.0)[0].tolist() == [7.0, 3.0]
-    assert to_px([[1.5, 1.5]], 4.0)[0].tolist() == [0.0, 0.0]
