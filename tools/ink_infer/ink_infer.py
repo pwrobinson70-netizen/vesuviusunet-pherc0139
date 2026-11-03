@@ -137,7 +137,7 @@ def run_inference(model, vol, surf, *, depth, patch, stride, layer_step_vox, dev
         p, v = extract_patch(vol, surf, c[0], c[1], patch, offs)
         return np.clip(p * scale + offset, 0.0, 1.0).astype(np.float32), v
 
-    t0 = time.time()
+    t0, done0 = time.time(), done
     use_amp = amp and str(device).startswith("cuda")
     batches = [coords[i:i + batch_size] for i in range(done, len(coords), batch_size)]
     with ThreadPoolExecutor(max_workers=max(1, workers)) as ex, torch.no_grad():
@@ -164,7 +164,8 @@ def run_inference(model, vol, surf, *, depth, patch, stride, layer_step_vox, dev
             if (bi + 1) % save_every == 0:
                 save_state(done)
                 el = time.time() - t0
-                log(f"{done}/{len(coords)} patches  {el / 60:.1f} min  eta {(len(coords) - done) * el / max(1, done - (len(coords) - sum(len(q) for q in batches))) / 60:.1f} min")
+                n_now = done - done0                      # patches done in THIS session (resume-safe)
+                log(f"{done}/{len(coords)} patches  {el / 60:.1f} min  eta {(len(coords) - done) * el / max(1, n_now) / 60:.1f} min")
     save_state(done)
     prob = np.where(wsum > 0, psum / np.maximum(wsum, 1e-9), 0.0).astype(np.float32)
     prob[~surf.valid] = 0.0
@@ -238,7 +239,9 @@ def main(argv=None):
         os.makedirs(a.out_dir, exist_ok=True)
         cfg = dict(version=__version__, mesh=a.mesh, zarr=a.zarr, level=a.zarr_level, ckpt=sha256_file(a.checkpoint),
                    depth=depth, patch=patch, step=step, flip=a.flip_normal, scale=scale, offset=offset,
-                   blend=a.blend, tta=a.tta, stride=a.stride or patch // 2, pitch=a.out_pitch_um)
+                   blend=a.blend, tta=a.tta, stride=a.stride or patch // 2, pitch=a.out_pitch_um,
+                   vox=vox, mesh_scale=a.mesh_scale or mesh.scale, norm_max=vol.norm_max,
+                   min_valid_frac=a.min_valid_frac)       # anything that changes the patch list or pixels
         prob, surf2, st = run_inference(
             model, vol, surf, depth=depth, patch=patch, stride=a.stride or patch // 2, layer_step_vox=step,
             device=device, batch_size=a.batch_size, amp=a.amp, tta=a.tta, workers=a.workers, blend=a.blend,
