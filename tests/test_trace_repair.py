@@ -60,7 +60,7 @@ def run_repair(env, path):
     return verdict, out, audit(env, load_mesh(str(out)))["traces"][0]["verdict"]
 
 
-def fraction_on(env, out, target):
+def fraction_on(env, out, target, anchor_col=0):
     """Fraction of valid points whose CONTINUOUS winding coordinate is within 0.35 of `target`.
     phi is unwrapped along each row, so a trace that follows its sheet past the angle seam (a spiral sheet
     continues as the next 'turn' there) is not mislabelled."""
@@ -74,7 +74,10 @@ def fraction_on(env, out, target):
     u = np.full(m.valid.shape, np.nan)
     for i in range(phi.shape[0]):
         v = m.valid[i]
-        u[i, v] = (r[i, v] - p.r0) / p.pitch - np.unwrap(phi[i, v]) / (2 * np.pi)
+        ph = np.unwrap(phi[i, v])
+        k = int(np.flatnonzero(np.flatnonzero(v) == anchor_col)[0])      # the anchor column is on the true sheet
+        ph = ph + 2 * np.pi * np.round((phi[i, v][k] - ph[k]) / (2 * np.pi))
+        u[i, v] = (r[i, v] - p.r0) / p.pitch - ph / (2 * np.pi)
     ok = np.abs(u - np.asarray(target)) < 0.35
     return float(np.mean(ok[m.valid]))
 
@@ -118,3 +121,18 @@ def test_refuses_to_overwrite(env):
     path = env["dir"] / "clean"
     rc = tr.main([str(path), "--audit", str(env["dir"] / "clean.json"), "--npy", str(env["dir"] / "v.npy"), "--out", str(path)])
     assert rc == 2
+
+
+def test_origin_cell_repairs_the_far_side(env):
+    """Mirrored case: the trace is right on the high-column side and hops onto the wrong sheet towards low columns."""
+    w = ramp(env, 1, [(0.0, 1.0), (0.7, -1.0)])           # w = 2 for cols < 0.7 nc, 1 beyond
+    path = plant(env, "mirror", w)
+    rep = audit(env, load_mesh(str(path)))
+    assert rep["traces"][0]["verdict"] == ta.FAIL
+    (env["dir"] / "mirror.json").write_text(json.dumps(dict(result=rep), default=float))
+    out = env["dir"] / "mirror_fixed"
+    nr, nc = w.shape
+    assert tr.main([str(path), "--audit", str(env["dir"] / "mirror.json"), "--npy", str(env["dir"] / "v.npy"), "--out", str(out),
+                    "--origin-cell", str(nr // 2), str(nc - 1)]) == 0
+    assert audit(env, load_mesh(str(out)))["traces"][0]["verdict"] == ta.PASS
+    assert fraction_on(env, out, np.ones_like(w), anchor_col=nc - 1) >= 0.9

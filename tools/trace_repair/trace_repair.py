@@ -8,6 +8,7 @@ the audit reports (sheet_switch_finder switches and winding-number jumps with co
 points beyond it, in the growth direction, are re-snapped to the sheet that was tracked BEFORE the switch:
   * growth runs along grid columns for horizontal switches and winding jumps, along rows for vertical switches;
     `--origin low` (default) means the trace was grown from the low-index side (column / row 0), `high` from the other;
+    `--origin-cell ROW COL` says it grew outward from one cell (sheet_tracer patches): each side is repaired outward from it;
   * the first repaired line is `min(switch lines) - --margin` (a ramp switch starts before its reported centre);
   * each point is predicted from its already-repaired neighbour one step back: neighbour + (original step with its
     component along the sheet normal removed), i.e. the sheet jump is dropped and the advance along the sheet is kept;
@@ -107,19 +108,28 @@ def repair(xyz, switches, T, pitch, a):
         if not lines:
             continue
         Q = P if axis == "cols" else np.ascontiguousarray(P.transpose(1, 0, 2))
-        if a.origin == "high":
-            Q = np.ascontiguousarray(Q[:, ::-1])
-            first = Q.shape[1] - 1 - (max(lines) + a.margin)
-        else:
-            first = min(lines) - a.margin
-        first = max(1, first)
-        r = repair_axis(Q, first, T, pitch, a)
-        if a.origin == "high":
-            Q = Q[:, ::-1]
+        C = Q.shape[1]
+        jobs = []                                    # (flip, first line to repair, in the possibly flipped array)
+        if a.origin_cell is None:
+            if a.origin == "low":
+                jobs.append((False, max(1, min(lines) - a.margin)))
+            else:
+                jobs.append((True, max(1, C - 1 - max(lines) - a.margin)))
+        else:                                        # growth radiates from the cell: chain outward both ways
+            o = a.origin_cell[1] if axis == "cols" else a.origin_cell[0]
+            hi, lo = [x for x in lines if x >= o], [x for x in lines if x < o]
+            if hi:
+                jobs.append((False, max(o + 1, min(hi) - a.margin)))
+            if lo:
+                jobs.append((True, max(C - o, C - 1 - max(lo) - a.margin)))
+        for flip, first in jobs:
+            R_ = np.ascontiguousarray(Q[:, ::-1]) if flip else Q
+            r = repair_axis(R_, first, T, pitch, a)
+            Q = np.ascontiguousarray(R_[:, ::-1]) if flip else R_
+            info["unsnapped"] += r["unsnapped"]
+            info["outliers"] += r["outliers"]
+            info[axis] = dict(info[axis] or {}, **{("high_to_low" if flip else "low_to_high"): int(first)}, n_switches=len(lines))
         P = Q if axis == "cols" else np.ascontiguousarray(Q.transpose(1, 0, 2))
-        info[axis] = dict(first_repaired_step=int(first), n_switches=len(lines))
-        info["unsnapped"] += r["unsnapped"]
-        info["outliers"] += r["outliers"]
     return P.astype(np.float32), info
 
 
@@ -134,6 +144,8 @@ def build_parser():
     ap.add_argument("--zarr-level", type=int, default=0)
     ap.add_argument("--out", required=True, help="new tifxyz folder (must not exist)")
     ap.add_argument("--origin", choices=["low", "high"], default="low", help="side of the grid the trace was grown from")
+    ap.add_argument("--origin-cell", type=int, nargs=2, metavar=("ROW", "COL"),
+                    help="grid cell the trace was grown from (growth radiates from it, e.g. a sheet_tracer seed); overrides --origin")
     ap.add_argument("--min-switch-confidence", type=float, default=0.3)
     ap.add_argument("--margin", type=int, default=2, help="lines before the first reported switch where repair starts")
     ap.add_argument("--snap-pitch", type=float, default=1.0, help="snap window +/- x pitch")
