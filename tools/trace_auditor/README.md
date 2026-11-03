@@ -149,3 +149,11 @@ scroll region, or further than the largest height spacing of the map from the ma
 |---|---|---|
 | `--crush-map` | none | crush_map.npz whose severity marks NOT JUDGED regions |
 | `--max-crush-severity` | 0.5 | judgement call: severity at or above this is NOT JUDGED (1 = spacing reduced 4x or more) |
+
+## `--windcheck`: one more verdict (self-intersection + off-sheet)
+
+`--windcheck` adds a check named `windcheck` to every trace (off by default; nothing else changes without it). It runs `tools/upstream/windcheck/ct_aware_check.py`:
+windcheck's exact self-intersection engine (MIT, Josep Carreras, vendored; needs g++ or clang++) on the trace, and a CT-aware off-sheet test (the CT sampled along the surface
+normal: is a bright sheet within 0.2 pitch of the trace?). The sheet pitch is `--pitch-vox` if given, else the median pitch the auditor measured. Every threshold is a flag
+with prefix `--wc-` (`--wc-min-crossings`, `--wc-max-off-fraction`, `--wc-off-tol-pitches`, ...; `--help`). It needs a zarr (3-D array access): with a PNG folder the off-sheet part is
+NOT JUDGED. It cannot tell the right sheet from a wrong one. Before / after on a folded phantom with planted defects: `tools/upstream/windcheck/BENCHMARK.md`.
