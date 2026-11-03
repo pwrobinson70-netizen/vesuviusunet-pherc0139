@@ -63,3 +63,7 @@ def merge():
 
 def sweep():
     return _run("winding_sweep", "winding_sweep")
+
+
+def drift():
+    return _run("label_drift", "label_drift")

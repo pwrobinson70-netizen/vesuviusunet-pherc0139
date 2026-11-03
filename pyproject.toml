@@ -32,6 +32,7 @@ vun-crush = "vun_tools.cli:crush"
 vun-ink = "vun_tools.cli:ink"
 vun-merge = "vun_tools.cli:merge"
 vun-sweep = "vun_tools.cli:sweep"
+vun-drift = "vun_tools.cli:drift"
 
 [tool.setuptools]
 packages = [
@@ -47,6 +48,7 @@ packages = [
     "vun_tools._tools.sheet_tracer",
     "vun_tools._tools.winding_sweep",
     "vun_tools._tools.common",
+    "vun_tools._tools.label_drift",
     "vun_tools._tools.crush_map",
 ]
 
@@ -63,4 +65,5 @@ vesuvius_unet = "vesuvius_unet"
 "vun_tools._tools.sheet_tracer" = "tools/sheet_tracer"
 "vun_tools._tools.winding_sweep" = "tools/winding_sweep"
 "vun_tools._tools.common" = "tools/common"
+"vun_tools._tools.label_drift" = "tools/label_drift"
 "vun_tools._tools.crush_map" = "tools/crush_map"
