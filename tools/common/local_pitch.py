@@ -70,6 +70,13 @@ class LocalPitch:
         return len(self.pitch)
 
 
+def _med(a):
+    """Median of a small 1-D array (a sorted-list median is several times faster than np.median for the short arrays used here)."""
+    v = sorted(a.tolist() if hasattr(a, "tolist") else a)
+    n = len(v)
+    return v[n // 2] if n % 2 else 0.5 * (v[n // 2 - 1] + v[n // 2])
+
+
 def run_median(x, run, size):
     """Running median of x over each run (nan-aware: only finite neighbours count; NaN stays NaN)."""
     if size <= 1 or len(x) == 0:
@@ -162,16 +169,21 @@ def estimate_profiles(s_vox, prof, p: PitchParams) -> LocalPitch:
     centre = int(np.argmin(np.abs(s_vox)))
     pitch, conf = np.full(n, np.nan), np.zeros(n)
     npk, cv = np.zeros(n, int), np.full(n, np.nan)
+    finite = np.all(np.isfinite(prof), axis=1)
+    if p.trend_sigma_vox > 0 and finite.any():          # slow-trend removal once for all rows (the same filter as per row, much faster)
+        det = np.full(prof.shape, np.nan)
+        det[finite] = prof[finite] - gaussian_filter1d(prof[finite], p.trend_sigma_vox / step_vox, axis=1, mode="nearest")
+    else:
+        det = prof
     for i in range(n):
-        pr = prof[i]
-        if not np.all(np.isfinite(pr)):
+        if not finite[i]:
             continue
-        pr = _detrend(pr, step_vox, p)
+        pr = det[i]
         pk = _peaks(pr, p)
         if len(pk) < 2:
             continue
         pos = s_vox[pk]
-        g0 = float(np.median(np.diff(pos)))
+        g0 = float(_med(np.diff(pos)))
         if not g0 > 0:
             continue
         pitch[i] = g0                                            # pass-1 fallback, confidence stays 0
@@ -183,16 +195,16 @@ def estimate_profiles(s_vox, prof, p: PitchParams) -> LocalPitch:
                 pitch[i] = ap
                 npk[i] = len(near)
                 gaps = np.diff(near) if len(near) >= 2 else np.zeros(0)
-                cv[i] = 1.4826 * np.median(np.abs(gaps - np.median(gaps))) / np.median(gaps) if len(gaps) >= 2 else np.nan
+                cv[i] = 1.4826 * _med(np.abs(gaps - _med(gaps))) / _med(gaps) if len(gaps) >= 2 else np.nan
                 conf[i] = max(0.0, min(1.0, h)) * min(1.0, max(0, len(near) - 1) / p.full_gaps)
             continue
         npk[i] = len(near)
         if len(near) < p.min_peaks:
             continue
         gaps = np.diff(near)
-        m = float(np.median(gaps))
+        m = float(_med(gaps))
         pitch[i] = m
-        c = 1.4826 * float(np.median(np.abs(gaps - m))) / m if len(gaps) >= 2 else float("nan")
+        c = 1.4826 * float(_med(np.abs(gaps - m))) / m if len(gaps) >= 2 else float("nan")
         cv[i] = c
         c_reg = 1.0 if not np.isfinite(c) else max(0.0, 1.0 - c / p.cv_max)
         hw = int(round(p.window_pitches * g0 / step_vox))
