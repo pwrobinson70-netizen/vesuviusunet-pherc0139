@@ -40,17 +40,48 @@ sheet and a 22-voxel pitch the gap closes). The volume is rendered by inverting 
 | `bad/pair_{adjacent,skipped,shared,off_sheet}/` | with `--bad-pairs`: B traces for A = `surfaces/turn_01`: turn 2 (clean), turn 3 (skipped sheet, ratio 2), turn 1.15 (shared, ratio 0.15), turn 2.42 (in the dark gap, ratio 1.42) |
 | `truth.json` | all parameters, grid size, switch records (trace, turn, column, direction, ...), pair records with the expected verdict, ink record |
 
+## Harder phantoms (v0.2) - folds, delamination, tears, gaps, a local-spacing field
+
+All OFF by default (no flag = v0.1 output, byte for byte; `tests/test_phantom_v2.py::test_defaults_unchanged`). Each feature
+modifies ONE sheet (`turn`) in a window centred at angle `phi` (degrees) and height `z` (voxels, `-1` = middle):
+
+| flag | what it does | truth surface `surfaces/turn_NN` |
+|---|---|---|
+| `--fold turn=2,phi=200,z=-1,len=44,zlen=90,amount=2.8,h=9` | the sheet doubles back on itself (an S-shaped pleat, up to three layers across the fold); `amount` > 1 makes it double back (the arc shift is `amount * 2 len/(2 pi)`), `h` = radial separation of the layers | follows the folded sheet (the cut line goes backwards in angle) |
+| `--delam turn=2,phi=120,z=-1,len=80,zlen=110,h=8` | the sheet splits into two thin layers (0.6 x thickness) `h` voxels apart | the MID plane (no bright sheet there where the gap is wider than the thickness) |
+| `--tear turn=2,phi=250,z=-1,len=60,zlen=90,gap=10,off=6` | the sheet ends, `gap` voxels are missing, and it restarts `off` voxels radially offset, relaxing back over `len/2` | piece 1, the missing stretch interpolated linearly, piece 2 |
+| `--gap turn=2,phi=150,z=-1,len=56,zlen=70` | a segment of the sheet is missing (brightness removed where the window is > 0.6) | unchanged: the surface is still there, the sheet is not |
+| `--spacing-ratio R` | the local sheet spacing is compressed by a smooth factor between `1/R` and `1` (angle, slowly with z), so within a slice the largest spacing is `R` times the smallest (2.5 = "up to 2.5x") | follows it |
+
+`--preset NAME` starts from `round`, `mild`, `crushed` (= the v0.1 `bad`, which stays), `merged`, `folded`, `delaminated`, `torn`,
+`gappy` or `crushed-hard` (squash 0.5, warp 8, irregular 0.15, spacing ratio 2.5); explicit flags beat the preset. Lengths in
+the preset feature specs are for size 256 and scale with `--size`. Windows must stay 8 degrees away from the angle-0 seam and
+radial sizes below 0.45 pitch (otherwise the nearest-sheet label is ambiguous); a violation is an error (exit 2).
+
+**Ground truth.** `winding.npy` labels every voxel with its sheet: a folded / delaminated / torn sheet keeps its label on all
+its layers and pieces, and a gap keeps its label. `severity.npy` (float32, same shape; written when a v0.2 feature or the spacing
+field is on, or with `--severity`): per voxel inside the scroll the larger of (a) the feature window, a cos^2 bump that is
+exactly 0 outside the window and 1 at its centre, and (b) `|ln s| / ln 4` clipped to 1, where `s` is the TRUE local radial stretch
+of the whole deformation map (squash, warp, squeeze, spacing field; measured by finite differences of the forward map). So 0 =
+untouched (an undeformed phantom has an all-zero map), 1 = the local spacing changed by a factor 4 or the centre of a
+feature. It is 0 outside the scroll.
+
+Limits of the v0.2 features: all radial/arc sizes are in the undeformed frame (the squash etc. then act on them); the arc
+coordinate of a feature uses the sheet radius at the window centre; a feature of 0.45 pitch at most; the folded layers of
+a thick sheet (> layer separation) merge into one blob; none of it is a physical model of papyrus.
+
 ## Benchmark
 
-`benchmark.py` builds four phantoms (round, mild, bad = badly crushed, merged) with three known switches
+`benchmark.py` builds four phantoms by default (round, mild, bad = badly crushed, merged; `--phantoms` takes any preset name, see above) with three known switches
 each and scores `sheet_switch_finder`, `umbilicus_finder` and `sheet_spacing_check` against the truth. It
 does not run `ink_infer` (needs torch and a checkpoint). The table and what it shows are in the pull
 request that added it; rerun it to reproduce (about 4 minutes at 256^3).
 
 ## Limits
 
-- The phantom is a smooth, noise-free-ish idealisation. Real scrolls have delamination, tears, dust,
-  non-uniform sheet thickness and brightness, ring artefacts; none of that is here.
+- The phantom is a smooth, noise-free-ish idealisation. Real scrolls have dust, non-uniform sheet thickness and
+  brightness, ring artefacts, and delamination / tears / folds of every shape; v0.2 has idealised local versions of the
+  last three (above), nothing else.
 - The squeeze thins the sheet's *distance* profile with the stretch, an approximation; the surfaces are exact,
   the thickness of a merged sheet is not.
 - Ink is a uniform relative brightening of the sheet under the mask, not a model of any real ink.
