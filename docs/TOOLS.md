@@ -1,6 +1,6 @@
 # Tools
 
-Six command-line tools for checking traced papyrus surfaces and for running an ink model over one, plus a
+Seven command-line tools for checking traced papyrus surfaces and for running an ink model over one, plus a
 synthetic scroll ("phantom") with known truth to test them on. CPU only. Install from the repository root:
 
 ```bash
@@ -24,6 +24,7 @@ level-0 voxel coordinates, `-1` = no data; `docs/FORMATS.md`); a CT volume is an
 | `vun-audit` | `tools/trace_auditor` | One verdict (PASS / FAIL / NOT JUDGED) per trace, combining the checks |
 | `vun-phantom` | `tools/phantom_scroll` | Make a synthetic scroll with exact truth to test any of the above |
 | `vun-ink` | `tools/ink_infer` | Ink-probability picture of one traced segment from a trained checkpoint |
+| `vun-merge` | `tools/patch_merger` | Merge overlapping tifxyz patches, but only where the overlap is provably one sheet |
 
 ## vun-umbilicus
 - **Input:** OME-Zarr / 3-D zarr / PNG folder; z range in level-0 voxels (`--z-start --z-stop --z-step`).
@@ -93,3 +94,11 @@ switch (AUC 0.55, F0.5 0). These numbers come from PR #12 (`tool/ink-e2e`, `docs
 
 All benchmark numbers are from one seed, one pitch and one grid step on synthetic data. They show where the
 tools can fail, not how often, and say nothing about any real scan.
+
+## vun-merge
+- **Input:** tifxyz patches (or folders of them, e.g. `winding_sweep` output) of one volume; `--zarr`/`--npy` volume and
+  `--umbilicus` centre line (otherwise estimated) for the on-sheet and winding checks; `--pitch-vox` or measured.
+- **Output** (`--out-dir`): one `component_NNN.tifxyz` per connected group of accepted overlaps, `seam_report.json` /
+  `seam_report.txt` (every overlap and cut, accepted or refused, with the reason), `overlay.png`.
+- **Limits:** a check that cannot be run (no volume, no centre) refuses the overlap unless `--allow-unjudged`; overlaps
+  are judged on the surface, so a leak that stays within half a pitch of a good patch is not seen. Synthetic evidence only.

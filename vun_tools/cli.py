@@ -51,3 +51,7 @@ def phantom():
 
 def ink():
     return _run("ink_infer", "ink_infer")
+
+
+def merge():
+    return _run("patch_merger", "patch_merger")

@@ -29,6 +29,7 @@ vun-umbilicus = "vun_tools.cli:umbilicus"
 vun-audit = "vun_tools.cli:audit"
 vun-phantom = "vun_tools.cli:phantom"
 vun-ink = "vun_tools.cli:ink"
+vun-merge = "vun_tools.cli:merge"
 
 [tool.setuptools]
 packages = [
@@ -40,6 +41,7 @@ packages = [
     "vun_tools._tools.trace_auditor",
     "vun_tools._tools.phantom_scroll",
     "vun_tools._tools.ink_infer",
+    "vun_tools._tools.patch_merger",
 ]
 
 [tool.setuptools.package-dir]
@@ -51,3 +53,4 @@ vesuvius_unet = "vesuvius_unet"
 "vun_tools._tools.trace_auditor" = "tools/trace_auditor"
 "vun_tools._tools.phantom_scroll" = "tools/phantom_scroll"
 "vun_tools._tools.ink_infer" = "tools/ink_infer"
+"vun_tools._tools.patch_merger" = "tools/patch_merger"
