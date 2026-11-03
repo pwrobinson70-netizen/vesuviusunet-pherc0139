@@ -1,0 +1,4280 @@
+{
+  "tool_version": "0.1.0",
+  "inputs": {
+    "traces": [
+      "testdata/pherc_paris4_45um/20260623164704-w116-117.tifxyz",
+      "testdata/pherc_paris4_45um/20260623165230-w118-119.tifxyz"
+    ],
+    "ct": "testdata/pherc_paris4_45um/slices",
+    "centre": "file tools/realdata_run/out/umbilicus_estimated.json",
+    "heights": [
+      2073.0,
+      2600.0,
+      3128.0
+    ],
+    "warnings": []
+  },
+  "params": {
+    "n_heights": 5,
+    "height_margin": 0.1,
+    "centre_z_step": 32.0,
+    "centre_max_gap": 1.5,
+    "umbilicus_scale": 1.0,
+    "min_switch_confidence": 0.3,
+    "min_tracked_fraction": 0.6,
+    "max_unjudged_height_fraction": 0.5,
+    "wn_jump_pitch": 0.6,
+    "wn_window_deg": 20.0,
+    "wn_window_min_points": 3,
+    "wn_min_points": 12,
+    "wn_min_span_deg": 60.0,
+    "wn_monotonic": 0.95,
+    "wn_pair_lo": 0.5,
+    "wn_pair_hi": 1.5,
+    "wn_pair_frac": 0.8,
+    "min_clean_fraction": 0.8,
+    "expect_side": "either",
+    "pitch_vox": null
+  },
+  "result": {
+    "traces": [
+      {
+        "name": "20260623164704-w116-117.tifxyz",
+        "checks": [
+          {
+            "check": "switch_finder",
+            "status": "FAIL",
+            "reason": "horizontal switch at z=2600 col 283 row 57.9 (inward, step -0.85 pitch, confidence 0.32); horizontal switch at z=2600 col 292 row 57.4 (outward, step +1.02 pitch, confidence 0.47); horizontal switch at z=2600 col 325 row 64.4 (outward, step +1.10 pitch, confidence 0.56); vertical switch at z=2600 col 287 row 57.7 (outward, step +1.84 pitch, confidence 0.33); vertical switch at z=2600 col 321 row 63.5 (inward, step -1.01 pitch, confidence 0.48)",
+            "switches": [
+              {
+                "kind": "horizontal",
+                "height": 2600.0,
+                "height_from": 2600.0,
+                "height_to": 2600.0,
+                "row": 57.897315694836884,
+                "col": 283,
+                "x": 937.0627186008692,
+                "y": 1442.3376336674626,
+                "z": 2600.0,
+                "direction": "inward",
+                "step": -0.8534013173159432,
+                "n_sheets": 1,
+                "double_switch": false,
+                "confidence": 0.32295363732334237,
+                "line_index": 280,
+                "index_before": 279,
+                "index_after": 280,
+                "persist_before": 5,
+                "persist_after": 5
+              },
+              {
+                "kind": "horizontal",
+                "height": 2600.0,
+                "height_from": 2600.0,
+                "height_to": 2600.0,
+                "row": 57.36276582033767,
+                "col": 292,
+                "x": 1086.7753492762185,
+                "y": 1536.608131430914,
+                "z": 2600.0,
+                "direction": "outward",
+                "step": 1.016498203663265,
+                "n_sheets": 1,
+                "double_switch": false,
+                "confidence": 0.4738571353450617,
+                "line_index": 289,
+                "index_before": 287,
+                "index_after": 290,
+                "persist_before": 5,
+                "persist_after": 5
+              },
+              {
+                "kind": "horizontal",
+                "height": 2600.0,
+                "height_from": 2600.0,
+                "height_to": 2600.0,
+                "row": 64.3894764313321,
+                "col": 325,
+                "x": 1652.0226617049123,
+                "y": 1385.6934492070507,
+                "z": 2600.0,
+                "direction": "outward",
+                "step": 1.0998383344096294,
+                "n_sheets": 1,
+                "double_switch": false,
+                "confidence": 0.5641569111991728,
+                "line_index": 322,
+                "index_before": 320,
+                "index_after": 324,
+                "persist_before": 5,
+                "persist_after": 5
+              },
+              {
+                "kind": "vertical",
+                "height": 2600.0,
+                "height_from": 2073.0,
+                "height_to": 2600.0,
+                "row": 57.725009763041534,
+                "col": 287,
+                "x": 1005.8071094064629,
+                "y": 1480.8273574445234,
+                "z": 2600.0,
+                "direction": "outward",
+                "step": 1.8376988005988737,
+                "n_sheets": 2,
+                "double_switch": true,
+                "confidence": 0.3290292128501379,
+                "line_index": 284,
+                "col_start": 285,
+                "col_end": 289,
+                "n_columns": 5
+              },
+              {
+                "kind": "vertical",
+                "height": 2600.0,
+                "height_from": 2073.0,
+                "height_to": 2600.0,
+                "row": 63.48552909821194,
+                "col": 321,
+                "x": 1594.8503762128246,
+                "y": 1442.322474497372,
+                "z": 2600.0,
+                "direction": "inward",
+                "step": -1.0104006304241278,
+                "n_sheets": 1,
+                "double_switch": false,
+                "confidence": 0.48015941595516165,
+                "line_index": 318,
+                "col_start": 319,
+                "col_end": 323,
+                "n_columns": 5
+              }
+            ]
+          },
+          {
+            "check": "winding_jumps",
+            "status": "FAIL",
+            "reason": "radius jumps +1.23 pitch at z=2073, col 23, angle 324 deg; radius jumps -3.77 pitch at z=2073, col 33, angle 303 deg; radius jumps -0.96 pitch at z=2073, col 39, angle 287 deg; radius jumps +2.00 pitch at z=2073, col 59, angle 237 deg; radius jumps +1.43 pitch at z=2073, col 66, angle 226 deg; radius jumps +1.95 pitch at z=2073, col 69, angle 220 deg; radius jumps -1.88 pitch at z=2073, col 77, angle 205 deg; radius jumps +1.42 pitch at z=2073, col 85, angle 189 deg; radius jumps +2.24 pitch at z=2073, col 102, angle 140 deg; radius jumps -1.18 pitch at z=2073, col 109, angle 123 deg; radius jumps +1.55 pitch at z=2073, col 113, angle 109 deg; radius jumps +3.28 pitch at z=2073, col 120, angle 84 deg; radius jumps -13.07 pitch at z=2073, col 126, angle 68 deg; radius jumps +5.02 pitch at z=2073, col 134, angle 56 deg; radius jumps +1.18 pitch at z=2073, col 148, angle 39 deg; radius jumps -7.69 pitch at z=2073, col 183, angle 355 deg; radius jumps +1.30 pitch at z=2073, col 191, angle 339 deg; radius jumps +1.57 pitch at z=2073, col 197, angle 324 deg; radius jumps -3.69 pitch at z=2073, col 207, angle 303 deg; radius jumps -1.02 pitch at z=2073, col 213, angle 287 deg; radius jumps +2.15 pitch at z=2073, col 242, angle 221 deg; radius jumps -2.38 pitch at z=2073, col 251, angle 205 deg; radius jumps -0.60 pitch at z=2073, col 269, angle 160 deg; radius jumps +2.84 pitch at z=2073, col 275, angle 141 deg; radius jumps -1.37 pitch at z=2073, col 282, angle 123 deg; radius jumps +1.21 pitch at z=2073, col 286, angle 109 deg; radius jumps +2.49 pitch at z=2073, col 293, angle 83 deg; radius jumps -11.46 pitch at z=2073, col 299, angle 67 deg; radius jumps +5.20 pitch at z=2073, col 308, angle 55 deg; radius jumps +1.06 pitch at z=2073, col 322, angle 37 deg; radius jumps -3.99 pitch at z=2073, col 331, angle 22 deg; radius jumps +0.80 pitch at z=2600, col 19, angle 337 deg; radius jumps +0.65 pitch at z=2600, col 23, angle 327 deg; radius jumps -3.33 pitch at z=2600, col 35, angle 301 deg; radius jumps +1.05 pitch at z=2600, col 46, angle 270 deg; radius jumps +1.58 pitch at z=2600, col 56, angle 246 deg; radius jumps +1.06 pitch at z=2600, col 63, angle 235 deg; radius jumps +2.50 pitch at z=2600, col 65, angle 231 deg; radius jumps -3.97 pitch at z=2600, col 72, angle 222 deg; radius jumps +4.10 pitch at z=2600, col 80, angle 206 deg; radius jumps -1.54 pitch at z=2600, col 86, angle 191 deg; radius jumps +2.42 pitch at z=2600, col 97, angle 159 deg; radius jumps -0.96 pitch at z=2600, col 103, angle 145 deg; radius jumps -1.14 pitch at z=2600, col 115, angle 114 deg; radius jumps -2.64 pitch at z=2600, col 135, angle 71 deg; radius jumps +2.21 pitch at z=2600, col 143, angle 55 deg; radius jumps -0.96 pitch at z=2600, col 150, angle 41 deg; radius jumps +1.32 pitch at z=2600, col 161, angle 20 deg; radius jumps +2.55 pitch at z=2600, col 171, angle 5 deg; radius jumps -4.53 pitch at z=2600, col 180, angle 356 deg; radius jumps +0.64 pitch at z=2600, col 191, angle 336 deg; radius jumps -2.71 pitch at z=2600, col 205, angle 303 deg; radius jumps -0.69 pitch at z=2600, col 213, angle 281 deg; radius jumps +0.85 pitch at z=2600, col 218, angle 269 deg; radius jumps -0.73 pitch at z=2600, col 224, angle 255 deg; radius jumps +1.56 pitch at z=2600, col 229, angle 243 deg; radius jumps +2.08 pitch at z=2600, col 237, angle 231 deg; radius jumps -5.23 pitch at z=2600, col 245, angle 219 deg; radius jumps +3.29 pitch at z=2600, col 250, angle 209 deg; radius jumps -1.51 pitch at z=2600, col 255, angle 197 deg; radius jumps +0.63 pitch at z=2600, col 263, angle 173 deg; radius jumps +2.56 pitch at z=2600, col 267, angle 161 deg; radius jumps -1.10 pitch at z=2600, col 273, angle 146 deg; radius jumps +0.68 pitch at z=2600, col 279, angle 130 deg; radius jumps -1.47 pitch at z=2600, col 288, angle 107 deg; radius jumps -2.57 pitch at z=2600, col 305, angle 71 deg; radius jumps +1.84 pitch at z=2600, col 313, angle 55 deg; radius jumps -1.05 pitch at z=2600, col 318, angle 46 deg; radius jumps -0.70 pitch at z=2600, col 320, angle 41 deg; radius jumps -1.59 pitch at z=3128, col 34, angle 300 deg; radius jumps -0.88 pitch at z=3128, col 41, angle 282 deg; radius jumps -2.18 pitch at z=3128, col 46, angle 269 deg; radius jumps +0.60 pitch at z=3128, col 52, angle 257 deg; radius jumps -3.18 pitch at z=3128, col 59, angle 244 deg; radius jumps +2.07 pitch at z=3128, col 63, angle 237 deg; radius jumps -0.86 pitch at z=3128, col 68, angle 227 deg; radius jumps -1.98 pitch at z=3128, col 73, angle 216 deg; radius jumps +1.16 pitch at z=3128, col 80, angle 201 deg; radius jumps -1.05 pitch at z=3128, col 83, angle 193 deg; radius jumps +1.12 pitch at z=3128, col 88, angle 179 deg; radius jumps -1.74 pitch at z=3128, col 92, angle 170 deg; radius jumps +2.88 pitch at z=3128, col 103, angle 150 deg; radius jumps -1.71 pitch at z=3128, col 108, angle 140 deg; radius jumps -2.45 pitch at z=3128, col 113, angle 131 deg; radius jumps +0.93 pitch at z=3128, col 119, angle 117 deg; radius jumps +3.31 pitch at z=3128, col 130, angle 90 deg; radius jumps +0.89 pitch at z=3128, col 136, angle 79 deg; radius jumps -2.61 pitch at z=3128, col 143, angle 64 deg; radius jumps -0.89 pitch at z=3128, col 149, angle 49 deg; radius jumps -3.29 pitch at z=3128, col 159, angle 22 deg; radius jumps +2.69 pitch at z=3128, col 166, angle 9 deg; radius jumps -2.25 pitch at z=3128, col 176, angle 354 deg; radius jumps +2.96 pitch at z=3128, col 179, angle 349 deg; radius jumps +0.97 pitch at z=3128, col 191, angle 328 deg; radius jumps -1.83 pitch at z=3128, col 203, angle 301 deg; radius jumps +0.72 pitch at z=3128, col 209, angle 287 deg; radius jumps -0.61 pitch at z=3128, col 211, angle 282 deg; radius jumps -2.55 pitch at z=3128, col 216, angle 268 deg; radius jumps -3.50 pitch at z=3128, col 229, angle 244 deg; radius jumps +1.40 pitch at z=3128, col 234, angle 234 deg; radius jumps -1.65 pitch at z=3128, col 242, angle 217 deg; radius jumps +0.88 pitch at z=3128, col 249, angle 201 deg; radius jumps -0.70 pitch at z=3128, col 253, angle 190 deg; radius jumps +2.36 pitch at z=3128, col 257, angle 179 deg; radius jumps -2.49 pitch at z=3128, col 261, angle 169 deg; radius jumps +3.33 pitch at z=3128, col 271, angle 151 deg; radius jumps -2.30 pitch at z=3128, col 283, angle 127 deg; radius jumps +0.63 pitch at z=3128, col 289, angle 113 deg; radius jumps +3.64 pitch at z=3128, col 298, angle 91 deg; radius jumps +0.62 pitch at z=3128, col 305, angle 77 deg; radius jumps -2.48 pitch at z=3128, col 311, angle 65 deg; radius jumps -2.62 pitch at z=3128, col 327, angle 24 deg",
+            "jumps": [
+              {
+                "z": 2073.0,
+                "col": 23,
+                "angle_deg": 323.8716602169249,
+                "step_vox": 23.748348025858434,
+                "step_pitches": 1.225721188431403,
+                "x": 1518.0721423655261,
+                "y": 761.2340878294929
+              },
+              {
+                "z": 2073.0,
+                "col": 33,
+                "angle_deg": 302.7894665819722,
+                "step_vox": -61.203214169265344,
+                "step_pitches": -3.7663516411855595,
+                "x": 1377.3023258369826,
+                "y": 686.0658003109219
+              },
+              {
+                "z": 2073.0,
+                "col": 39,
+                "angle_deg": 286.90878332553734,
+                "step_vox": -15.595794067869502,
+                "step_pitches": -0.959741173407354,
+                "x": 1272.0103451738603,
+                "y": 656.5558285965043
+              },
+              {
+                "z": 2073.0,
+                "col": 59,
+                "angle_deg": 237.4340504981381,
+                "step_vox": 32.95785910300741,
+                "step_pitches": 1.9974460062428732,
+                "x": 892.8028833388466,
+                "y": 602.1061939782726
+              },
+              {
+                "z": 2073.0,
+                "col": 66,
+                "angle_deg": 225.55853503979748,
+                "step_vox": 23.612013565814184,
+                "step_pitches": 1.4310311252008596,
+                "x": 758.9073196138704,
+                "y": 611.9816541842021
+              },
+              {
+                "z": 2073.0,
+                "col": 69,
+                "angle_deg": 219.92167243438743,
+                "step_vox": 36.13348195016535,
+                "step_pitches": 1.9531611864954241,
+                "x": 732.4553605901294,
+                "y": 663.3857580227782
+              },
+              {
+                "z": 2073.0,
+                "col": 77,
+                "angle_deg": 205.2404391855507,
+                "step_vox": -31.462177104033486,
+                "step_pitches": -1.8783389315840888,
+                "x": 719.2056601897877,
+                "y": 813.6846600631392
+              },
+              {
+                "z": 2073.0,
+                "col": 85,
+                "angle_deg": 189.2753199436308,
+                "step_vox": 22.034985575470785,
+                "step_pitches": 1.4216119726110183,
+                "x": 757.5115836204916,
+                "y": 956.0444867586858
+              },
+              {
+                "z": 2073.0,
+                "col": 102,
+                "angle_deg": 140.2105361192456,
+                "step_vox": 37.50871742375601,
+                "step_pitches": 2.239326413358568,
+                "x": 901.2342709504381,
+                "y": 1238.2277593372792
+              },
+              {
+                "z": 2073.0,
+                "col": 109,
+                "angle_deg": 122.93192410409353,
+                "step_vox": -21.86665913050446,
+                "step_pitches": -1.1819815746218627,
+                "x": 990.741873952207,
+                "y": 1284.6951041379496
+              },
+              {
+                "z": 2073.0,
+                "col": 113,
+                "angle_deg": 109.00103145424455,
+                "step_vox": 28.6398893906389,
+                "step_pitches": 1.5481021292237243,
+                "x": 1072.7400398551133,
+                "y": 1278.0663044439086
+              },
+              {
+                "z": 2073.0,
+                "col": 120,
+                "angle_deg": 84.4582631337301,
+                "step_vox": 60.71319549593612,
+                "step_pitches": 3.281794351131682,
+                "x": 1191.947782932091,
+                "y": 1341.5178053102477
+              },
+              {
+                "z": 2073.0,
+                "col": 126,
+                "angle_deg": 67.65645493449108,
+                "step_vox": -271.3044758093537,
+                "step_pitches": -13.074914496836321,
+                "x": 1304.0662318720222,
+                "y": 1370.1537486989998
+              },
+              {
+                "z": 2073.0,
+                "col": 134,
+                "angle_deg": 55.910761207066116,
+                "step_vox": 90.27937427072399,
+                "step_pitches": 5.015520792817999,
+                "x": 1446.199062313947,
+                "y": 1443.426377249314
+              },
+              {
+                "z": 2073.0,
+                "col": 148,
+                "angle_deg": 39.41393644021991,
+                "step_vox": 21.818376155161502,
+                "step_pitches": 1.179371684062784,
+                "x": 1688.6122838999943,
+                "y": 1455.579891750377
+              },
+              {
+                "z": 2073.0,
+                "col": 183,
+                "angle_deg": 355.1418467760899,
+                "step_vox": -103.87553319860714,
+                "step_pitches": -7.694483940637566,
+                "x": 1655.0168661665357,
+                "y": 979.9361562536549
+              },
+              {
+                "z": 2073.0,
+                "col": 191,
+                "angle_deg": 339.2497509521874,
+                "step_vox": 21.516339622198174,
+                "step_pitches": 1.3040205831635256,
+                "x": 1538.9134285049154,
+                "y": 878.7267991836343
+              },
+              {
+                "z": 2073.0,
+                "col": 197,
+                "angle_deg": 324.0670612622445,
+                "step_vox": 28.49153396776831,
+                "step_pitches": 1.5683413193266957,
+                "x": 1516.3090516561206,
+                "y": 764.3742280281075
+              },
+              {
+                "z": 2073.0,
+                "col": 207,
+                "angle_deg": 302.86870070517637,
+                "step_vox": -64.51694266946377,
+                "step_pitches": -3.686682438255073,
+                "x": 1376.41770910591,
+                "y": 688.4528710407195
+              },
+              {
+                "z": 2073.0,
+                "col": 213,
+                "angle_deg": 286.84203032535606,
+                "step_vox": -17.255032045314792,
+                "step_pitches": -1.0150018850185172,
+                "x": 1270.7368775874234,
+                "y": 659.2269969009326
+              },
+              {
+                "z": 2073.0,
+                "col": 242,
+                "angle_deg": 221.16623843796265,
+                "step_vox": 34.34901267669646,
+                "step_pitches": 2.146813292293529,
+                "x": 738.5478718913236,
+                "y": 652.5930616722204
+              },
+              {
+                "z": 2073.0,
+                "col": 251,
+                "angle_deg": 204.799660294678,
+                "step_vox": -39.23744572726194,
+                "step_pitches": -2.378027013773451,
+                "x": 727.2514155036603,
+                "y": 821.5408609709348
+              },
+              {
+                "z": 2073.0,
+                "col": 269,
+                "angle_deg": 160.21759100065879,
+                "step_vox": -9.045953886724739,
+                "step_pitches": -0.603063592448316,
+                "x": 838.747625179171,
+                "y": 1137.81466347172
+              },
+              {
+                "z": 2073.0,
+                "col": 275,
+                "angle_deg": 140.57111317960312,
+                "step_vox": 39.79538488347767,
+                "step_pitches": 2.842527491676976,
+                "x": 905.1495525450076,
+                "y": 1232.2547059909161
+              },
+              {
+                "z": 2073.0,
+                "col": 282,
+                "angle_deg": 122.78089177216702,
+                "step_vox": -23.31040141734683,
+                "step_pitches": -1.371200083373343,
+                "x": 993.3148764422361,
+                "y": 1282.2238806797834
+              },
+              {
+                "z": 2073.0,
+                "col": 286,
+                "angle_deg": 108.52266931153008,
+                "step_vox": 23.679657401277154,
+                "step_pitches": 1.2143414051937003,
+                "x": 1075.9331041705514,
+                "y": 1275.6551716032304
+              },
+              {
+                "z": 2073.0,
+                "col": 293,
+                "angle_deg": 83.2413629710311,
+                "step_vox": 52.324795490385135,
+                "step_pitches": 2.491656928113578,
+                "x": 1198.3716145459464,
+                "y": 1337.7801940956747
+              },
+              {
+                "z": 2073.0,
+                "col": 299,
+                "angle_deg": 66.53355781427092,
+                "step_vox": -240.6494640144444,
+                "step_pitches": -11.459498286402114,
+                "x": 1309.3060227680844,
+                "y": 1363.6957490285522
+              },
+              {
+                "z": 2073.0,
+                "col": 308,
+                "angle_deg": 55.271532411601925,
+                "step_vox": 83.19351036011537,
+                "step_pitches": 5.1995943975072105,
+                "x": 1461.2731123368724,
+                "y": 1455.2059796648941
+              },
+              {
+                "z": 2073.0,
+                "col": 322,
+                "angle_deg": 37.34473220280893,
+                "step_vox": 16.95716455271851,
+                "step_pitches": 1.0598227845449069,
+                "x": 1709.963377748373,
+                "y": 1440.8515239201392
+              },
+              {
+                "z": 2073.0,
+                "col": 331,
+                "angle_deg": 22.445547580430684,
+                "step_vox": -63.77478378606437,
+                "step_pitches": -3.985923986629023,
+                "x": 1812.4933346823982,
+                "y": 1291.0870524890045
+              },
+              {
+                "z": 2600.0,
+                "col": 19,
+                "angle_deg": 336.59149309805656,
+                "step_vox": 13.185387630670476,
+                "step_pitches": 0.8012256684423276,
+                "x": 1567.766838309108,
+                "y": 895.0983475752533
+              },
+              {
+                "z": 2600.0,
+                "col": 23,
+                "angle_deg": 326.51990454956837,
+                "step_vox": 11.639388451644912,
+                "step_pitches": 0.6537385455136336,
+                "x": 1517.6085116620707,
+                "y": 832.9069454583207
+              },
+              {
+                "z": 2600.0,
+                "col": 35,
+                "angle_deg": 300.7408727550834,
+                "step_vox": -68.34592793124366,
+                "step_pitches": -3.333947703963106,
+                "x": 1337.746599069488,
+                "y": 760.7172273275376
+              },
+              {
+                "z": 2600.0,
+                "col": 46,
+                "angle_deg": 270.0848857082247,
+                "step_vox": 18.901844439125917,
+                "step_pitches": 1.0501024688403287,
+                "x": 1150.9621409759625,
+                "y": 669.3698473383438
+              },
+              {
+                "z": 2600.0,
+                "col": 56,
+                "angle_deg": 246.00247303257106,
+                "step_vox": 29.546448637020916,
+                "step_pitches": 1.575810593974449,
+                "x": 953.4830833938878,
+                "y": 633.5558344303628
+              },
+              {
+                "z": 2600.0,
+                "col": 63,
+                "angle_deg": 234.51077349542743,
+                "step_vox": 18.221680410478083,
+                "step_pitches": 1.0563292991581497,
+                "x": 814.9373414404902,
+                "y": 605.3676935485706
+              },
+              {
+                "z": 2600.0,
+                "col": 65,
+                "angle_deg": 231.1161702859541,
+                "step_vox": 41.21420447806245,
+                "step_pitches": 2.4978305744280274,
+                "x": 776.7076052033777,
+                "y": 612.4599968369014
+              },
+              {
+                "z": 2600.0,
+                "col": 72,
+                "angle_deg": 221.502236930315,
+                "step_vox": -59.586251256332645,
+                "step_pitches": -3.9724167504221763,
+                "x": 766.9010285922909,
+                "y": 736.5174698986688
+              },
+              {
+                "z": 2600.0,
+                "col": 80,
+                "angle_deg": 205.75589551788755,
+                "step_vox": 61.47729189184881,
+                "step_pitches": 4.0984861261232535,
+                "x": 762.030243422453,
+                "y": 888.4427044417432
+              },
+              {
+                "z": 2600.0,
+                "col": 86,
+                "angle_deg": 191.25927948184403,
+                "step_vox": -22.370664092712218,
+                "step_pitches": -1.5428044201870494,
+                "x": 764.3810063428523,
+                "y": 998.9590169558251
+              },
+              {
+                "z": 2600.0,
+                "col": 97,
+                "angle_deg": 159.47823532706212,
+                "step_vox": 46.05148619886272,
+                "step_pitches": 2.4237624315190907,
+                "x": 758.8509459045292,
+                "y": 1222.3487715840654
+              },
+              {
+                "z": 2600.0,
+                "col": 103,
+                "angle_deg": 145.08082148419757,
+                "step_vox": -18.27516994172177,
+                "step_pitches": -0.9618510495643037,
+                "x": 797.1886189230529,
+                "y": 1322.3515566223202
+              },
+              {
+                "z": 2600.0,
+                "col": 115,
+                "angle_deg": 114.20655874347705,
+                "step_vox": -24.539969634863446,
+                "step_pitches": -1.1413939365052765,
+                "x": 973.3690891931514,
+                "y": 1469.5020962263525
+              },
+              {
+                "z": 2600.0,
+                "col": 135,
+                "angle_deg": 70.56951497464388,
+                "step_vox": -41.654080461233086,
+                "step_pitches": -2.6447035213481325,
+                "x": 1333.660266972566,
+                "y": 1595.4267003722705
+              },
+              {
+                "z": 2600.0,
+                "col": 143,
+                "angle_deg": 54.91795193107373,
+                "step_vox": 35.38688191058367,
+                "step_pitches": 2.2116801194114792,
+                "x": 1482.2527886822518,
+                "y": 1548.350327711655
+              },
+              {
+                "z": 2600.0,
+                "col": 150,
+                "angle_deg": 40.82431112142285,
+                "step_vox": -17.231211564963886,
+                "step_pitches": -0.9572895313868826,
+                "x": 1587.5904888218731,
+                "y": 1453.5311003307381
+              },
+              {
+                "z": 2600.0,
+                "col": 161,
+                "angle_deg": 20.087605329412042,
+                "step_vox": 20.762361923754263,
+                "step_pitches": 1.3182452015082071,
+                "x": 1739.44983051192,
+                "y": 1291.2317737646038
+              },
+              {
+                "z": 2600.0,
+                "col": 171,
+                "angle_deg": 5.1123213248579304,
+                "step_vox": 35.33126337368648,
+                "step_pitches": 2.5463973602656926,
+                "x": 1854.663740556624,
+                "y": 1138.8101024816503
+              },
+              {
+                "z": 2600.0,
+                "col": 180,
+                "angle_deg": 356.4098829026929,
+                "step_vox": -80.67888972635014,
+                "step_pitches": -4.526693988152901,
+                "x": 1712.1713337036708,
+                "y": 1040.5511157888964
+              },
+              {
+                "z": 2600.0,
+                "col": 191,
+                "angle_deg": 335.67117930529037,
+                "step_vox": 13.435228201354846,
+                "step_pitches": 0.63818995909454,
+                "x": 1560.2227477319454,
+                "y": 890.4916185413831
+              },
+              {
+                "z": 2600.0,
+                "col": 205,
+                "angle_deg": 303.22524704676,
+                "step_vox": -65.81997593362098,
+                "step_pitches": -2.710732599582846,
+                "x": 1367.0953178221478,
+                "y": 744.9120327493418
+              },
+              {
+                "z": 2600.0,
+                "col": 213,
+                "angle_deg": 281.2137426471959,
+                "step_vox": -13.446780385461864,
+                "step_pitches": -0.6895784813057366,
+                "x": 1216.5490009614807,
+                "y": 741.941414745826
+              },
+              {
+                "z": 2600.0,
+                "col": 218,
+                "angle_deg": 269.28272356416556,
+                "step_vox": 19.046371129055032,
+                "step_pitches": 0.846505383513557,
+                "x": 1145.3113209874437,
+                "y": 672.5344339684391
+              },
+              {
+                "z": 2600.0,
+                "col": 224,
+                "angle_deg": 254.63705955068207,
+                "step_vox": -14.803815784601895,
+                "step_pitches": -0.7310526313383652,
+                "x": 1030.1128974548626,
+                "y": 638.1401427255518
+              },
+              {
+                "z": 2600.0,
+                "col": 229,
+                "angle_deg": 243.20813254499035,
+                "step_vox": 28.094964105082283,
+                "step_pitches": 1.560831339171238,
+                "x": 928.5637341727995,
+                "y": 636.5631199790988
+              },
+              {
+                "z": 2600.0,
+                "col": 237,
+                "angle_deg": 230.51513197455972,
+                "step_vox": 35.33023657784458,
+                "step_pitches": 2.078249210461446,
+                "x": 773.8669207221693,
+                "y": 618.8315359897301
+              },
+              {
+                "z": 2600.0,
+                "col": 245,
+                "angle_deg": 219.42486632883856,
+                "step_vox": -78.464019732737,
+                "step_pitches": -5.230934648849133,
+                "x": 777.7417904182483,
+                "y": 769.4570274108286
+              },
+              {
+                "z": 2600.0,
+                "col": 250,
+                "angle_deg": 208.95550684925269,
+                "step_vox": 46.10516046116288,
+                "step_pitches": 3.2932257472259203,
+                "x": 786.3400995564889,
+                "y": 874.3898516779446
+              },
+              {
+                "z": 2600.0,
+                "col": 255,
+                "angle_deg": 196.9881487328131,
+                "step_vox": -22.701915556107977,
+                "step_pitches": -1.513461037073865,
+                "x": 764.6483040946969,
+                "y": 957.9633341814839
+              },
+              {
+                "z": 2600.0,
+                "col": 263,
+                "angle_deg": 172.64808046489281,
+                "step_vox": 10.321739117026059,
+                "step_pitches": 0.6255599464864279,
+                "x": 774.1165426039822,
+                "y": 1124.3444730944361
+              },
+              {
+                "z": 2600.0,
+                "col": 267,
+                "angle_deg": 161.11910249956736,
+                "step_vox": 42.89799039690406,
+                "step_pitches": 2.5610740535465113,
+                "x": 766.5844892534353,
+                "y": 1207.0527923324832
+              },
+              {
+                "z": 2600.0,
+                "col": 273,
+                "angle_deg": 146.48852583424218,
+                "step_vox": -22.091944237440295,
+                "step_pitches": -1.1045972118720147,
+                "x": 792.4721168257137,
+                "y": 1312.7839060713277
+              },
+              {
+                "z": 2600.0,
+                "col": 279,
+                "angle_deg": 130.41776071834317,
+                "step_vox": 11.190189563450035,
+                "step_pitches": 0.6781933068757597,
+                "x": 871.5499713936848,
+                "y": 1403.1950022996361
+              },
+              {
+                "z": 2600.0,
+                "col": 288,
+                "angle_deg": 107.04821412474757,
+                "step_vox": -24.31340196311048,
+                "step_pitches": -1.4735395129157867,
+                "x": 1023.4166581329823,
+                "y": 1489.7667347573033
+              },
+              {
+                "z": 2600.0,
+                "col": 305,
+                "angle_deg": 70.86920629055396,
+                "step_vox": -44.89121968286,
+                "step_pitches": -2.5652125533062855,
+                "x": 1329.2576441424128,
+                "y": 1591.528976786347
+              },
+              {
+                "z": 2600.0,
+                "col": 313,
+                "angle_deg": 55.37971248122699,
+                "step_vox": 33.57047780067671,
+                "step_pitches": 1.8394782356535184,
+                "x": 1474.4836874508085,
+                "y": 1545.28828941977
+              },
+              {
+                "z": 2600.0,
+                "col": 318,
+                "angle_deg": 45.50460451080221,
+                "step_vox": -20.814933575754367,
+                "step_pitches": -1.053920687379968,
+                "x": 1552.8773551169165,
+                "y": 1485.4704866110771
+              },
+              {
+                "z": 2600.0,
+                "col": 320,
+                "angle_deg": 41.49143763392601,
+                "step_vox": -13.839779197839299,
+                "step_pitches": -0.7007483138146481,
+                "x": 1579.6654029321298,
+                "y": 1455.502977851545
+              },
+              {
+                "z": 3128.0,
+                "col": 34,
+                "angle_deg": 299.5505704271521,
+                "step_vox": -26.583869301992728,
+                "step_pitches": -1.5870966747458344,
+                "x": 1368.5436420803842,
+                "y": 819.764660613739
+              },
+              {
+                "z": 3128.0,
+                "col": 41,
+                "angle_deg": 282.22389005267394,
+                "step_vox": -13.705689441048314,
+                "step_pitches": -0.8842380284547299,
+                "x": 1236.753265907794,
+                "y": 805.8303953067474
+              },
+              {
+                "z": 3128.0,
+                "col": 46,
+                "angle_deg": 269.0605215025485,
+                "step_vox": -30.542182161429352,
+                "step_pitches": -2.1815844401020965,
+                "x": 1143.331753962001,
+                "y": 776.0182369702483
+              },
+              {
+                "z": 3128.0,
+                "col": 52,
+                "angle_deg": 256.80515917667793,
+                "step_vox": 8.133571158652458,
+                "step_pitches": 0.6024867524927747,
+                "x": 1036.7594791610638,
+                "y": 720.0754624216733
+              },
+              {
+                "z": 3128.0,
+                "col": 59,
+                "angle_deg": 244.4792952889157,
+                "step_vox": -40.582485902963526,
+                "step_pitches": -3.1829400708206688,
+                "x": 902.0475274195413,
+                "y": 684.4958545698786
+              },
+              {
+                "z": 3128.0,
+                "col": 63,
+                "angle_deg": 236.6722941639577,
+                "step_vox": 26.40373405605987,
+                "step_pitches": 2.0708811024360685,
+                "x": 833.7818780109205,
+                "y": 723.1733611854855
+              },
+              {
+                "z": 3128.0,
+                "col": 68,
+                "angle_deg": 226.79084031794605,
+                "step_vox": -12.636816437003269,
+                "step_pitches": -0.8567333177629335,
+                "x": 776.9043908763235,
+                "y": 807.0475534929185
+              },
+              {
+                "z": 3128.0,
+                "col": 73,
+                "angle_deg": 216.441006809014,
+                "step_vox": -29.153244093170564,
+                "step_pitches": -1.9764911249607162,
+                "x": 736.4019968881993,
+                "y": 898.9562852032839
+              },
+              {
+                "z": 3128.0,
+                "col": 80,
+                "angle_deg": 200.51323741578608,
+                "step_vox": 17.370589161446304,
+                "step_pitches": 1.1580392774297537,
+                "x": 713.9538512446511,
+                "y": 1041.3294968667826
+              },
+              {
+                "z": 3128.0,
+                "col": 83,
+                "angle_deg": 192.72106695423756,
+                "step_vox": -15.722258019519405,
+                "step_pitches": -1.048150534634627,
+                "x": 706.5122397281743,
+                "y": 1104.413087360366
+              },
+              {
+                "z": 3128.0,
+                "col": 88,
+                "angle_deg": 179.11961065697966,
+                "step_vox": 16.78623964009546,
+                "step_pitches": 1.1190826426730307,
+                "x": 711.6282203802044,
+                "y": 1211.3519483286223
+              },
+              {
+                "z": 3128.0,
+                "col": 92,
+                "angle_deg": 169.75605595042097,
+                "step_vox": -20.914896347684092,
+                "step_pitches": -1.7429080289736743,
+                "x": 704.8342775548081,
+                "y": 1285.1255453714862
+              },
+              {
+                "z": 3128.0,
+                "col": 103,
+                "angle_deg": 149.84883318488892,
+                "step_vox": 33.85942215464169,
+                "step_pitches": 2.8816529493312077,
+                "x": 706.803896943685,
+                "y": 1462.2599663382252
+              },
+              {
+                "z": 3128.0,
+                "col": 108,
+                "angle_deg": 139.81243700906103,
+                "step_vox": -21.349796165015704,
+                "step_pitches": -1.7079836932012562,
+                "x": 739.4701089254104,
+                "y": 1551.6860226067295
+              },
+              {
+                "z": 3128.0,
+                "col": 113,
+                "angle_deg": 130.8152353815178,
+                "step_vox": -34.940429933429364,
+                "step_pitches": -2.4519599953283766,
+                "x": 832.1105593212867,
+                "y": 1573.107382552503
+              },
+              {
+                "z": 3128.0,
+                "col": 119,
+                "angle_deg": 117.09248105095548,
+                "step_vox": 13.971196625188824,
+                "step_pitches": 0.9314131083459216,
+                "x": 949.6686058517168,
+                "y": 1596.9223158913053
+              },
+              {
+                "z": 3128.0,
+                "col": 130,
+                "angle_deg": 90.4792444514685,
+                "step_vox": 46.30568253185066,
+                "step_pitches": 3.307548752275047,
+                "x": 1146.2491993205983,
+                "y": 1696.0628186289778
+              },
+              {
+                "z": 3128.0,
+                "col": 136,
+                "angle_deg": 78.78298942418775,
+                "step_vox": 9.802575416562611,
+                "step_pitches": 0.8911432196875101,
+                "x": 1253.625457603196,
+                "y": 1725.3272451690796
+              },
+              {
+                "z": 3128.0,
+                "col": 143,
+                "angle_deg": 63.84829289353934,
+                "step_vox": -36.50511929226376,
+                "step_pitches": -2.6075085208759825,
+                "x": 1363.3568976999518,
+                "y": 1638.3994365497501
+              },
+              {
+                "z": 3128.0,
+                "col": 149,
+                "angle_deg": 48.76361021228581,
+                "step_vox": -13.118348660385227,
+                "step_pitches": -0.8893795701956085,
+                "x": 1455.0586265672605,
+                "y": 1552.2187285877776
+              },
+              {
+                "z": 3128.0,
+                "col": 159,
+                "angle_deg": 22.401092756243997,
+                "step_vox": -49.40736604541033,
+                "step_pitches": -3.2938244030273554,
+                "x": 1577.70524818133,
+                "y": 1380.7585359157815
+              },
+              {
+                "z": 3128.0,
+                "col": 166,
+                "angle_deg": 9.41816569325016,
+                "step_vox": 46.41817411741516,
+                "step_pitches": 2.6909086444878354,
+                "x": 1689.0027553342888,
+                "y": 1293.9571968221223
+              },
+              {
+                "z": 3128.0,
+                "col": 176,
+                "angle_deg": 354.21400598395473,
+                "step_vox": -29.53436660332757,
+                "step_pitches": -2.25218740129361,
+                "x": 1785.2358471592472,
+                "y": 1140.2784562619574
+              },
+              {
+                "z": 3128.0,
+                "col": 179,
+                "angle_deg": 349.2427515290428,
+                "step_vox": 39.3773774834611,
+                "step_pitches": 2.961717280807331,
+                "x": 1754.387997730629,
+                "y": 1089.85252976545
+              },
+              {
+                "z": 3128.0,
+                "col": 191,
+                "angle_deg": 327.6107523295688,
+                "step_vox": 13.941294911563176,
+                "step_pitches": 0.9690631534103945,
+                "x": 1583.285119045173,
+                "y": 929.9813162088171
+              },
+              {
+                "z": 3128.0,
+                "col": 203,
+                "angle_deg": 301.3268993836552,
+                "step_vox": -27.93028859647314,
+                "step_pitches": -1.8260515575703093,
+                "x": 1382.9435460116867,
+                "y": 822.4815287709691
+              },
+              {
+                "z": 3128.0,
+                "col": 209,
+                "angle_deg": 287.21054268131905,
+                "step_vox": 11.25085603167986,
+                "step_pitches": 0.718487177639933,
+                "x": 1268.0510296405198,
+                "y": 824.6592201345645
+              },
+              {
+                "z": 3128.0,
+                "col": 211,
+                "angle_deg": 281.6693156612308,
+                "step_vox": -9.586911570351944,
+                "step_pitches": -0.6122265734332155,
+                "x": 1232.1948330215016,
+                "y": 808.3760360207253
+              },
+              {
+                "z": 3128.0,
+                "col": 216,
+                "angle_deg": 268.3082053236025,
+                "step_vox": -38.26491215537477,
+                "step_pitches": -2.5509941436916517,
+                "x": 1137.8818547404885,
+                "y": 782.1371795642117
+              },
+              {
+                "z": 3128.0,
+                "col": 229,
+                "angle_deg": 243.89812205637566,
+                "step_vox": -48.97323930498763,
+                "step_pitches": -3.4980885217848305,
+                "x": 898.5784175358217,
+                "y": 690.702481270046
+              },
+              {
+                "z": 3128.0,
+                "col": 234,
+                "angle_deg": 233.87495822917072,
+                "step_vox": 19.554711079927515,
+                "step_pitches": 1.3967650771376796,
+                "x": 815.9072283238103,
+                "y": 746.3815896037949
+              },
+              {
+                "z": 3128.0,
+                "col": 242,
+                "angle_deg": 217.16458356265076,
+                "step_vox": -29.65808111761313,
+                "step_pitches": -1.6476711732007294,
+                "x": 738.9217845532578,
+                "y": 892.7120595046916
+              },
+              {
+                "z": 3128.0,
+                "col": 249,
+                "angle_deg": 201.00496366579694,
+                "step_vox": 12.34797080622377,
+                "step_pitches": 0.8819979147302693,
+                "x": 718.296993392864,
+                "y": 1038.7136033879303
+              },
+              {
+                "z": 3128.0,
+                "col": 253,
+                "angle_deg": 190.1285727843166,
+                "step_vox": -9.784616685754237,
+                "step_pitches": -0.6989011918395883,
+                "x": 722.2533659921972,
+                "y": 1128.132308201665
+              },
+              {
+                "z": 3128.0,
+                "col": 257,
+                "angle_deg": 178.8035634897019,
+                "step_vox": 32.97985445219134,
+                "step_pitches": 2.3557038894422386,
+                "x": 713.802551508502,
+                "y": 1213.7274115396149
+              },
+              {
+                "z": 3128.0,
+                "col": 261,
+                "angle_deg": 169.2859520630053,
+                "step_vox": -35.446099662232236,
+                "step_pitches": -2.487445590332087,
+                "x": 713.4932817002793,
+                "y": 1287.267764910479
+              },
+              {
+                "z": 3128.0,
+                "col": 271,
+                "angle_deg": 150.83104561905202,
+                "step_vox": 43.24801132168456,
+                "step_pitches": 3.326770101668043,
+                "x": 707.3663826097107,
+                "y": 1451.875849864956
+              },
+              {
+                "z": 3128.0,
+                "col": 283,
+                "angle_deg": 127.34379470885267,
+                "step_vox": -34.561968045496,
+                "step_pitches": -2.3041312030330667,
+                "x": 868.0649455867401,
+                "y": 1574.5882276171487
+              },
+              {
+                "z": 3128.0,
+                "col": 289,
+                "angle_deg": 112.65262101515577,
+                "step_vox": 10.70920206392935,
+                "step_pitches": 0.6299530625840795,
+                "x": 984.1832746100682,
+                "y": 1602.7927976091908
+              },
+              {
+                "z": 3128.0,
+                "col": 298,
+                "angle_deg": 90.7764313547998,
+                "step_vox": 50.91214645031577,
+                "step_pitches": 3.636581889308269,
+                "x": 1143.826355786132,
+                "y": 1686.7225793192665
+              },
+              {
+                "z": 3128.0,
+                "col": 305,
+                "angle_deg": 77.12367329899303,
+                "step_vox": 9.669593011498772,
+                "step_pitches": 0.6238447104192757,
+                "x": 1267.6740567903073,
+                "y": 1717.8043574570997
+              },
+              {
+                "z": 3128.0,
+                "col": 311,
+                "angle_deg": 64.50911847402631,
+                "step_vox": -38.51184054025981,
+                "step_pitches": -2.4846348735651493,
+                "x": 1358.1600436439755,
+                "y": 1640.4503444792406
+              },
+              {
+                "z": 3128.0,
+                "col": 327,
+                "angle_deg": 23.504608110805748,
+                "step_vox": -41.295148591563745,
+                "step_pitches": -2.6219141962897616,
+                "x": 1568.1714214039002,
+                "y": 1386.3195341009778
+              }
+            ],
+            "heights": [
+              {
+                "z": 2073.0,
+                "status": "FAIL",
+                "reason": "",
+                "jumps": [
+                  {
+                    "col": 23,
+                    "angle_deg": 323.8716602169249,
+                    "step_vox": 23.748348025858434,
+                    "step_pitches": 1.225721188431403,
+                    "x": 1518.0721423655261,
+                    "y": 761.2340878294929
+                  },
+                  {
+                    "col": 33,
+                    "angle_deg": 302.7894665819722,
+                    "step_vox": -61.203214169265344,
+                    "step_pitches": -3.7663516411855595,
+                    "x": 1377.3023258369826,
+                    "y": 686.0658003109219
+                  },
+                  {
+                    "col": 39,
+                    "angle_deg": 286.90878332553734,
+                    "step_vox": -15.595794067869502,
+                    "step_pitches": -0.959741173407354,
+                    "x": 1272.0103451738603,
+                    "y": 656.5558285965043
+                  },
+                  {
+                    "col": 59,
+                    "angle_deg": 237.4340504981381,
+                    "step_vox": 32.95785910300741,
+                    "step_pitches": 1.9974460062428732,
+                    "x": 892.8028833388466,
+                    "y": 602.1061939782726
+                  },
+                  {
+                    "col": 66,
+                    "angle_deg": 225.55853503979748,
+                    "step_vox": 23.612013565814184,
+                    "step_pitches": 1.4310311252008596,
+                    "x": 758.9073196138704,
+                    "y": 611.9816541842021
+                  },
+                  {
+                    "col": 69,
+                    "angle_deg": 219.92167243438743,
+                    "step_vox": 36.13348195016535,
+                    "step_pitches": 1.9531611864954241,
+                    "x": 732.4553605901294,
+                    "y": 663.3857580227782
+                  },
+                  {
+                    "col": 77,
+                    "angle_deg": 205.2404391855507,
+                    "step_vox": -31.462177104033486,
+                    "step_pitches": -1.8783389315840888,
+                    "x": 719.2056601897877,
+                    "y": 813.6846600631392
+                  },
+                  {
+                    "col": 85,
+                    "angle_deg": 189.2753199436308,
+                    "step_vox": 22.034985575470785,
+                    "step_pitches": 1.4216119726110183,
+                    "x": 757.5115836204916,
+                    "y": 956.0444867586858
+                  },
+                  {
+                    "col": 102,
+                    "angle_deg": 140.2105361192456,
+                    "step_vox": 37.50871742375601,
+                    "step_pitches": 2.239326413358568,
+                    "x": 901.2342709504381,
+                    "y": 1238.2277593372792
+                  },
+                  {
+                    "col": 109,
+                    "angle_deg": 122.93192410409353,
+                    "step_vox": -21.86665913050446,
+                    "step_pitches": -1.1819815746218627,
+                    "x": 990.741873952207,
+                    "y": 1284.6951041379496
+                  },
+                  {
+                    "col": 113,
+                    "angle_deg": 109.00103145424455,
+                    "step_vox": 28.6398893906389,
+                    "step_pitches": 1.5481021292237243,
+                    "x": 1072.7400398551133,
+                    "y": 1278.0663044439086
+                  },
+                  {
+                    "col": 120,
+                    "angle_deg": 84.4582631337301,
+                    "step_vox": 60.71319549593612,
+                    "step_pitches": 3.281794351131682,
+                    "x": 1191.947782932091,
+                    "y": 1341.5178053102477
+                  },
+                  {
+                    "col": 126,
+                    "angle_deg": 67.65645493449108,
+                    "step_vox": -271.3044758093537,
+                    "step_pitches": -13.074914496836321,
+                    "x": 1304.0662318720222,
+                    "y": 1370.1537486989998
+                  },
+                  {
+                    "col": 134,
+                    "angle_deg": 55.910761207066116,
+                    "step_vox": 90.27937427072399,
+                    "step_pitches": 5.015520792817999,
+                    "x": 1446.199062313947,
+                    "y": 1443.426377249314
+                  },
+                  {
+                    "col": 148,
+                    "angle_deg": 39.41393644021991,
+                    "step_vox": 21.818376155161502,
+                    "step_pitches": 1.179371684062784,
+                    "x": 1688.6122838999943,
+                    "y": 1455.579891750377
+                  },
+                  {
+                    "col": 183,
+                    "angle_deg": 355.1418467760899,
+                    "step_vox": -103.87553319860714,
+                    "step_pitches": -7.694483940637566,
+                    "x": 1655.0168661665357,
+                    "y": 979.9361562536549
+                  },
+                  {
+                    "col": 191,
+                    "angle_deg": 339.2497509521874,
+                    "step_vox": 21.516339622198174,
+                    "step_pitches": 1.3040205831635256,
+                    "x": 1538.9134285049154,
+                    "y": 878.7267991836343
+                  },
+                  {
+                    "col": 197,
+                    "angle_deg": 324.0670612622445,
+                    "step_vox": 28.49153396776831,
+                    "step_pitches": 1.5683413193266957,
+                    "x": 1516.3090516561206,
+                    "y": 764.3742280281075
+                  },
+                  {
+                    "col": 207,
+                    "angle_deg": 302.86870070517637,
+                    "step_vox": -64.51694266946377,
+                    "step_pitches": -3.686682438255073,
+                    "x": 1376.41770910591,
+                    "y": 688.4528710407195
+                  },
+                  {
+                    "col": 213,
+                    "angle_deg": 286.84203032535606,
+                    "step_vox": -17.255032045314792,
+                    "step_pitches": -1.0150018850185172,
+                    "x": 1270.7368775874234,
+                    "y": 659.2269969009326
+                  },
+                  {
+                    "col": 242,
+                    "angle_deg": 221.16623843796265,
+                    "step_vox": 34.34901267669646,
+                    "step_pitches": 2.146813292293529,
+                    "x": 738.5478718913236,
+                    "y": 652.5930616722204
+                  },
+                  {
+                    "col": 251,
+                    "angle_deg": 204.799660294678,
+                    "step_vox": -39.23744572726194,
+                    "step_pitches": -2.378027013773451,
+                    "x": 727.2514155036603,
+                    "y": 821.5408609709348
+                  },
+                  {
+                    "col": 269,
+                    "angle_deg": 160.21759100065879,
+                    "step_vox": -9.045953886724739,
+                    "step_pitches": -0.603063592448316,
+                    "x": 838.747625179171,
+                    "y": 1137.81466347172
+                  },
+                  {
+                    "col": 275,
+                    "angle_deg": 140.57111317960312,
+                    "step_vox": 39.79538488347767,
+                    "step_pitches": 2.842527491676976,
+                    "x": 905.1495525450076,
+                    "y": 1232.2547059909161
+                  },
+                  {
+                    "col": 282,
+                    "angle_deg": 122.78089177216702,
+                    "step_vox": -23.31040141734683,
+                    "step_pitches": -1.371200083373343,
+                    "x": 993.3148764422361,
+                    "y": 1282.2238806797834
+                  },
+                  {
+                    "col": 286,
+                    "angle_deg": 108.52266931153008,
+                    "step_vox": 23.679657401277154,
+                    "step_pitches": 1.2143414051937003,
+                    "x": 1075.9331041705514,
+                    "y": 1275.6551716032304
+                  },
+                  {
+                    "col": 293,
+                    "angle_deg": 83.2413629710311,
+                    "step_vox": 52.324795490385135,
+                    "step_pitches": 2.491656928113578,
+                    "x": 1198.3716145459464,
+                    "y": 1337.7801940956747
+                  },
+                  {
+                    "col": 299,
+                    "angle_deg": 66.53355781427092,
+                    "step_vox": -240.6494640144444,
+                    "step_pitches": -11.459498286402114,
+                    "x": 1309.3060227680844,
+                    "y": 1363.6957490285522
+                  },
+                  {
+                    "col": 308,
+                    "angle_deg": 55.271532411601925,
+                    "step_vox": 83.19351036011537,
+                    "step_pitches": 5.1995943975072105,
+                    "x": 1461.2731123368724,
+                    "y": 1455.2059796648941
+                  },
+                  {
+                    "col": 322,
+                    "angle_deg": 37.34473220280893,
+                    "step_vox": 16.95716455271851,
+                    "step_pitches": 1.0598227845449069,
+                    "x": 1709.963377748373,
+                    "y": 1440.8515239201392
+                  },
+                  {
+                    "col": 331,
+                    "angle_deg": 22.445547580430684,
+                    "step_vox": -63.77478378606437,
+                    "step_pitches": -3.985923986629023,
+                    "x": 1812.4933346823982,
+                    "y": 1291.0870524890045
+                  }
+                ]
+              },
+              {
+                "z": 2600.0,
+                "status": "FAIL",
+                "reason": "",
+                "jumps": [
+                  {
+                    "col": 19,
+                    "angle_deg": 336.59149309805656,
+                    "step_vox": 13.185387630670476,
+                    "step_pitches": 0.8012256684423276,
+                    "x": 1567.766838309108,
+                    "y": 895.0983475752533
+                  },
+                  {
+                    "col": 23,
+                    "angle_deg": 326.51990454956837,
+                    "step_vox": 11.639388451644912,
+                    "step_pitches": 0.6537385455136336,
+                    "x": 1517.6085116620707,
+                    "y": 832.9069454583207
+                  },
+                  {
+                    "col": 35,
+                    "angle_deg": 300.7408727550834,
+                    "step_vox": -68.34592793124366,
+                    "step_pitches": -3.333947703963106,
+                    "x": 1337.746599069488,
+                    "y": 760.7172273275376
+                  },
+                  {
+                    "col": 46,
+                    "angle_deg": 270.0848857082247,
+                    "step_vox": 18.901844439125917,
+                    "step_pitches": 1.0501024688403287,
+                    "x": 1150.9621409759625,
+                    "y": 669.3698473383438
+                  },
+                  {
+                    "col": 56,
+                    "angle_deg": 246.00247303257106,
+                    "step_vox": 29.546448637020916,
+                    "step_pitches": 1.575810593974449,
+                    "x": 953.4830833938878,
+                    "y": 633.5558344303628
+                  },
+                  {
+                    "col": 63,
+                    "angle_deg": 234.51077349542743,
+                    "step_vox": 18.221680410478083,
+                    "step_pitches": 1.0563292991581497,
+                    "x": 814.9373414404902,
+                    "y": 605.3676935485706
+                  },
+                  {
+                    "col": 65,
+                    "angle_deg": 231.1161702859541,
+                    "step_vox": 41.21420447806245,
+                    "step_pitches": 2.4978305744280274,
+                    "x": 776.7076052033777,
+                    "y": 612.4599968369014
+                  },
+                  {
+                    "col": 72,
+                    "angle_deg": 221.502236930315,
+                    "step_vox": -59.586251256332645,
+                    "step_pitches": -3.9724167504221763,
+                    "x": 766.9010285922909,
+                    "y": 736.5174698986688
+                  },
+                  {
+                    "col": 80,
+                    "angle_deg": 205.75589551788755,
+                    "step_vox": 61.47729189184881,
+                    "step_pitches": 4.0984861261232535,
+                    "x": 762.030243422453,
+                    "y": 888.4427044417432
+                  },
+                  {
+                    "col": 86,
+                    "angle_deg": 191.25927948184403,
+                    "step_vox": -22.370664092712218,
+                    "step_pitches": -1.5428044201870494,
+                    "x": 764.3810063428523,
+                    "y": 998.9590169558251
+                  },
+                  {
+                    "col": 97,
+                    "angle_deg": 159.47823532706212,
+                    "step_vox": 46.05148619886272,
+                    "step_pitches": 2.4237624315190907,
+                    "x": 758.8509459045292,
+                    "y": 1222.3487715840654
+                  },
+                  {
+                    "col": 103,
+                    "angle_deg": 145.08082148419757,
+                    "step_vox": -18.27516994172177,
+                    "step_pitches": -0.9618510495643037,
+                    "x": 797.1886189230529,
+                    "y": 1322.3515566223202
+                  },
+                  {
+                    "col": 115,
+                    "angle_deg": 114.20655874347705,
+                    "step_vox": -24.539969634863446,
+                    "step_pitches": -1.1413939365052765,
+                    "x": 973.3690891931514,
+                    "y": 1469.5020962263525
+                  },
+                  {
+                    "col": 135,
+                    "angle_deg": 70.56951497464388,
+                    "step_vox": -41.654080461233086,
+                    "step_pitches": -2.6447035213481325,
+                    "x": 1333.660266972566,
+                    "y": 1595.4267003722705
+                  },
+                  {
+                    "col": 143,
+                    "angle_deg": 54.91795193107373,
+                    "step_vox": 35.38688191058367,
+                    "step_pitches": 2.2116801194114792,
+                    "x": 1482.2527886822518,
+                    "y": 1548.350327711655
+                  },
+                  {
+                    "col": 150,
+                    "angle_deg": 40.82431112142285,
+                    "step_vox": -17.231211564963886,
+                    "step_pitches": -0.9572895313868826,
+                    "x": 1587.5904888218731,
+                    "y": 1453.5311003307381
+                  },
+                  {
+                    "col": 161,
+                    "angle_deg": 20.087605329412042,
+                    "step_vox": 20.762361923754263,
+                    "step_pitches": 1.3182452015082071,
+                    "x": 1739.44983051192,
+                    "y": 1291.2317737646038
+                  },
+                  {
+                    "col": 171,
+                    "angle_deg": 5.1123213248579304,
+                    "step_vox": 35.33126337368648,
+                    "step_pitches": 2.5463973602656926,
+                    "x": 1854.663740556624,
+                    "y": 1138.8101024816503
+                  },
+                  {
+                    "col": 180,
+                    "angle_deg": 356.4098829026929,
+                    "step_vox": -80.67888972635014,
+                    "step_pitches": -4.526693988152901,
+                    "x": 1712.1713337036708,
+                    "y": 1040.5511157888964
+                  },
+                  {
+                    "col": 191,
+                    "angle_deg": 335.67117930529037,
+                    "step_vox": 13.435228201354846,
+                    "step_pitches": 0.63818995909454,
+                    "x": 1560.2227477319454,
+                    "y": 890.4916185413831
+                  },
+                  {
+                    "col": 205,
+                    "angle_deg": 303.22524704676,
+                    "step_vox": -65.81997593362098,
+                    "step_pitches": -2.710732599582846,
+                    "x": 1367.0953178221478,
+                    "y": 744.9120327493418
+                  },
+                  {
+                    "col": 213,
+                    "angle_deg": 281.2137426471959,
+                    "step_vox": -13.446780385461864,
+                    "step_pitches": -0.6895784813057366,
+                    "x": 1216.5490009614807,
+                    "y": 741.941414745826
+                  },
+                  {
+                    "col": 218,
+                    "angle_deg": 269.28272356416556,
+                    "step_vox": 19.046371129055032,
+                    "step_pitches": 0.846505383513557,
+                    "x": 1145.3113209874437,
+                    "y": 672.5344339684391
+                  },
+                  {
+                    "col": 224,
+                    "angle_deg": 254.63705955068207,
+                    "step_vox": -14.803815784601895,
+                    "step_pitches": -0.7310526313383652,
+                    "x": 1030.1128974548626,
+                    "y": 638.1401427255518
+                  },
+                  {
+                    "col": 229,
+                    "angle_deg": 243.20813254499035,
+                    "step_vox": 28.094964105082283,
+                    "step_pitches": 1.560831339171238,
+                    "x": 928.5637341727995,
+                    "y": 636.5631199790988
+                  },
+                  {
+                    "col": 237,
+                    "angle_deg": 230.51513197455972,
+                    "step_vox": 35.33023657784458,
+                    "step_pitches": 2.078249210461446,
+                    "x": 773.8669207221693,
+                    "y": 618.8315359897301
+                  },
+                  {
+                    "col": 245,
+                    "angle_deg": 219.42486632883856,
+                    "step_vox": -78.464019732737,
+                    "step_pitches": -5.230934648849133,
+                    "x": 777.7417904182483,
+                    "y": 769.4570274108286
+                  },
+                  {
+                    "col": 250,
+                    "angle_deg": 208.95550684925269,
+                    "step_vox": 46.10516046116288,
+                    "step_pitches": 3.2932257472259203,
+                    "x": 786.3400995564889,
+                    "y": 874.3898516779446
+                  },
+                  {
+                    "col": 255,
+                    "angle_deg": 196.9881487328131,
+                    "step_vox": -22.701915556107977,
+                    "step_pitches": -1.513461037073865,
+                    "x": 764.6483040946969,
+                    "y": 957.9633341814839
+                  },
+                  {
+                    "col": 263,
+                    "angle_deg": 172.64808046489281,
+                    "step_vox": 10.321739117026059,
+                    "step_pitches": 0.6255599464864279,
+                    "x": 774.1165426039822,
+                    "y": 1124.3444730944361
+                  },
+                  {
+                    "col": 267,
+                    "angle_deg": 161.11910249956736,
+                    "step_vox": 42.89799039690406,
+                    "step_pitches": 2.5610740535465113,
+                    "x": 766.5844892534353,
+                    "y": 1207.0527923324832
+                  },
+                  {
+                    "col": 273,
+                    "angle_deg": 146.48852583424218,
+                    "step_vox": -22.091944237440295,
+                    "step_pitches": -1.1045972118720147,
+                    "x": 792.4721168257137,
+                    "y": 1312.7839060713277
+                  },
+                  {
+                    "col": 279,
+                    "angle_deg": 130.41776071834317,
+                    "step_vox": 11.190189563450035,
+                    "step_pitches": 0.6781933068757597,
+                    "x": 871.5499713936848,
+                    "y": 1403.1950022996361
+                  },
+                  {
+                    "col": 288,
+                    "angle_deg": 107.04821412474757,
+                    "step_vox": -24.31340196311048,
+                    "step_pitches": -1.4735395129157867,
+                    "x": 1023.4166581329823,
+                    "y": 1489.7667347573033
+                  },
+                  {
+                    "col": 305,
+                    "angle_deg": 70.86920629055396,
+                    "step_vox": -44.89121968286,
+                    "step_pitches": -2.5652125533062855,
+                    "x": 1329.2576441424128,
+                    "y": 1591.528976786347
+                  },
+                  {
+                    "col": 313,
+                    "angle_deg": 55.37971248122699,
+                    "step_vox": 33.57047780067671,
+                    "step_pitches": 1.8394782356535184,
+                    "x": 1474.4836874508085,
+                    "y": 1545.28828941977
+                  },
+                  {
+                    "col": 318,
+                    "angle_deg": 45.50460451080221,
+                    "step_vox": -20.814933575754367,
+                    "step_pitches": -1.053920687379968,
+                    "x": 1552.8773551169165,
+                    "y": 1485.4704866110771
+                  },
+                  {
+                    "col": 320,
+                    "angle_deg": 41.49143763392601,
+                    "step_vox": -13.839779197839299,
+                    "step_pitches": -0.7007483138146481,
+                    "x": 1579.6654029321298,
+                    "y": 1455.502977851545
+                  }
+                ]
+              },
+              {
+                "z": 3128.0,
+                "status": "FAIL",
+                "reason": "",
+                "jumps": [
+                  {
+                    "col": 34,
+                    "angle_deg": 299.5505704271521,
+                    "step_vox": -26.583869301992728,
+                    "step_pitches": -1.5870966747458344,
+                    "x": 1368.5436420803842,
+                    "y": 819.764660613739
+                  },
+                  {
+                    "col": 41,
+                    "angle_deg": 282.22389005267394,
+                    "step_vox": -13.705689441048314,
+                    "step_pitches": -0.8842380284547299,
+                    "x": 1236.753265907794,
+                    "y": 805.8303953067474
+                  },
+                  {
+                    "col": 46,
+                    "angle_deg": 269.0605215025485,
+                    "step_vox": -30.542182161429352,
+                    "step_pitches": -2.1815844401020965,
+                    "x": 1143.331753962001,
+                    "y": 776.0182369702483
+                  },
+                  {
+                    "col": 52,
+                    "angle_deg": 256.80515917667793,
+                    "step_vox": 8.133571158652458,
+                    "step_pitches": 0.6024867524927747,
+                    "x": 1036.7594791610638,
+                    "y": 720.0754624216733
+                  },
+                  {
+                    "col": 59,
+                    "angle_deg": 244.4792952889157,
+                    "step_vox": -40.582485902963526,
+                    "step_pitches": -3.1829400708206688,
+                    "x": 902.0475274195413,
+                    "y": 684.4958545698786
+                  },
+                  {
+                    "col": 63,
+                    "angle_deg": 236.6722941639577,
+                    "step_vox": 26.40373405605987,
+                    "step_pitches": 2.0708811024360685,
+                    "x": 833.7818780109205,
+                    "y": 723.1733611854855
+                  },
+                  {
+                    "col": 68,
+                    "angle_deg": 226.79084031794605,
+                    "step_vox": -12.636816437003269,
+                    "step_pitches": -0.8567333177629335,
+                    "x": 776.9043908763235,
+                    "y": 807.0475534929185
+                  },
+                  {
+                    "col": 73,
+                    "angle_deg": 216.441006809014,
+                    "step_vox": -29.153244093170564,
+                    "step_pitches": -1.9764911249607162,
+                    "x": 736.4019968881993,
+                    "y": 898.9562852032839
+                  },
+                  {
+                    "col": 80,
+                    "angle_deg": 200.51323741578608,
+                    "step_vox": 17.370589161446304,
+                    "step_pitches": 1.1580392774297537,
+                    "x": 713.9538512446511,
+                    "y": 1041.3294968667826
+                  },
+                  {
+                    "col": 83,
+                    "angle_deg": 192.72106695423756,
+                    "step_vox": -15.722258019519405,
+                    "step_pitches": -1.048150534634627,
+                    "x": 706.5122397281743,
+                    "y": 1104.413087360366
+                  },
+                  {
+                    "col": 88,
+                    "angle_deg": 179.11961065697966,
+                    "step_vox": 16.78623964009546,
+                    "step_pitches": 1.1190826426730307,
+                    "x": 711.6282203802044,
+                    "y": 1211.3519483286223
+                  },
+                  {
+                    "col": 92,
+                    "angle_deg": 169.75605595042097,
+                    "step_vox": -20.914896347684092,
+                    "step_pitches": -1.7429080289736743,
+                    "x": 704.8342775548081,
+                    "y": 1285.1255453714862
+                  },
+                  {
+                    "col": 103,
+                    "angle_deg": 149.84883318488892,
+                    "step_vox": 33.85942215464169,
+                    "step_pitches": 2.8816529493312077,
+                    "x": 706.803896943685,
+                    "y": 1462.2599663382252
+                  },
+                  {
+                    "col": 108,
+                    "angle_deg": 139.81243700906103,
+                    "step_vox": -21.349796165015704,
+                    "step_pitches": -1.7079836932012562,
+                    "x": 739.4701089254104,
+                    "y": 1551.6860226067295
+                  },
+                  {
+                    "col": 113,
+                    "angle_deg": 130.8152353815178,
+                    "step_vox": -34.940429933429364,
+                    "step_pitches": -2.4519599953283766,
+                    "x": 832.1105593212867,
+                    "y": 1573.107382552503
+                  },
+                  {
+                    "col": 119,
+                    "angle_deg": 117.09248105095548,
+                    "step_vox": 13.971196625188824,
+                    "step_pitches": 0.9314131083459216,
+                    "x": 949.6686058517168,
+                    "y": 1596.9223158913053
+                  },
+                  {
+                    "col": 130,
+                    "angle_deg": 90.4792444514685,
+                    "step_vox": 46.30568253185066,
+                    "step_pitches": 3.307548752275047,
+                    "x": 1146.2491993205983,
+                    "y": 1696.0628186289778
+                  },
+                  {
+                    "col": 136,
+                    "angle_deg": 78.78298942418775,
+                    "step_vox": 9.802575416562611,
+                    "step_pitches": 0.8911432196875101,
+                    "x": 1253.625457603196,
+                    "y": 1725.3272451690796
+                  },
+                  {
+                    "col": 143,
+                    "angle_deg": 63.84829289353934,
+                    "step_vox": -36.50511929226376,
+                    "step_pitches": -2.6075085208759825,
+                    "x": 1363.3568976999518,
+                    "y": 1638.3994365497501
+                  },
+                  {
+                    "col": 149,
+                    "angle_deg": 48.76361021228581,
+                    "step_vox": -13.118348660385227,
+                    "step_pitches": -0.8893795701956085,
+                    "x": 1455.0586265672605,
+                    "y": 1552.2187285877776
+                  },
+                  {
+                    "col": 159,
+                    "angle_deg": 22.401092756243997,
+                    "step_vox": -49.40736604541033,
+                    "step_pitches": -3.2938244030273554,
+                    "x": 1577.70524818133,
+                    "y": 1380.7585359157815
+                  },
+                  {
+                    "col": 166,
+                    "angle_deg": 9.41816569325016,
+                    "step_vox": 46.41817411741516,
+                    "step_pitches": 2.6909086444878354,
+                    "x": 1689.0027553342888,
+                    "y": 1293.9571968221223
+                  },
+                  {
+                    "col": 176,
+                    "angle_deg": 354.21400598395473,
+                    "step_vox": -29.53436660332757,
+                    "step_pitches": -2.25218740129361,
+                    "x": 1785.2358471592472,
+                    "y": 1140.2784562619574
+                  },
+                  {
+                    "col": 179,
+                    "angle_deg": 349.2427515290428,
+                    "step_vox": 39.3773774834611,
+                    "step_pitches": 2.961717280807331,
+                    "x": 1754.387997730629,
+                    "y": 1089.85252976545
+                  },
+                  {
+                    "col": 191,
+                    "angle_deg": 327.6107523295688,
+                    "step_vox": 13.941294911563176,
+                    "step_pitches": 0.9690631534103945,
+                    "x": 1583.285119045173,
+                    "y": 929.9813162088171
+                  },
+                  {
+                    "col": 203,
+                    "angle_deg": 301.3268993836552,
+                    "step_vox": -27.93028859647314,
+                    "step_pitches": -1.8260515575703093,
+                    "x": 1382.9435460116867,
+                    "y": 822.4815287709691
+                  },
+                  {
+                    "col": 209,
+                    "angle_deg": 287.21054268131905,
+                    "step_vox": 11.25085603167986,
+                    "step_pitches": 0.718487177639933,
+                    "x": 1268.0510296405198,
+                    "y": 824.6592201345645
+                  },
+                  {
+                    "col": 211,
+                    "angle_deg": 281.6693156612308,
+                    "step_vox": -9.586911570351944,
+                    "step_pitches": -0.6122265734332155,
+                    "x": 1232.1948330215016,
+                    "y": 808.3760360207253
+                  },
+                  {
+                    "col": 216,
+                    "angle_deg": 268.3082053236025,
+                    "step_vox": -38.26491215537477,
+                    "step_pitches": -2.5509941436916517,
+                    "x": 1137.8818547404885,
+                    "y": 782.1371795642117
+                  },
+                  {
+                    "col": 229,
+                    "angle_deg": 243.89812205637566,
+                    "step_vox": -48.97323930498763,
+                    "step_pitches": -3.4980885217848305,
+                    "x": 898.5784175358217,
+                    "y": 690.702481270046
+                  },
+                  {
+                    "col": 234,
+                    "angle_deg": 233.87495822917072,
+                    "step_vox": 19.554711079927515,
+                    "step_pitches": 1.3967650771376796,
+                    "x": 815.9072283238103,
+                    "y": 746.3815896037949
+                  },
+                  {
+                    "col": 242,
+                    "angle_deg": 217.16458356265076,
+                    "step_vox": -29.65808111761313,
+                    "step_pitches": -1.6476711732007294,
+                    "x": 738.9217845532578,
+                    "y": 892.7120595046916
+                  },
+                  {
+                    "col": 249,
+                    "angle_deg": 201.00496366579694,
+                    "step_vox": 12.34797080622377,
+                    "step_pitches": 0.8819979147302693,
+                    "x": 718.296993392864,
+                    "y": 1038.7136033879303
+                  },
+                  {
+                    "col": 253,
+                    "angle_deg": 190.1285727843166,
+                    "step_vox": -9.784616685754237,
+                    "step_pitches": -0.6989011918395883,
+                    "x": 722.2533659921972,
+                    "y": 1128.132308201665
+                  },
+                  {
+                    "col": 257,
+                    "angle_deg": 178.8035634897019,
+                    "step_vox": 32.97985445219134,
+                    "step_pitches": 2.3557038894422386,
+                    "x": 713.802551508502,
+                    "y": 1213.7274115396149
+                  },
+                  {
+                    "col": 261,
+                    "angle_deg": 169.2859520630053,
+                    "step_vox": -35.446099662232236,
+                    "step_pitches": -2.487445590332087,
+                    "x": 713.4932817002793,
+                    "y": 1287.267764910479
+                  },
+                  {
+                    "col": 271,
+                    "angle_deg": 150.83104561905202,
+                    "step_vox": 43.24801132168456,
+                    "step_pitches": 3.326770101668043,
+                    "x": 707.3663826097107,
+                    "y": 1451.875849864956
+                  },
+                  {
+                    "col": 283,
+                    "angle_deg": 127.34379470885267,
+                    "step_vox": -34.561968045496,
+                    "step_pitches": -2.3041312030330667,
+                    "x": 868.0649455867401,
+                    "y": 1574.5882276171487
+                  },
+                  {
+                    "col": 289,
+                    "angle_deg": 112.65262101515577,
+                    "step_vox": 10.70920206392935,
+                    "step_pitches": 0.6299530625840795,
+                    "x": 984.1832746100682,
+                    "y": 1602.7927976091908
+                  },
+                  {
+                    "col": 298,
+                    "angle_deg": 90.7764313547998,
+                    "step_vox": 50.91214645031577,
+                    "step_pitches": 3.636581889308269,
+                    "x": 1143.826355786132,
+                    "y": 1686.7225793192665
+                  },
+                  {
+                    "col": 305,
+                    "angle_deg": 77.12367329899303,
+                    "step_vox": 9.669593011498772,
+                    "step_pitches": 0.6238447104192757,
+                    "x": 1267.6740567903073,
+                    "y": 1717.8043574570997
+                  },
+                  {
+                    "col": 311,
+                    "angle_deg": 64.50911847402631,
+                    "step_vox": -38.51184054025981,
+                    "step_pitches": -2.4846348735651493,
+                    "x": 1358.1600436439755,
+                    "y": 1640.4503444792406
+                  },
+                  {
+                    "col": 327,
+                    "angle_deg": 23.504608110805748,
+                    "step_vox": -41.295148591563745,
+                    "step_pitches": -2.6219141962897616,
+                    "x": 1568.1714214039002,
+                    "y": 1386.3195341009778
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "heights": [
+          {
+            "z": 2073.0,
+            "tracked": 0.49279538904899134,
+            "pitch": 17.0,
+            "n_switches": 7
+          },
+          {
+            "z": 2600.0,
+            "tracked": 0.5558823529411765,
+            "pitch": 17.0,
+            "n_switches": 10
+          },
+          {
+            "z": 3128.0,
+            "tracked": 0.48214285714285715,
+            "pitch": 14.25,
+            "n_switches": 8
+          }
+        ],
+        "verdict": "FAIL",
+        "reasons": [
+          "switch_finder: horizontal switch at z=2600 col 283 row 57.9 (inward, step -0.85 pitch, confidence 0.32); horizontal switch at z=2600 col 292 row 57.4 (outward, step +1.02 pitch, confidence 0.47); horizontal switch at z=2600 col 325 row 64.4 (outward, step +1.10 pitch, confidence 0.56); vertical switch at z=2600 col 287 row 57.7 (outward, step +1.84 pitch, confidence 0.33); vertical switch at z=2600 col 321 row 63.5 (inward, step -1.01 pitch, confidence 0.48)",
+          "winding_jumps: radius jumps +1.23 pitch at z=2073, col 23, angle 324 deg; radius jumps -3.77 pitch at z=2073, col 33, angle 303 deg; radius jumps -0.96 pitch at z=2073, col 39, angle 287 deg; radius jumps +2.00 pitch at z=2073, col 59, angle 237 deg; radius jumps +1.43 pitch at z=2073, col 66, angle 226 deg; radius jumps +1.95 pitch at z=2073, col 69, angle 220 deg; radius jumps -1.88 pitch at z=2073, col 77, angle 205 deg; radius jumps +1.42 pitch at z=2073, col 85, angle 189 deg; radius jumps +2.24 pitch at z=2073, col 102, angle 140 deg; radius jumps -1.18 pitch at z=2073, col 109, angle 123 deg; radius jumps +1.55 pitch at z=2073, col 113, angle 109 deg; radius jumps +3.28 pitch at z=2073, col 120, angle 84 deg; radius jumps -13.07 pitch at z=2073, col 126, angle 68 deg; radius jumps +5.02 pitch at z=2073, col 134, angle 56 deg; radius jumps +1.18 pitch at z=2073, col 148, angle 39 deg; radius jumps -7.69 pitch at z=2073, col 183, angle 355 deg; radius jumps +1.30 pitch at z=2073, col 191, angle 339 deg; radius jumps +1.57 pitch at z=2073, col 197, angle 324 deg; radius jumps -3.69 pitch at z=2073, col 207, angle 303 deg; radius jumps -1.02 pitch at z=2073, col 213, angle 287 deg; radius jumps +2.15 pitch at z=2073, col 242, angle 221 deg; radius jumps -2.38 pitch at z=2073, col 251, angle 205 deg; radius jumps -0.60 pitch at z=2073, col 269, angle 160 deg; radius jumps +2.84 pitch at z=2073, col 275, angle 141 deg; radius jumps -1.37 pitch at z=2073, col 282, angle 123 deg; radius jumps +1.21 pitch at z=2073, col 286, angle 109 deg; radius jumps +2.49 pitch at z=2073, col 293, angle 83 deg; radius jumps -11.46 pitch at z=2073, col 299, angle 67 deg; radius jumps +5.20 pitch at z=2073, col 308, angle 55 deg; radius jumps +1.06 pitch at z=2073, col 322, angle 37 deg; radius jumps -3.99 pitch at z=2073, col 331, angle 22 deg; radius jumps +0.80 pitch at z=2600, col 19, angle 337 deg; radius jumps +0.65 pitch at z=2600, col 23, angle 327 deg; radius jumps -3.33 pitch at z=2600, col 35, angle 301 deg; radius jumps +1.05 pitch at z=2600, col 46, angle 270 deg; radius jumps +1.58 pitch at z=2600, col 56, angle 246 deg; radius jumps +1.06 pitch at z=2600, col 63, angle 235 deg; radius jumps +2.50 pitch at z=2600, col 65, angle 231 deg; radius jumps -3.97 pitch at z=2600, col 72, angle 222 deg; radius jumps +4.10 pitch at z=2600, col 80, angle 206 deg; radius jumps -1.54 pitch at z=2600, col 86, angle 191 deg; radius jumps +2.42 pitch at z=2600, col 97, angle 159 deg; radius jumps -0.96 pitch at z=2600, col 103, angle 145 deg; radius jumps -1.14 pitch at z=2600, col 115, angle 114 deg; radius jumps -2.64 pitch at z=2600, col 135, angle 71 deg; radius jumps +2.21 pitch at z=2600, col 143, angle 55 deg; radius jumps -0.96 pitch at z=2600, col 150, angle 41 deg; radius jumps +1.32 pitch at z=2600, col 161, angle 20 deg; radius jumps +2.55 pitch at z=2600, col 171, angle 5 deg; radius jumps -4.53 pitch at z=2600, col 180, angle 356 deg; radius jumps +0.64 pitch at z=2600, col 191, angle 336 deg; radius jumps -2.71 pitch at z=2600, col 205, angle 303 deg; radius jumps -0.69 pitch at z=2600, col 213, angle 281 deg; radius jumps +0.85 pitch at z=2600, col 218, angle 269 deg; radius jumps -0.73 pitch at z=2600, col 224, angle 255 deg; radius jumps +1.56 pitch at z=2600, col 229, angle 243 deg; radius jumps +2.08 pitch at z=2600, col 237, angle 231 deg; radius jumps -5.23 pitch at z=2600, col 245, angle 219 deg; radius jumps +3.29 pitch at z=2600, col 250, angle 209 deg; radius jumps -1.51 pitch at z=2600, col 255, angle 197 deg; radius jumps +0.63 pitch at z=2600, col 263, angle 173 deg; radius jumps +2.56 pitch at z=2600, col 267, angle 161 deg; radius jumps -1.10 pitch at z=2600, col 273, angle 146 deg; radius jumps +0.68 pitch at z=2600, col 279, angle 130 deg; radius jumps -1.47 pitch at z=2600, col 288, angle 107 deg; radius jumps -2.57 pitch at z=2600, col 305, angle 71 deg; radius jumps +1.84 pitch at z=2600, col 313, angle 55 deg; radius jumps -1.05 pitch at z=2600, col 318, angle 46 deg; radius jumps -0.70 pitch at z=2600, col 320, angle 41 deg; radius jumps -1.59 pitch at z=3128, col 34, angle 300 deg; radius jumps -0.88 pitch at z=3128, col 41, angle 282 deg; radius jumps -2.18 pitch at z=3128, col 46, angle 269 deg; radius jumps +0.60 pitch at z=3128, col 52, angle 257 deg; radius jumps -3.18 pitch at z=3128, col 59, angle 244 deg; radius jumps +2.07 pitch at z=3128, col 63, angle 237 deg; radius jumps -0.86 pitch at z=3128, col 68, angle 227 deg; radius jumps -1.98 pitch at z=3128, col 73, angle 216 deg; radius jumps +1.16 pitch at z=3128, col 80, angle 201 deg; radius jumps -1.05 pitch at z=3128, col 83, angle 193 deg; radius jumps +1.12 pitch at z=3128, col 88, angle 179 deg; radius jumps -1.74 pitch at z=3128, col 92, angle 170 deg; radius jumps +2.88 pitch at z=3128, col 103, angle 150 deg; radius jumps -1.71 pitch at z=3128, col 108, angle 140 deg; radius jumps -2.45 pitch at z=3128, col 113, angle 131 deg; radius jumps +0.93 pitch at z=3128, col 119, angle 117 deg; radius jumps +3.31 pitch at z=3128, col 130, angle 90 deg; radius jumps +0.89 pitch at z=3128, col 136, angle 79 deg; radius jumps -2.61 pitch at z=3128, col 143, angle 64 deg; radius jumps -0.89 pitch at z=3128, col 149, angle 49 deg; radius jumps -3.29 pitch at z=3128, col 159, angle 22 deg; radius jumps +2.69 pitch at z=3128, col 166, angle 9 deg; radius jumps -2.25 pitch at z=3128, col 176, angle 354 deg; radius jumps +2.96 pitch at z=3128, col 179, angle 349 deg; radius jumps +0.97 pitch at z=3128, col 191, angle 328 deg; radius jumps -1.83 pitch at z=3128, col 203, angle 301 deg; radius jumps +0.72 pitch at z=3128, col 209, angle 287 deg; radius jumps -0.61 pitch at z=3128, col 211, angle 282 deg; radius jumps -2.55 pitch at z=3128, col 216, angle 268 deg; radius jumps -3.50 pitch at z=3128, col 229, angle 244 deg; radius jumps +1.40 pitch at z=3128, col 234, angle 234 deg; radius jumps -1.65 pitch at z=3128, col 242, angle 217 deg; radius jumps +0.88 pitch at z=3128, col 249, angle 201 deg; radius jumps -0.70 pitch at z=3128, col 253, angle 190 deg; radius jumps +2.36 pitch at z=3128, col 257, angle 179 deg; radius jumps -2.49 pitch at z=3128, col 261, angle 169 deg; radius jumps +3.33 pitch at z=3128, col 271, angle 151 deg; radius jumps -2.30 pitch at z=3128, col 283, angle 127 deg; radius jumps +0.63 pitch at z=3128, col 289, angle 113 deg; radius jumps +3.64 pitch at z=3128, col 298, angle 91 deg; radius jumps +0.62 pitch at z=3128, col 305, angle 77 deg; radius jumps -2.48 pitch at z=3128, col 311, angle 65 deg; radius jumps -2.62 pitch at z=3128, col 327, angle 24 deg"
+        ]
+      },
+      {
+        "name": "20260623165230-w118-119.tifxyz",
+        "checks": [
+          {
+            "check": "switch_finder",
+            "status": "FAIL",
+            "reason": "horizontal switch at z=2073 col 81 row 96.8 (inward, step -1.01 pitch, confidence 0.52); horizontal switch at z=2073 col 87 row 96.1 (outward, step +0.87 pitch, confidence 0.33); horizontal switch at z=2600 col 45 row 68.8 (outward, step +3.14 pitch, confidence 0.41)",
+            "switches": [
+              {
+                "kind": "horizontal",
+                "height": 2073.0,
+                "height_from": 2073.0,
+                "height_to": 2073.0,
+                "row": 96.77365104224931,
+                "col": 81,
+                "x": 744.6850818224782,
+                "y": 865.0856954327996,
+                "z": 2073.0,
+                "direction": "inward",
+                "step": -1.0131086616412452,
+                "n_sheets": 1,
+                "double_switch": false,
+                "confidence": 0.5224548208171766,
+                "line_index": 77,
+                "index_before": 76,
+                "index_after": 77,
+                "persist_before": 5,
+                "persist_after": 5
+              },
+              {
+                "kind": "horizontal",
+                "height": 2073.0,
+                "height_from": 2073.0,
+                "height_to": 2073.0,
+                "row": 96.13996530492572,
+                "col": 87,
+                "x": 751.3869759848194,
+                "y": 979.9443373713668,
+                "z": 2073.0,
+                "direction": "outward",
+                "step": 0.8714457551638284,
+                "n_sheets": 1,
+                "double_switch": false,
+                "confidence": 0.3278745496917376,
+                "line_index": 83,
+                "index_before": 82,
+                "index_after": 83,
+                "persist_before": 5,
+                "persist_after": 5
+              },
+              {
+                "kind": "horizontal",
+                "height": 2600.0,
+                "height_from": 2600.0,
+                "height_to": 2600.0,
+                "row": 68.78526239756906,
+                "col": 45,
+                "x": 1171.0837538707135,
+                "y": 681.0084281115102,
+                "z": 2600.0,
+                "direction": "outward",
+                "step": 3.1376540117404037,
+                "n_sheets": 3,
+                "double_switch": true,
+                "confidence": 0.40941161917351365,
+                "line_index": 41,
+                "index_before": 38,
+                "index_after": 43,
+                "persist_before": 5,
+                "persist_after": 5
+              }
+            ]
+          },
+          {
+            "check": "winding_jumps",
+            "status": "FAIL",
+            "reason": "radius jumps +3.62 pitch at z=2073, col 18, angle 337 deg; radius jumps -3.55 pitch at z=2073, col 33, angle 303 deg; radius jumps -0.87 pitch at z=2073, col 39, angle 287 deg; radius jumps +0.84 pitch at z=2073, col 55, angle 247 deg; radius jumps -0.74 pitch at z=2073, col 56, angle 245 deg; radius jumps +2.10 pitch at z=2073, col 60, angle 237 deg; radius jumps +2.01 pitch at z=2073, col 69, angle 221 deg; radius jumps +0.78 pitch at z=2073, col 72, angle 215 deg; radius jumps -1.57 pitch at z=2073, col 78, angle 205 deg; radius jumps +0.72 pitch at z=2073, col 93, angle 170 deg; radius jumps -1.58 pitch at z=2073, col 98, angle 157 deg; radius jumps +1.96 pitch at z=2073, col 104, angle 139 deg; radius jumps -1.97 pitch at z=2073, col 111, angle 121 deg; radius jumps +1.60 pitch at z=2073, col 114, angle 111 deg; radius jumps +4.09 pitch at z=2073, col 122, angle 85 deg; radius jumps -13.20 pitch at z=2073, col 128, angle 68 deg; radius jumps +4.14 pitch at z=2073, col 139, angle 54 deg; radius jumps +1.11 pitch at z=2073, col 151, angle 38 deg; radius jumps -3.67 pitch at z=2073, col 163, angle 18 deg; radius jumps -6.31 pitch at z=2073, col 184, angle 355 deg; radius jumps +1.95 pitch at z=2073, col 193, angle 339 deg; radius jumps -3.41 pitch at z=2073, col 208, angle 304 deg; radius jumps -0.84 pitch at z=2073, col 215, angle 286 deg; radius jumps +2.28 pitch at z=2073, col 244, angle 221 deg; radius jumps -2.12 pitch at z=2073, col 253, angle 205 deg; radius jumps +0.99 pitch at z=2073, col 262, angle 186 deg; radius jumps -0.64 pitch at z=2073, col 265, angle 178 deg; radius jumps +0.71 pitch at z=2073, col 269, angle 167 deg; radius jumps -1.42 pitch at z=2073, col 274, angle 153 deg; radius jumps +2.32 pitch at z=2073, col 278, angle 140 deg; radius jumps -0.88 pitch at z=2073, col 282, angle 129 deg; radius jumps -1.40 pitch at z=2073, col 285, angle 123 deg; radius jumps +1.43 pitch at z=2073, col 289, angle 108 deg; radius jumps -0.62 pitch at z=2073, col 291, angle 100 deg; radius jumps +2.93 pitch at z=2073, col 296, angle 85 deg; radius jumps -13.01 pitch at z=2073, col 302, angle 68 deg; radius jumps +4.60 pitch at z=2073, col 310, angle 56 deg; radius jumps +1.59 pitch at z=2073, col 324, angle 40 deg; radius jumps -3.41 pitch at z=2073, col 334, angle 24 deg; radius jumps +1.16 pitch at z=2600, col 19, angle 337 deg; radius jumps +0.64 pitch at z=2600, col 23, angle 327 deg; radius jumps -4.05 pitch at z=2600, col 34, angle 302 deg; radius jumps -0.70 pitch at z=2600, col 42, angle 280 deg; radius jumps +1.22 pitch at z=2600, col 46, angle 271 deg; radius jumps +2.04 pitch at z=2600, col 57, angle 245 deg; radius jumps +2.81 pitch at z=2600, col 65, angle 232 deg; radius jumps -3.71 pitch at z=2600, col 75, angle 218 deg; radius jumps +3.89 pitch at z=2600, col 81, angle 205 deg; radius jumps -1.35 pitch at z=2600, col 86, angle 194 deg; radius jumps +2.50 pitch at z=2600, col 98, angle 160 deg; radius jumps +0.64 pitch at z=2600, col 110, angle 130 deg; radius jumps -1.18 pitch at z=2600, col 118, angle 110 deg; radius jumps +0.68 pitch at z=2600, col 123, angle 99 deg; radius jumps -0.67 pitch at z=2600, col 131, angle 82 deg; radius jumps -1.85 pitch at z=2600, col 137, angle 70 deg; radius jumps +1.47 pitch at z=2600, col 145, angle 54 deg; radius jumps +0.80 pitch at z=2600, col 164, angle 18 deg; radius jumps +1.86 pitch at z=2600, col 173, angle 5 deg; radius jumps -4.67 pitch at z=2600, col 182, angle 356 deg; radius jumps -2.72 pitch at z=2600, col 209, angle 300 deg; radius jumps +1.38 pitch at z=2600, col 220, angle 270 deg; radius jumps +1.51 pitch at z=2600, col 230, angle 246 deg; radius jumps -1.07 pitch at z=2600, col 237, angle 234 deg; radius jumps +2.56 pitch at z=2600, col 239, angle 231 deg; radius jumps -4.58 pitch at z=2600, col 247, angle 219 deg; radius jumps +4.09 pitch at z=2600, col 253, angle 207 deg; radius jumps -2.04 pitch at z=2600, col 260, angle 190 deg; radius jumps +2.52 pitch at z=2600, col 270, angle 160 deg; radius jumps -0.66 pitch at z=2600, col 286, angle 120 deg; radius jumps -1.39 pitch at z=2600, col 290, angle 110 deg; radius jumps -2.61 pitch at z=2600, col 309, angle 70 deg; radius jumps +1.65 pitch at z=2600, col 317, angle 54 deg; radius jumps +0.86 pitch at z=2600, col 328, angle 33 deg; radius jumps +0.98 pitch at z=2600, col 332, angle 26 deg; radius jumps -0.82 pitch at z=3128, col 34, angle 300 deg; radius jumps -0.67 pitch at z=3128, col 38, angle 291 deg; radius jumps -1.43 pitch at z=3128, col 41, angle 283 deg; radius jumps -1.39 pitch at z=3128, col 48, angle 266 deg; radius jumps +1.00 pitch at z=3128, col 53, angle 256 deg; radius jumps -3.18 pitch at z=3128, col 60, angle 244 deg; radius jumps +1.23 pitch at z=3128, col 64, angle 236 deg; radius jumps -0.64 pitch at z=3128, col 69, angle 226 deg; radius jumps -1.64 pitch at z=3128, col 74, angle 216 deg; radius jumps +0.62 pitch at z=3128, col 81, angle 200 deg; radius jumps -0.96 pitch at z=3128, col 85, angle 190 deg; radius jumps +1.26 pitch at z=3128, col 90, angle 176 deg; radius jumps -1.87 pitch at z=3128, col 93, angle 170 deg; radius jumps +3.20 pitch at z=3128, col 104, angle 150 deg; radius jumps -1.30 pitch at z=3128, col 109, angle 140 deg; radius jumps -2.95 pitch at z=3128, col 116, angle 127 deg; radius jumps +3.93 pitch at z=3128, col 131, angle 91 deg; radius jumps -2.31 pitch at z=3128, col 143, angle 67 deg; radius jumps +0.95 pitch at z=3128, col 176, angle 358 deg; radius jumps -1.01 pitch at z=3128, col 178, angle 354 deg; radius jumps +2.71 pitch at z=3128, col 181, angle 349 deg; radius jumps +0.83 pitch at z=3128, col 193, angle 327 deg; radius jumps +0.76 pitch at z=3128, col 196, angle 321 deg; radius jumps -1.75 pitch at z=3128, col 207, angle 297 deg; radius jumps -0.97 pitch at z=3128, col 213, angle 282 deg; radius jumps -1.44 pitch at z=3128, col 218, angle 269 deg; radius jumps +1.01 pitch at z=3128, col 224, angle 257 deg; radius jumps -3.02 pitch at z=3128, col 232, angle 243 deg; radius jumps +2.23 pitch at z=3128, col 235, angle 237 deg; radius jumps -1.32 pitch at z=3128, col 245, angle 216 deg; radius jumps +1.62 pitch at z=3128, col 253, angle 197 deg; radius jumps -1.37 pitch at z=3128, col 255, angle 192 deg; radius jumps -1.82 pitch at z=3128, col 265, angle 167 deg; radius jumps +3.26 pitch at z=3128, col 275, angle 149 deg; radius jumps -0.70 pitch at z=3128, col 280, angle 139 deg; radius jumps -2.72 pitch at z=3128, col 286, angle 128 deg; radius jumps +3.40 pitch at z=3128, col 302, angle 90 deg; radius jumps -2.37 pitch at z=3128, col 313, angle 67 deg; radius jumps -0.88 pitch at z=3128, col 321, angle 49 deg; radius jumps +0.83 pitch at z=3128, col 330, angle 26 deg; radius jumps -1.22 pitch at z=3128, col 331, angle 23 deg",
+            "jumps": [
+              {
+                "z": 2073.0,
+                "col": 18,
+                "angle_deg": 336.75865474262287,
+                "step_vox": 59.833447804550445,
+                "step_pitches": 3.615314066740208,
+                "x": 1541.9508048842486,
+                "y": 858.3030118291305
+              },
+              {
+                "z": 2073.0,
+                "col": 33,
+                "angle_deg": 303.07976807324746,
+                "step_vox": -56.80479097336607,
+                "step_pitches": -3.550299435835379,
+                "x": 1382.954486814225,
+                "y": 681.0974479500485
+              },
+              {
+                "z": 2073.0,
+                "col": 39,
+                "angle_deg": 287.3416238651533,
+                "step_vox": -16.13474184722785,
+                "step_pitches": -0.8721482079582622,
+                "x": 1276.397012289286,
+                "y": 652.1864912629559
+              },
+              {
+                "z": 2073.0,
+                "col": 55,
+                "angle_deg": 246.8861567559349,
+                "step_vox": 14.322030072364733,
+                "step_pitches": 0.8424723571979255,
+                "x": 975.6450051481262,
+                "y": 587.8026434583991
+              },
+              {
+                "z": 2073.0,
+                "col": 56,
+                "angle_deg": 244.61798412063968,
+                "step_vox": -13.811744835769659,
+                "step_pitches": -0.7366263912410485,
+                "x": 956.2308358728525,
+                "y": 590.4640333379651
+              },
+              {
+                "z": 2073.0,
+                "col": 60,
+                "angle_deg": 236.67534620198657,
+                "step_vox": 35.69247136906922,
+                "step_pitches": 2.099557139357013,
+                "x": 878.3901099370543,
+                "y": 592.1919813824555
+              },
+              {
+                "z": 2073.0,
+                "col": 69,
+                "angle_deg": 220.99555551717336,
+                "step_vox": 40.29192629572163,
+                "step_pitches": 2.0145963147860817,
+                "x": 728.6139854129758,
+                "y": 646.1736027563741
+              },
+              {
+                "z": 2073.0,
+                "col": 72,
+                "angle_deg": 215.40103287229414,
+                "step_vox": 17.22936341234265,
+                "step_pitches": 0.7831528823792113,
+                "x": 709.5821957330623,
+                "y": 701.1544583750905
+              },
+              {
+                "z": 2073.0,
+                "col": 78,
+                "angle_deg": 204.6330219608247,
+                "step_vox": -29.087631019181742,
+                "step_pitches": -1.5723043794152294,
+                "x": 712.6548197935743,
+                "y": 816.3764151084063
+              },
+              {
+                "z": 2073.0,
+                "col": 93,
+                "angle_deg": 169.932950921698,
+                "step_vox": 12.861859992984243,
+                "step_pitches": 0.7246118305906616,
+                "x": 791.3896166047498,
+                "y": 1087.537699094012
+              },
+              {
+                "z": 2073.0,
+                "col": 98,
+                "angle_deg": 156.9998822576944,
+                "step_vox": -28.055865333875232,
+                "step_pitches": -1.5806121314859285,
+                "x": 838.5556405000908,
+                "y": 1158.77482361313
+              },
+              {
+                "z": 2073.0,
+                "col": 104,
+                "angle_deg": 138.6860388980595,
+                "step_vox": 30.932847476698296,
+                "step_pitches": 1.9639903159808443,
+                "x": 892.1863279511116,
+                "y": 1258.1519237183932
+              },
+              {
+                "z": 2073.0,
+                "col": 111,
+                "angle_deg": 121.11782053562717,
+                "step_vox": -36.92640778541184,
+                "step_pitches": -1.9694084152219649,
+                "x": 998.8243364566987,
+                "y": 1290.4833194057253
+              },
+              {
+                "z": 2073.0,
+                "col": 114,
+                "angle_deg": 110.93508954281069,
+                "step_vox": 29.933929559912002,
+                "step_pitches": 1.5964762431953068,
+                "x": 1060.5118300631652,
+                "y": 1284.4428593018542
+              },
+              {
+                "z": 2073.0,
+                "col": 122,
+                "angle_deg": 85.00514996463204,
+                "step_vox": 80.74463045389868,
+                "step_pitches": 4.088335719184744,
+                "x": 1191.1581702102958,
+                "y": 1367.6832010040928
+              },
+              {
+                "z": 2073.0,
+                "col": 128,
+                "angle_deg": 68.2160528808244,
+                "step_vox": -270.551189060371,
+                "step_pitches": -13.197618978554681,
+                "x": 1307.9764520395138,
+                "y": 1389.8462732049773
+              },
+              {
+                "z": 2073.0,
+                "col": 139,
+                "angle_deg": 53.90177205148211,
+                "step_vox": 85.85748899765468,
+                "step_pitches": 4.137710313139984,
+                "x": 1500.9677161738807,
+                "y": 1488.2546827616745
+              },
+              {
+                "z": 2073.0,
+                "col": 151,
+                "angle_deg": 38.089376095983994,
+                "step_vox": 22.376595390994083,
+                "step_pitches": 1.105017056345387,
+                "x": 1706.8836982991024,
+                "y": 1449.8410963421807
+              },
+              {
+                "z": 2073.0,
+                "col": 163,
+                "angle_deg": 18.37078992758876,
+                "step_vox": -61.40201162898953,
+                "step_pitches": -3.665791739044151,
+                "x": 1840.7765190440189,
+                "y": 1247.6966326744423
+              },
+              {
+                "z": 2073.0,
+                "col": 184,
+                "angle_deg": 355.00214863202615,
+                "step_vox": -78.9296046031114,
+                "step_pitches": -6.314368368248912,
+                "x": 1679.0430181429801,
+                "y": 976.6214372537268
+              },
+              {
+                "z": 2073.0,
+                "col": 193,
+                "angle_deg": 338.50859697197285,
+                "step_vox": 36.644960665865014,
+                "step_pitches": 1.9543979021794675,
+                "x": 1543.5133012806984,
+                "y": 871.2966754294378
+              },
+              {
+                "z": 2073.0,
+                "col": 208,
+                "angle_deg": 303.7523914438234,
+                "step_vox": -56.292380070026454,
+                "step_pitches": -3.4116593981834216,
+                "x": 1390.6560041180032,
+                "y": 678.1667660545547
+              },
+              {
+                "z": 2073.0,
+                "col": 215,
+                "angle_deg": 285.8488679602925,
+                "step_vox": -15.391194505422675,
+                "step_pitches": -0.8433531235848041,
+                "x": 1266.502170649046,
+                "y": 650.0919929296186
+              },
+              {
+                "z": 2073.0,
+                "col": 244,
+                "angle_deg": 221.33173647456164,
+                "step_vox": 45.62778139878377,
+                "step_pitches": 2.2813890699391886,
+                "x": 734.2491862308169,
+                "y": 646.6539979353073
+              },
+              {
+                "z": 2073.0,
+                "col": 253,
+                "angle_deg": 204.85459071321065,
+                "step_vox": -36.51279129043536,
+                "step_pitches": -2.1166835530687167,
+                "x": 716.7271314239035,
+                "y": 816.1610082603462
+              },
+              {
+                "z": 2073.0,
+                "col": 262,
+                "angle_deg": 185.83249032115793,
+                "step_vox": 14.395996924552733,
+                "step_pitches": 0.9928273741070851,
+                "x": 755.3968089330463,
+                "y": 980.5040701214024
+              },
+              {
+                "z": 2073.0,
+                "col": 265,
+                "angle_deg": 178.10291354662616,
+                "step_vox": -9.262397845327285,
+                "step_pitches": -0.6387860582984335,
+                "x": 777.7944159864358,
+                "y": 1034.6207433414554
+              },
+              {
+                "z": 2073.0,
+                "col": 269,
+                "angle_deg": 166.86732909869136,
+                "step_vox": 10.539350763553024,
+                "step_pitches": 0.7145322551561373,
+                "x": 803.4750083382692,
+                "y": 1105.3296077271907
+              },
+              {
+                "z": 2073.0,
+                "col": 274,
+                "angle_deg": 153.1511920795648,
+                "step_vox": -21.301181105335054,
+                "step_pitches": -1.4200787403556703,
+                "x": 861.2464525236478,
+                "y": 1173.636680943438
+              },
+              {
+                "z": 2073.0,
+                "col": 278,
+                "angle_deg": 140.10558412139426,
+                "step_vox": 34.86844594770926,
+                "step_pitches": 2.3245630631806176,
+                "x": 895.6861259934625,
+                "y": 1243.672742123284
+              },
+              {
+                "z": 2073.0,
+                "col": 282,
+                "angle_deg": 129.47022843503476,
+                "step_vox": -14.034159227155069,
+                "step_pitches": -0.8771349516971918,
+                "x": 929.6446886068683,
+                "y": 1302.8108834506095
+              },
+              {
+                "z": 2073.0,
+                "col": 285,
+                "angle_deg": 122.5993635900279,
+                "step_vox": -23.168197686168305,
+                "step_pitches": -1.4041331931011094,
+                "x": 991.3441423609723,
+                "y": 1287.1261414075054
+              },
+              {
+                "z": 2073.0,
+                "col": 289,
+                "angle_deg": 108.49876808258932,
+                "step_vox": 25.650884147219017,
+                "step_pitches": 1.4250491192899455,
+                "x": 1074.4706949328329,
+                "y": 1280.377978775983
+              },
+              {
+                "z": 2073.0,
+                "col": 291,
+                "angle_deg": 99.91322358891853,
+                "step_vox": -12.607057910956847,
+                "step_pitches": -0.622570761034906,
+                "x": 1114.6359652343256,
+                "y": 1286.879101843957
+              },
+              {
+                "z": 2073.0,
+                "col": 296,
+                "angle_deg": 84.63857937991247,
+                "step_vox": 63.01121468272164,
+                "step_pitches": 2.930754171289379,
+                "x": 1192.0730833090222,
+                "y": 1353.6676037827228
+              },
+              {
+                "z": 2073.0,
+                "col": 302,
+                "angle_deg": 68.27180077668027,
+                "step_vox": -279.7594422621656,
+                "step_pitches": -13.01206708196119,
+                "x": 1304.047052056432,
+                "y": 1381.0275888111305
+              },
+              {
+                "z": 2073.0,
+                "col": 310,
+                "angle_deg": 56.12660868943192,
+                "step_vox": 98.96616319674828,
+                "step_pitches": 4.603077357988292,
+                "x": 1446.5196174932316,
+                "y": 1447.3439405830325
+              },
+              {
+                "z": 2073.0,
+                "col": 324,
+                "angle_deg": 39.841406792562,
+                "step_vox": 32.531856476416024,
+                "step_pitches": 1.586919828117855,
+                "x": 1684.210392374592,
+                "y": 1458.5435073014455
+              },
+              {
+                "z": 2073.0,
+                "col": 334,
+                "angle_deg": 23.63351981106939,
+                "step_vox": -56.25160311395389,
+                "step_pitches": -3.409188067512357,
+                "x": 1808.8986599931106,
+                "y": 1305.467724361315
+              },
+              {
+                "z": 2600.0,
+                "col": 19,
+                "angle_deg": 336.9188564562651,
+                "step_vox": 14.312531121453091,
+                "step_pitches": 1.1602051782589509,
+                "x": 1576.0463200710947,
+                "y": 894.3949589704762
+              },
+              {
+                "z": 2600.0,
+                "col": 23,
+                "angle_deg": 327.0358154158042,
+                "step_vox": 8.37267914357782,
+                "step_pitches": 0.6427735146624931,
+                "x": 1525.6934179085654,
+                "y": 832.3890591322277
+              },
+              {
+                "z": 2600.0,
+                "col": 34,
+                "angle_deg": 302.0018167116295,
+                "step_vox": -59.72347139758297,
+                "step_pitches": -4.04904890831071,
+                "x": 1360.2978602918158,
+                "y": 739.8528967329626
+              },
+              {
+                "z": 2600.0,
+                "col": 42,
+                "angle_deg": 279.6387626535619,
+                "step_vox": -11.474027655247085,
+                "step_pitches": -0.6953956154695202,
+                "x": 1209.5672553315035,
+                "y": 727.1801942347621
+              },
+              {
+                "z": 2600.0,
+                "col": 46,
+                "angle_deg": 270.9583997011538,
+                "step_vox": 21.68576705652896,
+                "step_pitches": 1.2217333552974061,
+                "x": 1157.216857088116,
+                "y": 665.9163897413379
+              },
+              {
+                "z": 2600.0,
+                "col": 57,
+                "angle_deg": 245.0690040371024,
+                "step_vox": 31.669692190382037,
+                "step_pitches": 2.043205947766583,
+                "x": 940.7463650564878,
+                "y": 624.8650167103314
+              },
+              {
+                "z": 2600.0,
+                "col": 65,
+                "angle_deg": 232.14699644960254,
+                "step_vox": 40.679507969078834,
+                "step_pitches": 2.8054833082123336,
+                "x": 782.1801704506078,
+                "y": 602.0510220831792
+              },
+              {
+                "z": 2600.0,
+                "col": 75,
+                "angle_deg": 218.35308215671753,
+                "step_vox": -60.33491818138188,
+                "step_pitches": -3.7129180419311925,
+                "x": 772.8174109908916,
+                "y": 777.0664767083819
+              },
+              {
+                "z": 2600.0,
+                "col": 81,
+                "angle_deg": 205.27815720901148,
+                "step_vox": 56.475372891729805,
+                "step_pitches": 3.8948533028779178,
+                "x": 751.1829285078006,
+                "y": 887.2960100168959
+              },
+              {
+                "z": 2600.0,
+                "col": 86,
+                "angle_deg": 193.63209142907144,
+                "step_vox": -19.62043310367685,
+                "step_pitches": -1.3531333174949551,
+                "x": 754.8615032144451,
+                "y": 979.8843278538086
+              },
+              {
+                "z": 2600.0,
+                "col": 98,
+                "angle_deg": 159.5665282970685,
+                "step_vox": 38.19204778081484,
+                "step_pitches": 2.504396575791137,
+                "x": 751.8505513059259,
+                "y": 1224.2693975995508
+              },
+              {
+                "z": 2600.0,
+                "col": 110,
+                "angle_deg": 129.75466830191286,
+                "step_vox": 10.735811759229158,
+                "step_pitches": 0.6409439856256214,
+                "x": 868.4889104820104,
+                "y": 1414.6569851714205
+              },
+              {
+                "z": 2600.0,
+                "col": 118,
+                "angle_deg": 109.7765743533839,
+                "step_vox": -24.08936811694599,
+                "step_pitches": -1.175091127655902,
+                "x": 1001.9244999683638,
+                "y": 1488.6249703509652
+              },
+              {
+                "z": 2600.0,
+                "col": 123,
+                "angle_deg": 98.52743658274369,
+                "step_vox": 15.006860684588077,
+                "step_pitches": 0.6821300311176398,
+                "x": 1079.694617042354,
+                "y": 1547.0892127169006
+              },
+              {
+                "z": 2600.0,
+                "col": 131,
+                "angle_deg": 81.93081596939118,
+                "step_vox": -13.316640516980755,
+                "step_pitches": -0.6658320258490378,
+                "x": 1225.2764847909743,
+                "y": 1604.2279137185535
+              },
+              {
+                "z": 2600.0,
+                "col": 137,
+                "angle_deg": 69.90325441444435,
+                "step_vox": -33.69905863667112,
+                "step_pitches": -1.846523760913486,
+                "x": 1344.6851377982102,
+                "y": 1606.9118701495279
+              },
+              {
+                "z": 2600.0,
+                "col": 145,
+                "angle_deg": 54.438249893316026,
+                "step_vox": 28.23131397330362,
+                "step_pitches": 1.4665617648469413,
+                "x": 1491.8399099421865,
+                "y": 1553.447453041461
+              },
+              {
+                "z": 2600.0,
+                "col": 164,
+                "angle_deg": 18.34941443277694,
+                "step_vox": 13.813424936074028,
+                "step_pitches": 0.8007782571637118,
+                "x": 1758.754077560514,
+                "y": 1277.589365705647
+              },
+              {
+                "z": 2600.0,
+                "col": 173,
+                "angle_deg": 5.017599340256368,
+                "step_vox": 25.046411733028066,
+                "step_pitches": 1.8552897580020788,
+                "x": 1855.570812968006,
+                "y": 1137.7162325387342
+              },
+              {
+                "z": 2600.0,
+                "col": 182,
+                "angle_deg": 356.2604168385657,
+                "step_vox": -80.9682676292984,
+                "step_pitches": -4.665638470835922,
+                "x": 1713.2177026543093,
+                "y": 1039.011127592171
+              },
+              {
+                "z": 2600.0,
+                "col": 209,
+                "angle_deg": 299.8800526850307,
+                "step_vox": -59.761441112914994,
+                "step_pitches": -2.716429141496136,
+                "x": 1332.152599398792,
+                "y": 759.3981256888583
+              },
+              {
+                "z": 2600.0,
+                "col": 220,
+                "angle_deg": 269.5635977937462,
+                "step_vox": 25.62085253957956,
+                "step_pitches": 1.3849109480853816,
+                "x": 1147.2221233196633,
+                "y": 663.8322987902109
+              },
+              {
+                "z": 2600.0,
+                "col": 230,
+                "angle_deg": 245.66109852061038,
+                "step_vox": 30.867808212033694,
+                "step_pitches": 1.505746742050424,
+                "x": 949.0177841135882,
+                "y": 630.6824603643337
+              },
+              {
+                "z": 2600.0,
+                "col": 237,
+                "angle_deg": 234.33404035863856,
+                "step_vox": -16.064537979913453,
+                "step_pitches": -1.070969198660897,
+                "x": 810.5775490797239,
+                "y": 602.3493642203157
+              },
+              {
+                "z": 2600.0,
+                "col": 239,
+                "angle_deg": 230.88531721893884,
+                "step_vox": 43.59906101266906,
+                "step_pitches": 2.5646506478040623,
+                "x": 772.4670006158655,
+                "y": 611.0461599304551
+              },
+              {
+                "z": 2600.0,
+                "col": 247,
+                "angle_deg": 219.3052681973382,
+                "step_vox": -73.29950528831264,
+                "step_pitches": -4.58121908051954,
+                "x": 763.3485525896266,
+                "y": 758.9753723765988
+              },
+              {
+                "z": 2600.0,
+                "col": 253,
+                "angle_deg": 207.4009580342513,
+                "step_vox": 57.321293102616096,
+                "step_pitches": 4.094378078758292,
+                "x": 770.6556404002223,
+                "y": 878.9718994778399
+              },
+              {
+                "z": 2600.0,
+                "col": 260,
+                "angle_deg": 189.9137610198162,
+                "step_vox": -28.490580795173134,
+                "step_pitches": -2.0350414853695096,
+                "x": 759.9155249401706,
+                "y": 1007.5598950321402
+              },
+              {
+                "z": 2600.0,
+                "col": 270,
+                "angle_deg": 160.41666973127008,
+                "step_vox": 40.264597740757964,
+                "step_pitches": 2.5165373587973727,
+                "x": 757.3956475595743,
+                "y": 1215.5994987865568
+              },
+              {
+                "z": 2600.0,
+                "col": 286,
+                "angle_deg": 120.36746939166324,
+                "step_vox": -14.548639097554595,
+                "step_pitches": -0.6613017771615725,
+                "x": 933.3785839693462,
+                "y": 1446.1174333554475
+              },
+              {
+                "z": 2600.0,
+                "col": 290,
+                "angle_deg": 109.93630792538897,
+                "step_vox": -26.36570418620194,
+                "step_pitches": -1.3876686413790493,
+                "x": 1001.7271382547589,
+                "y": 1485.5822128864997
+              },
+              {
+                "z": 2600.0,
+                "col": 309,
+                "angle_deg": 69.69102588821852,
+                "step_vox": -43.765924942116854,
+                "step_pitches": -2.612891041320409,
+                "x": 1343.8075657328525,
+                "y": 1598.5050996433938
+              },
+              {
+                "z": 2600.0,
+                "col": 317,
+                "angle_deg": 54.487567638093196,
+                "step_vox": 27.56161628309873,
+                "step_pitches": 1.6454696288417152,
+                "x": 1488.8599489054213,
+                "y": 1550.1416804125038
+              },
+              {
+                "z": 2600.0,
+                "col": 328,
+                "angle_deg": 32.811821965479,
+                "step_vox": 14.234416883606535,
+                "step_pitches": 0.86269193233979,
+                "x": 1647.1857921387982,
+                "y": 1396.1274798535685
+              },
+              {
+                "z": 2600.0,
+                "col": 332,
+                "angle_deg": 25.742533321632436,
+                "step_vox": 15.956686939565657,
+                "step_pitches": 0.9819499655117327,
+                "x": 1707.7796510407525,
+                "y": 1344.5777855520953
+              },
+              {
+                "z": 3128.0,
+                "col": 34,
+                "angle_deg": 300.12065308372263,
+                "step_vox": -18.00081875078933,
+                "step_pitches": -0.8182190341267876,
+                "x": 1377.9960800124682,
+                "y": 812.2431969002188
+              },
+              {
+                "z": 3128.0,
+                "col": 38,
+                "angle_deg": 291.42415900522326,
+                "step_vox": -10.259725779597705,
+                "step_pitches": -0.6727689035801774,
+                "x": 1300.2690610142988,
+                "y": 822.5614309937972
+              },
+              {
+                "z": 3128.0,
+                "col": 41,
+                "angle_deg": 283.3432568000909,
+                "step_vox": -21.469280746102076,
+                "step_pitches": -1.4312853830734718,
+                "x": 1246.6162709387017,
+                "y": 798.7860955758933
+              },
+              {
+                "z": 3128.0,
+                "col": 48,
+                "angle_deg": 265.9575264102368,
+                "step_vox": -20.15402000381482,
+                "step_pitches": -1.3899324140561946,
+                "x": 1117.9423090253504,
+                "y": 745.9022780124129
+              },
+              {
+                "z": 3128.0,
+                "col": 53,
+                "angle_deg": 256.0596625306453,
+                "step_vox": 13.506081879651333,
+                "step_pitches": 1.0004505096038026,
+                "x": 1026.3381461155789,
+                "y": 704.9696410904476
+              },
+              {
+                "z": 3128.0,
+                "col": 60,
+                "angle_deg": 243.63896311953522,
+                "step_vox": -40.60776644861345,
+                "step_pitches": -3.18492285871478,
+                "x": 889.9042723852123,
+                "y": 679.0282143926569
+              },
+              {
+                "z": 3128.0,
+                "col": 64,
+                "angle_deg": 235.98664792342848,
+                "step_vox": 15.691713899647844,
+                "step_pitches": 1.2307226587959093,
+                "x": 825.2516028281038,
+                "y": 722.8591836740228
+              },
+              {
+                "z": 3128.0,
+                "col": 69,
+                "angle_deg": 226.13762399706715,
+                "step_vox": -10.0274508319104,
+                "step_pitches": -0.6366635448832,
+                "x": 768.6649060501499,
+                "y": 807.4484534351437
+              },
+              {
+                "z": 3128.0,
+                "col": 74,
+                "angle_deg": 215.7872500983577,
+                "step_vox": -27.855375586884115,
+                "step_pitches": -1.6385515051108304,
+                "x": 728.2018021087117,
+                "y": 900.2826891737506
+              },
+              {
+                "z": 3128.0,
+                "col": 81,
+                "angle_deg": 199.94308371566308,
+                "step_vox": 8.829936391522182,
+                "step_pitches": 0.6196446590541882,
+                "x": 706.1915357523767,
+                "y": 1043.4453973123939
+              },
+              {
+                "z": 3128.0,
+                "col": 85,
+                "angle_deg": 189.6182185109901,
+                "step_vox": -12.705245663648366,
+                "step_pitches": -0.9588864651810087,
+                "x": 698.7400413372445,
+                "y": 1128.076482596735
+              },
+              {
+                "z": 3128.0,
+                "col": 90,
+                "angle_deg": 176.49179144422035,
+                "step_vox": 15.80733568396508,
+                "step_pitches": 1.2645868547172063,
+                "x": 692.0019694731559,
+                "y": 1232.7102916151798
+              },
+              {
+                "z": 3128.0,
+                "col": 93,
+                "angle_deg": 169.50638024775097,
+                "step_vox": -23.40469424875269,
+                "step_pitches": -1.8723755399002153,
+                "x": 691.2819813063546,
+                "y": 1289.6422053378901
+              },
+              {
+                "z": 3128.0,
+                "col": 104,
+                "angle_deg": 149.9726825456384,
+                "step_vox": 40.029480378261525,
+                "step_pitches": 3.202358430260922,
+                "x": 700.0400692997318,
+                "y": 1464.8886831511504
+              },
+              {
+                "z": 3128.0,
+                "col": 109,
+                "angle_deg": 140.01448323567018,
+                "step_vox": -15.64522792110895,
+                "step_pitches": -1.3037689934257457,
+                "x": 734.0789034741613,
+                "y": 1553.7320354772658
+              },
+              {
+                "z": 3128.0,
+                "col": 116,
+                "angle_deg": 127.01861977033457,
+                "step_vox": -36.849174535782794,
+                "step_pitches": -2.9479339628626233,
+                "x": 863.9764440444634,
+                "y": 1584.396960842699
+              },
+              {
+                "z": 3128.0,
+                "col": 131,
+                "angle_deg": 91.20310106517496,
+                "step_vox": 49.0901850204599,
+                "step_pitches": 3.927214801636792,
+                "x": 1139.896255892609,
+                "y": 1702.855970772149
+              },
+              {
+                "z": 3128.0,
+                "col": 143,
+                "angle_deg": 66.72288362351617,
+                "step_vox": -32.88234020223505,
+                "step_pitches": -2.3075326457708805,
+                "x": 1351.8617512658188,
+                "y": 1673.0066940147897
+              },
+              {
+                "z": 3128.0,
+                "col": 176,
+                "angle_deg": 357.56243051267927,
+                "step_vox": 15.951947511243166,
+                "step_pitches": 0.9507783284846919,
+                "x": 1789.0427842885008,
+                "y": 1177.4217214008324
+              },
+              {
+                "z": 3128.0,
+                "col": 178,
+                "angle_deg": 353.9960465667727,
+                "step_vox": -16.6936355119604,
+                "step_pitches": -1.0091870334686388,
+                "x": 1786.691635813148,
+                "y": 1137.6844575282178
+              },
+              {
+                "z": 3128.0,
+                "col": 181,
+                "angle_deg": 348.9189720353668,
+                "step_vox": 43.842799675817275,
+                "step_pitches": 2.7084355012087893,
+                "x": 1757.9434870450086,
+                "y": 1085.6157751555083
+              },
+              {
+                "z": 3128.0,
+                "col": 193,
+                "angle_deg": 327.3107417003159,
+                "step_vox": 12.271685334434622,
+                "step_pitches": 0.8308052130505809,
+                "x": 1589.2065750452202,
+                "y": 922.9916753335076
+              },
+              {
+                "z": 3128.0,
+                "col": 196,
+                "angle_deg": 320.95948493235943,
+                "step_vox": 10.952121838545793,
+                "step_pitches": 0.7596847518066445,
+                "x": 1543.3169216786152,
+                "y": 885.9394150590657
+              },
+              {
+                "z": 3128.0,
+                "col": 207,
+                "angle_deg": 297.1625716890527,
+                "step_vox": -24.05293021805312,
+                "step_pitches": -1.754621049341261,
+                "x": 1347.223190729328,
+                "y": 820.9393820672152
+              },
+              {
+                "z": 3128.0,
+                "col": 213,
+                "angle_deg": 282.00921142804856,
+                "step_vox": -13.612662324880056,
+                "step_pitches": -0.9723330232057182,
+                "x": 1236.2138946290443,
+                "y": 801.0182465698421
+              },
+              {
+                "z": 3128.0,
+                "col": 218,
+                "angle_deg": 269.28213218878074,
+                "step_vox": -20.491436824894095,
+                "step_pitches": -1.4379955666592348,
+                "x": 1144.854629221294,
+                "y": 765.228264867629
+              },
+              {
+                "z": 3128.0,
+                "col": 224,
+                "angle_deg": 256.99586995426466,
+                "step_vox": 14.192038288389739,
+                "step_pitches": 1.0137170205992672,
+                "x": 1036.6746642188225,
+                "y": 712.3466026724188
+              },
+              {
+                "z": 3128.0,
+                "col": 232,
+                "angle_deg": 242.6497420477274,
+                "step_vox": -39.98355765227055,
+                "step_pitches": -3.017626992624192,
+                "x": 880.9579230865312,
+                "y": 683.7744981015834
+              },
+              {
+                "z": 3128.0,
+                "col": 235,
+                "angle_deg": 236.79961305079763,
+                "step_vox": 29.015403999709175,
+                "step_pitches": 2.2319541538237826,
+                "x": 833.008831324216,
+                "y": 719.6537295955411
+              },
+              {
+                "z": 3128.0,
+                "col": 245,
+                "angle_deg": 216.20266358706832,
+                "step_vox": -19.79045939453011,
+                "step_pitches": -1.3193639596353406,
+                "x": 732.0222416698992,
+                "y": 898.4031788368223
+              },
+              {
+                "z": 3128.0,
+                "col": 253,
+                "angle_deg": 197.3091949849795,
+                "step_vox": 21.88855153454484,
+                "step_pitches": 1.6213741877440622,
+                "x": 704.0500806764795,
+                "y": 1065.5213625952179
+              },
+              {
+                "z": 3128.0,
+                "col": 255,
+                "angle_deg": 191.96538706368918,
+                "step_vox": -17.439145567304582,
+                "step_pitches": -1.3677761229258496,
+                "x": 701.7442925866903,
+                "y": 1109.53700894033
+              },
+              {
+                "z": 3128.0,
+                "col": 265,
+                "angle_deg": 166.98648313395287,
+                "step_vox": -21.833579888929876,
+                "step_pitches": -1.8194649907441562,
+                "x": 727.0405921118453,
+                "y": 1302.4461815140457
+              },
+              {
+                "z": 3128.0,
+                "col": 275,
+                "angle_deg": 148.62243318591592,
+                "step_vox": 37.48006503732497,
+                "step_pitches": 3.2591360902021713,
+                "x": 707.7544207369754,
+                "y": 1474.5397934997875
+              },
+              {
+                "z": 3128.0,
+                "col": 280,
+                "angle_deg": 138.67791766005578,
+                "step_vox": -8.805041459291665,
+                "step_pitches": -0.7044033167433332,
+                "x": 746.0282893134802,
+                "y": 1560.1002862095922
+              },
+              {
+                "z": 3128.0,
+                "col": 286,
+                "angle_deg": 127.66204188473495,
+                "step_vox": -40.85143201361297,
+                "step_pitches": -2.7234288009075316,
+                "x": 859.3882006312249,
+                "y": 1581.59942637271
+              },
+              {
+                "z": 3128.0,
+                "col": 302,
+                "angle_deg": 89.99999700399962,
+                "step_vox": 49.27068932008095,
+                "step_pitches": 3.397978573798686,
+                "x": 1150.3600263128035,
+                "y": 1707.81840931159
+              },
+              {
+                "z": 3128.0,
+                "col": 313,
+                "angle_deg": 67.24513913109826,
+                "step_vox": -31.33646473906857,
+                "step_pitches": -2.3650162067221565,
+                "x": 1347.3458605641727,
+                "y": 1674.256229990106
+              },
+              {
+                "z": 3128.0,
+                "col": 321,
+                "angle_deg": 48.54575325953658,
+                "step_vox": -12.971440729156518,
+                "step_pitches": -0.8794197104512893,
+                "x": 1459.2093847381796,
+                "y": 1554.2629496493464
+              },
+              {
+                "z": 3128.0,
+                "col": 330,
+                "angle_deg": 26.23327668378289,
+                "step_vox": 13.329197464186986,
+                "step_pitches": 0.8330748415116866,
+                "x": 1585.6861357055482,
+                "y": 1419.1311532975708
+              },
+              {
+                "z": 3128.0,
+                "col": 331,
+                "angle_deg": 23.454627572827576,
+                "step_vox": -21.356791194203367,
+                "step_pitches": -1.2203880682401924,
+                "x": 1591.1483332229873,
+                "y": 1395.8553114758508
+              }
+            ],
+            "heights": [
+              {
+                "z": 2073.0,
+                "status": "FAIL",
+                "reason": "",
+                "jumps": [
+                  {
+                    "col": 18,
+                    "angle_deg": 336.75865474262287,
+                    "step_vox": 59.833447804550445,
+                    "step_pitches": 3.615314066740208,
+                    "x": 1541.9508048842486,
+                    "y": 858.3030118291305
+                  },
+                  {
+                    "col": 33,
+                    "angle_deg": 303.07976807324746,
+                    "step_vox": -56.80479097336607,
+                    "step_pitches": -3.550299435835379,
+                    "x": 1382.954486814225,
+                    "y": 681.0974479500485
+                  },
+                  {
+                    "col": 39,
+                    "angle_deg": 287.3416238651533,
+                    "step_vox": -16.13474184722785,
+                    "step_pitches": -0.8721482079582622,
+                    "x": 1276.397012289286,
+                    "y": 652.1864912629559
+                  },
+                  {
+                    "col": 55,
+                    "angle_deg": 246.8861567559349,
+                    "step_vox": 14.322030072364733,
+                    "step_pitches": 0.8424723571979255,
+                    "x": 975.6450051481262,
+                    "y": 587.8026434583991
+                  },
+                  {
+                    "col": 56,
+                    "angle_deg": 244.61798412063968,
+                    "step_vox": -13.811744835769659,
+                    "step_pitches": -0.7366263912410485,
+                    "x": 956.2308358728525,
+                    "y": 590.4640333379651
+                  },
+                  {
+                    "col": 60,
+                    "angle_deg": 236.67534620198657,
+                    "step_vox": 35.69247136906922,
+                    "step_pitches": 2.099557139357013,
+                    "x": 878.3901099370543,
+                    "y": 592.1919813824555
+                  },
+                  {
+                    "col": 69,
+                    "angle_deg": 220.99555551717336,
+                    "step_vox": 40.29192629572163,
+                    "step_pitches": 2.0145963147860817,
+                    "x": 728.6139854129758,
+                    "y": 646.1736027563741
+                  },
+                  {
+                    "col": 72,
+                    "angle_deg": 215.40103287229414,
+                    "step_vox": 17.22936341234265,
+                    "step_pitches": 0.7831528823792113,
+                    "x": 709.5821957330623,
+                    "y": 701.1544583750905
+                  },
+                  {
+                    "col": 78,
+                    "angle_deg": 204.6330219608247,
+                    "step_vox": -29.087631019181742,
+                    "step_pitches": -1.5723043794152294,
+                    "x": 712.6548197935743,
+                    "y": 816.3764151084063
+                  },
+                  {
+                    "col": 93,
+                    "angle_deg": 169.932950921698,
+                    "step_vox": 12.861859992984243,
+                    "step_pitches": 0.7246118305906616,
+                    "x": 791.3896166047498,
+                    "y": 1087.537699094012
+                  },
+                  {
+                    "col": 98,
+                    "angle_deg": 156.9998822576944,
+                    "step_vox": -28.055865333875232,
+                    "step_pitches": -1.5806121314859285,
+                    "x": 838.5556405000908,
+                    "y": 1158.77482361313
+                  },
+                  {
+                    "col": 104,
+                    "angle_deg": 138.6860388980595,
+                    "step_vox": 30.932847476698296,
+                    "step_pitches": 1.9639903159808443,
+                    "x": 892.1863279511116,
+                    "y": 1258.1519237183932
+                  },
+                  {
+                    "col": 111,
+                    "angle_deg": 121.11782053562717,
+                    "step_vox": -36.92640778541184,
+                    "step_pitches": -1.9694084152219649,
+                    "x": 998.8243364566987,
+                    "y": 1290.4833194057253
+                  },
+                  {
+                    "col": 114,
+                    "angle_deg": 110.93508954281069,
+                    "step_vox": 29.933929559912002,
+                    "step_pitches": 1.5964762431953068,
+                    "x": 1060.5118300631652,
+                    "y": 1284.4428593018542
+                  },
+                  {
+                    "col": 122,
+                    "angle_deg": 85.00514996463204,
+                    "step_vox": 80.74463045389868,
+                    "step_pitches": 4.088335719184744,
+                    "x": 1191.1581702102958,
+                    "y": 1367.6832010040928
+                  },
+                  {
+                    "col": 128,
+                    "angle_deg": 68.2160528808244,
+                    "step_vox": -270.551189060371,
+                    "step_pitches": -13.197618978554681,
+                    "x": 1307.9764520395138,
+                    "y": 1389.8462732049773
+                  },
+                  {
+                    "col": 139,
+                    "angle_deg": 53.90177205148211,
+                    "step_vox": 85.85748899765468,
+                    "step_pitches": 4.137710313139984,
+                    "x": 1500.9677161738807,
+                    "y": 1488.2546827616745
+                  },
+                  {
+                    "col": 151,
+                    "angle_deg": 38.089376095983994,
+                    "step_vox": 22.376595390994083,
+                    "step_pitches": 1.105017056345387,
+                    "x": 1706.8836982991024,
+                    "y": 1449.8410963421807
+                  },
+                  {
+                    "col": 163,
+                    "angle_deg": 18.37078992758876,
+                    "step_vox": -61.40201162898953,
+                    "step_pitches": -3.665791739044151,
+                    "x": 1840.7765190440189,
+                    "y": 1247.6966326744423
+                  },
+                  {
+                    "col": 184,
+                    "angle_deg": 355.00214863202615,
+                    "step_vox": -78.9296046031114,
+                    "step_pitches": -6.314368368248912,
+                    "x": 1679.0430181429801,
+                    "y": 976.6214372537268
+                  },
+                  {
+                    "col": 193,
+                    "angle_deg": 338.50859697197285,
+                    "step_vox": 36.644960665865014,
+                    "step_pitches": 1.9543979021794675,
+                    "x": 1543.5133012806984,
+                    "y": 871.2966754294378
+                  },
+                  {
+                    "col": 208,
+                    "angle_deg": 303.7523914438234,
+                    "step_vox": -56.292380070026454,
+                    "step_pitches": -3.4116593981834216,
+                    "x": 1390.6560041180032,
+                    "y": 678.1667660545547
+                  },
+                  {
+                    "col": 215,
+                    "angle_deg": 285.8488679602925,
+                    "step_vox": -15.391194505422675,
+                    "step_pitches": -0.8433531235848041,
+                    "x": 1266.502170649046,
+                    "y": 650.0919929296186
+                  },
+                  {
+                    "col": 244,
+                    "angle_deg": 221.33173647456164,
+                    "step_vox": 45.62778139878377,
+                    "step_pitches": 2.2813890699391886,
+                    "x": 734.2491862308169,
+                    "y": 646.6539979353073
+                  },
+                  {
+                    "col": 253,
+                    "angle_deg": 204.85459071321065,
+                    "step_vox": -36.51279129043536,
+                    "step_pitches": -2.1166835530687167,
+                    "x": 716.7271314239035,
+                    "y": 816.1610082603462
+                  },
+                  {
+                    "col": 262,
+                    "angle_deg": 185.83249032115793,
+                    "step_vox": 14.395996924552733,
+                    "step_pitches": 0.9928273741070851,
+                    "x": 755.3968089330463,
+                    "y": 980.5040701214024
+                  },
+                  {
+                    "col": 265,
+                    "angle_deg": 178.10291354662616,
+                    "step_vox": -9.262397845327285,
+                    "step_pitches": -0.6387860582984335,
+                    "x": 777.7944159864358,
+                    "y": 1034.6207433414554
+                  },
+                  {
+                    "col": 269,
+                    "angle_deg": 166.86732909869136,
+                    "step_vox": 10.539350763553024,
+                    "step_pitches": 0.7145322551561373,
+                    "x": 803.4750083382692,
+                    "y": 1105.3296077271907
+                  },
+                  {
+                    "col": 274,
+                    "angle_deg": 153.1511920795648,
+                    "step_vox": -21.301181105335054,
+                    "step_pitches": -1.4200787403556703,
+                    "x": 861.2464525236478,
+                    "y": 1173.636680943438
+                  },
+                  {
+                    "col": 278,
+                    "angle_deg": 140.10558412139426,
+                    "step_vox": 34.86844594770926,
+                    "step_pitches": 2.3245630631806176,
+                    "x": 895.6861259934625,
+                    "y": 1243.672742123284
+                  },
+                  {
+                    "col": 282,
+                    "angle_deg": 129.47022843503476,
+                    "step_vox": -14.034159227155069,
+                    "step_pitches": -0.8771349516971918,
+                    "x": 929.6446886068683,
+                    "y": 1302.8108834506095
+                  },
+                  {
+                    "col": 285,
+                    "angle_deg": 122.5993635900279,
+                    "step_vox": -23.168197686168305,
+                    "step_pitches": -1.4041331931011094,
+                    "x": 991.3441423609723,
+                    "y": 1287.1261414075054
+                  },
+                  {
+                    "col": 289,
+                    "angle_deg": 108.49876808258932,
+                    "step_vox": 25.650884147219017,
+                    "step_pitches": 1.4250491192899455,
+                    "x": 1074.4706949328329,
+                    "y": 1280.377978775983
+                  },
+                  {
+                    "col": 291,
+                    "angle_deg": 99.91322358891853,
+                    "step_vox": -12.607057910956847,
+                    "step_pitches": -0.622570761034906,
+                    "x": 1114.6359652343256,
+                    "y": 1286.879101843957
+                  },
+                  {
+                    "col": 296,
+                    "angle_deg": 84.63857937991247,
+                    "step_vox": 63.01121468272164,
+                    "step_pitches": 2.930754171289379,
+                    "x": 1192.0730833090222,
+                    "y": 1353.6676037827228
+                  },
+                  {
+                    "col": 302,
+                    "angle_deg": 68.27180077668027,
+                    "step_vox": -279.7594422621656,
+                    "step_pitches": -13.01206708196119,
+                    "x": 1304.047052056432,
+                    "y": 1381.0275888111305
+                  },
+                  {
+                    "col": 310,
+                    "angle_deg": 56.12660868943192,
+                    "step_vox": 98.96616319674828,
+                    "step_pitches": 4.603077357988292,
+                    "x": 1446.5196174932316,
+                    "y": 1447.3439405830325
+                  },
+                  {
+                    "col": 324,
+                    "angle_deg": 39.841406792562,
+                    "step_vox": 32.531856476416024,
+                    "step_pitches": 1.586919828117855,
+                    "x": 1684.210392374592,
+                    "y": 1458.5435073014455
+                  },
+                  {
+                    "col": 334,
+                    "angle_deg": 23.63351981106939,
+                    "step_vox": -56.25160311395389,
+                    "step_pitches": -3.409188067512357,
+                    "x": 1808.8986599931106,
+                    "y": 1305.467724361315
+                  }
+                ]
+              },
+              {
+                "z": 2600.0,
+                "status": "FAIL",
+                "reason": "",
+                "jumps": [
+                  {
+                    "col": 19,
+                    "angle_deg": 336.9188564562651,
+                    "step_vox": 14.312531121453091,
+                    "step_pitches": 1.1602051782589509,
+                    "x": 1576.0463200710947,
+                    "y": 894.3949589704762
+                  },
+                  {
+                    "col": 23,
+                    "angle_deg": 327.0358154158042,
+                    "step_vox": 8.37267914357782,
+                    "step_pitches": 0.6427735146624931,
+                    "x": 1525.6934179085654,
+                    "y": 832.3890591322277
+                  },
+                  {
+                    "col": 34,
+                    "angle_deg": 302.0018167116295,
+                    "step_vox": -59.72347139758297,
+                    "step_pitches": -4.04904890831071,
+                    "x": 1360.2978602918158,
+                    "y": 739.8528967329626
+                  },
+                  {
+                    "col": 42,
+                    "angle_deg": 279.6387626535619,
+                    "step_vox": -11.474027655247085,
+                    "step_pitches": -0.6953956154695202,
+                    "x": 1209.5672553315035,
+                    "y": 727.1801942347621
+                  },
+                  {
+                    "col": 46,
+                    "angle_deg": 270.9583997011538,
+                    "step_vox": 21.68576705652896,
+                    "step_pitches": 1.2217333552974061,
+                    "x": 1157.216857088116,
+                    "y": 665.9163897413379
+                  },
+                  {
+                    "col": 57,
+                    "angle_deg": 245.0690040371024,
+                    "step_vox": 31.669692190382037,
+                    "step_pitches": 2.043205947766583,
+                    "x": 940.7463650564878,
+                    "y": 624.8650167103314
+                  },
+                  {
+                    "col": 65,
+                    "angle_deg": 232.14699644960254,
+                    "step_vox": 40.679507969078834,
+                    "step_pitches": 2.8054833082123336,
+                    "x": 782.1801704506078,
+                    "y": 602.0510220831792
+                  },
+                  {
+                    "col": 75,
+                    "angle_deg": 218.35308215671753,
+                    "step_vox": -60.33491818138188,
+                    "step_pitches": -3.7129180419311925,
+                    "x": 772.8174109908916,
+                    "y": 777.0664767083819
+                  },
+                  {
+                    "col": 81,
+                    "angle_deg": 205.27815720901148,
+                    "step_vox": 56.475372891729805,
+                    "step_pitches": 3.8948533028779178,
+                    "x": 751.1829285078006,
+                    "y": 887.2960100168959
+                  },
+                  {
+                    "col": 86,
+                    "angle_deg": 193.63209142907144,
+                    "step_vox": -19.62043310367685,
+                    "step_pitches": -1.3531333174949551,
+                    "x": 754.8615032144451,
+                    "y": 979.8843278538086
+                  },
+                  {
+                    "col": 98,
+                    "angle_deg": 159.5665282970685,
+                    "step_vox": 38.19204778081484,
+                    "step_pitches": 2.504396575791137,
+                    "x": 751.8505513059259,
+                    "y": 1224.2693975995508
+                  },
+                  {
+                    "col": 110,
+                    "angle_deg": 129.75466830191286,
+                    "step_vox": 10.735811759229158,
+                    "step_pitches": 0.6409439856256214,
+                    "x": 868.4889104820104,
+                    "y": 1414.6569851714205
+                  },
+                  {
+                    "col": 118,
+                    "angle_deg": 109.7765743533839,
+                    "step_vox": -24.08936811694599,
+                    "step_pitches": -1.175091127655902,
+                    "x": 1001.9244999683638,
+                    "y": 1488.6249703509652
+                  },
+                  {
+                    "col": 123,
+                    "angle_deg": 98.52743658274369,
+                    "step_vox": 15.006860684588077,
+                    "step_pitches": 0.6821300311176398,
+                    "x": 1079.694617042354,
+                    "y": 1547.0892127169006
+                  },
+                  {
+                    "col": 131,
+                    "angle_deg": 81.93081596939118,
+                    "step_vox": -13.316640516980755,
+                    "step_pitches": -0.6658320258490378,
+                    "x": 1225.2764847909743,
+                    "y": 1604.2279137185535
+                  },
+                  {
+                    "col": 137,
+                    "angle_deg": 69.90325441444435,
+                    "step_vox": -33.69905863667112,
+                    "step_pitches": -1.846523760913486,
+                    "x": 1344.6851377982102,
+                    "y": 1606.9118701495279
+                  },
+                  {
+                    "col": 145,
+                    "angle_deg": 54.438249893316026,
+                    "step_vox": 28.23131397330362,
+                    "step_pitches": 1.4665617648469413,
+                    "x": 1491.8399099421865,
+                    "y": 1553.447453041461
+                  },
+                  {
+                    "col": 164,
+                    "angle_deg": 18.34941443277694,
+                    "step_vox": 13.813424936074028,
+                    "step_pitches": 0.8007782571637118,
+                    "x": 1758.754077560514,
+                    "y": 1277.589365705647
+                  },
+                  {
+                    "col": 173,
+                    "angle_deg": 5.017599340256368,
+                    "step_vox": 25.046411733028066,
+                    "step_pitches": 1.8552897580020788,
+                    "x": 1855.570812968006,
+                    "y": 1137.7162325387342
+                  },
+                  {
+                    "col": 182,
+                    "angle_deg": 356.2604168385657,
+                    "step_vox": -80.9682676292984,
+                    "step_pitches": -4.665638470835922,
+                    "x": 1713.2177026543093,
+                    "y": 1039.011127592171
+                  },
+                  {
+                    "col": 209,
+                    "angle_deg": 299.8800526850307,
+                    "step_vox": -59.761441112914994,
+                    "step_pitches": -2.716429141496136,
+                    "x": 1332.152599398792,
+                    "y": 759.3981256888583
+                  },
+                  {
+                    "col": 220,
+                    "angle_deg": 269.5635977937462,
+                    "step_vox": 25.62085253957956,
+                    "step_pitches": 1.3849109480853816,
+                    "x": 1147.2221233196633,
+                    "y": 663.8322987902109
+                  },
+                  {
+                    "col": 230,
+                    "angle_deg": 245.66109852061038,
+                    "step_vox": 30.867808212033694,
+                    "step_pitches": 1.505746742050424,
+                    "x": 949.0177841135882,
+                    "y": 630.6824603643337
+                  },
+                  {
+                    "col": 237,
+                    "angle_deg": 234.33404035863856,
+                    "step_vox": -16.064537979913453,
+                    "step_pitches": -1.070969198660897,
+                    "x": 810.5775490797239,
+                    "y": 602.3493642203157
+                  },
+                  {
+                    "col": 239,
+                    "angle_deg": 230.88531721893884,
+                    "step_vox": 43.59906101266906,
+                    "step_pitches": 2.5646506478040623,
+                    "x": 772.4670006158655,
+                    "y": 611.0461599304551
+                  },
+                  {
+                    "col": 247,
+                    "angle_deg": 219.3052681973382,
+                    "step_vox": -73.29950528831264,
+                    "step_pitches": -4.58121908051954,
+                    "x": 763.3485525896266,
+                    "y": 758.9753723765988
+                  },
+                  {
+                    "col": 253,
+                    "angle_deg": 207.4009580342513,
+                    "step_vox": 57.321293102616096,
+                    "step_pitches": 4.094378078758292,
+                    "x": 770.6556404002223,
+                    "y": 878.9718994778399
+                  },
+                  {
+                    "col": 260,
+                    "angle_deg": 189.9137610198162,
+                    "step_vox": -28.490580795173134,
+                    "step_pitches": -2.0350414853695096,
+                    "x": 759.9155249401706,
+                    "y": 1007.5598950321402
+                  },
+                  {
+                    "col": 270,
+                    "angle_deg": 160.41666973127008,
+                    "step_vox": 40.264597740757964,
+                    "step_pitches": 2.5165373587973727,
+                    "x": 757.3956475595743,
+                    "y": 1215.5994987865568
+                  },
+                  {
+                    "col": 286,
+                    "angle_deg": 120.36746939166324,
+                    "step_vox": -14.548639097554595,
+                    "step_pitches": -0.6613017771615725,
+                    "x": 933.3785839693462,
+                    "y": 1446.1174333554475
+                  },
+                  {
+                    "col": 290,
+                    "angle_deg": 109.93630792538897,
+                    "step_vox": -26.36570418620194,
+                    "step_pitches": -1.3876686413790493,
+                    "x": 1001.7271382547589,
+                    "y": 1485.5822128864997
+                  },
+                  {
+                    "col": 309,
+                    "angle_deg": 69.69102588821852,
+                    "step_vox": -43.765924942116854,
+                    "step_pitches": -2.612891041320409,
+                    "x": 1343.8075657328525,
+                    "y": 1598.5050996433938
+                  },
+                  {
+                    "col": 317,
+                    "angle_deg": 54.487567638093196,
+                    "step_vox": 27.56161628309873,
+                    "step_pitches": 1.6454696288417152,
+                    "x": 1488.8599489054213,
+                    "y": 1550.1416804125038
+                  },
+                  {
+                    "col": 328,
+                    "angle_deg": 32.811821965479,
+                    "step_vox": 14.234416883606535,
+                    "step_pitches": 0.86269193233979,
+                    "x": 1647.1857921387982,
+                    "y": 1396.1274798535685
+                  },
+                  {
+                    "col": 332,
+                    "angle_deg": 25.742533321632436,
+                    "step_vox": 15.956686939565657,
+                    "step_pitches": 0.9819499655117327,
+                    "x": 1707.7796510407525,
+                    "y": 1344.5777855520953
+                  }
+                ]
+              },
+              {
+                "z": 3128.0,
+                "status": "FAIL",
+                "reason": "",
+                "jumps": [
+                  {
+                    "col": 34,
+                    "angle_deg": 300.12065308372263,
+                    "step_vox": -18.00081875078933,
+                    "step_pitches": -0.8182190341267876,
+                    "x": 1377.9960800124682,
+                    "y": 812.2431969002188
+                  },
+                  {
+                    "col": 38,
+                    "angle_deg": 291.42415900522326,
+                    "step_vox": -10.259725779597705,
+                    "step_pitches": -0.6727689035801774,
+                    "x": 1300.2690610142988,
+                    "y": 822.5614309937972
+                  },
+                  {
+                    "col": 41,
+                    "angle_deg": 283.3432568000909,
+                    "step_vox": -21.469280746102076,
+                    "step_pitches": -1.4312853830734718,
+                    "x": 1246.6162709387017,
+                    "y": 798.7860955758933
+                  },
+                  {
+                    "col": 48,
+                    "angle_deg": 265.9575264102368,
+                    "step_vox": -20.15402000381482,
+                    "step_pitches": -1.3899324140561946,
+                    "x": 1117.9423090253504,
+                    "y": 745.9022780124129
+                  },
+                  {
+                    "col": 53,
+                    "angle_deg": 256.0596625306453,
+                    "step_vox": 13.506081879651333,
+                    "step_pitches": 1.0004505096038026,
+                    "x": 1026.3381461155789,
+                    "y": 704.9696410904476
+                  },
+                  {
+                    "col": 60,
+                    "angle_deg": 243.63896311953522,
+                    "step_vox": -40.60776644861345,
+                    "step_pitches": -3.18492285871478,
+                    "x": 889.9042723852123,
+                    "y": 679.0282143926569
+                  },
+                  {
+                    "col": 64,
+                    "angle_deg": 235.98664792342848,
+                    "step_vox": 15.691713899647844,
+                    "step_pitches": 1.2307226587959093,
+                    "x": 825.2516028281038,
+                    "y": 722.8591836740228
+                  },
+                  {
+                    "col": 69,
+                    "angle_deg": 226.13762399706715,
+                    "step_vox": -10.0274508319104,
+                    "step_pitches": -0.6366635448832,
+                    "x": 768.6649060501499,
+                    "y": 807.4484534351437
+                  },
+                  {
+                    "col": 74,
+                    "angle_deg": 215.7872500983577,
+                    "step_vox": -27.855375586884115,
+                    "step_pitches": -1.6385515051108304,
+                    "x": 728.2018021087117,
+                    "y": 900.2826891737506
+                  },
+                  {
+                    "col": 81,
+                    "angle_deg": 199.94308371566308,
+                    "step_vox": 8.829936391522182,
+                    "step_pitches": 0.6196446590541882,
+                    "x": 706.1915357523767,
+                    "y": 1043.4453973123939
+                  },
+                  {
+                    "col": 85,
+                    "angle_deg": 189.6182185109901,
+                    "step_vox": -12.705245663648366,
+                    "step_pitches": -0.9588864651810087,
+                    "x": 698.7400413372445,
+                    "y": 1128.076482596735
+                  },
+                  {
+                    "col": 90,
+                    "angle_deg": 176.49179144422035,
+                    "step_vox": 15.80733568396508,
+                    "step_pitches": 1.2645868547172063,
+                    "x": 692.0019694731559,
+                    "y": 1232.7102916151798
+                  },
+                  {
+                    "col": 93,
+                    "angle_deg": 169.50638024775097,
+                    "step_vox": -23.40469424875269,
+                    "step_pitches": -1.8723755399002153,
+                    "x": 691.2819813063546,
+                    "y": 1289.6422053378901
+                  },
+                  {
+                    "col": 104,
+                    "angle_deg": 149.9726825456384,
+                    "step_vox": 40.029480378261525,
+                    "step_pitches": 3.202358430260922,
+                    "x": 700.0400692997318,
+                    "y": 1464.8886831511504
+                  },
+                  {
+                    "col": 109,
+                    "angle_deg": 140.01448323567018,
+                    "step_vox": -15.64522792110895,
+                    "step_pitches": -1.3037689934257457,
+                    "x": 734.0789034741613,
+                    "y": 1553.7320354772658
+                  },
+                  {
+                    "col": 116,
+                    "angle_deg": 127.01861977033457,
+                    "step_vox": -36.849174535782794,
+                    "step_pitches": -2.9479339628626233,
+                    "x": 863.9764440444634,
+                    "y": 1584.396960842699
+                  },
+                  {
+                    "col": 131,
+                    "angle_deg": 91.20310106517496,
+                    "step_vox": 49.0901850204599,
+                    "step_pitches": 3.927214801636792,
+                    "x": 1139.896255892609,
+                    "y": 1702.855970772149
+                  },
+                  {
+                    "col": 143,
+                    "angle_deg": 66.72288362351617,
+                    "step_vox": -32.88234020223505,
+                    "step_pitches": -2.3075326457708805,
+                    "x": 1351.8617512658188,
+                    "y": 1673.0066940147897
+                  },
+                  {
+                    "col": 176,
+                    "angle_deg": 357.56243051267927,
+                    "step_vox": 15.951947511243166,
+                    "step_pitches": 0.9507783284846919,
+                    "x": 1789.0427842885008,
+                    "y": 1177.4217214008324
+                  },
+                  {
+                    "col": 178,
+                    "angle_deg": 353.9960465667727,
+                    "step_vox": -16.6936355119604,
+                    "step_pitches": -1.0091870334686388,
+                    "x": 1786.691635813148,
+                    "y": 1137.6844575282178
+                  },
+                  {
+                    "col": 181,
+                    "angle_deg": 348.9189720353668,
+                    "step_vox": 43.842799675817275,
+                    "step_pitches": 2.7084355012087893,
+                    "x": 1757.9434870450086,
+                    "y": 1085.6157751555083
+                  },
+                  {
+                    "col": 193,
+                    "angle_deg": 327.3107417003159,
+                    "step_vox": 12.271685334434622,
+                    "step_pitches": 0.8308052130505809,
+                    "x": 1589.2065750452202,
+                    "y": 922.9916753335076
+                  },
+                  {
+                    "col": 196,
+                    "angle_deg": 320.95948493235943,
+                    "step_vox": 10.952121838545793,
+                    "step_pitches": 0.7596847518066445,
+                    "x": 1543.3169216786152,
+                    "y": 885.9394150590657
+                  },
+                  {
+                    "col": 207,
+                    "angle_deg": 297.1625716890527,
+                    "step_vox": -24.05293021805312,
+                    "step_pitches": -1.754621049341261,
+                    "x": 1347.223190729328,
+                    "y": 820.9393820672152
+                  },
+                  {
+                    "col": 213,
+                    "angle_deg": 282.00921142804856,
+                    "step_vox": -13.612662324880056,
+                    "step_pitches": -0.9723330232057182,
+                    "x": 1236.2138946290443,
+                    "y": 801.0182465698421
+                  },
+                  {
+                    "col": 218,
+                    "angle_deg": 269.28213218878074,
+                    "step_vox": -20.491436824894095,
+                    "step_pitches": -1.4379955666592348,
+                    "x": 1144.854629221294,
+                    "y": 765.228264867629
+                  },
+                  {
+                    "col": 224,
+                    "angle_deg": 256.99586995426466,
+                    "step_vox": 14.192038288389739,
+                    "step_pitches": 1.0137170205992672,
+                    "x": 1036.6746642188225,
+                    "y": 712.3466026724188
+                  },
+                  {
+                    "col": 232,
+                    "angle_deg": 242.6497420477274,
+                    "step_vox": -39.98355765227055,
+                    "step_pitches": -3.017626992624192,
+                    "x": 880.9579230865312,
+                    "y": 683.7744981015834
+                  },
+                  {
+                    "col": 235,
+                    "angle_deg": 236.79961305079763,
+                    "step_vox": 29.015403999709175,
+                    "step_pitches": 2.2319541538237826,
+                    "x": 833.008831324216,
+                    "y": 719.6537295955411
+                  },
+                  {
+                    "col": 245,
+                    "angle_deg": 216.20266358706832,
+                    "step_vox": -19.79045939453011,
+                    "step_pitches": -1.3193639596353406,
+                    "x": 732.0222416698992,
+                    "y": 898.4031788368223
+                  },
+                  {
+                    "col": 253,
+                    "angle_deg": 197.3091949849795,
+                    "step_vox": 21.88855153454484,
+                    "step_pitches": 1.6213741877440622,
+                    "x": 704.0500806764795,
+                    "y": 1065.5213625952179
+                  },
+                  {
+                    "col": 255,
+                    "angle_deg": 191.96538706368918,
+                    "step_vox": -17.439145567304582,
+                    "step_pitches": -1.3677761229258496,
+                    "x": 701.7442925866903,
+                    "y": 1109.53700894033
+                  },
+                  {
+                    "col": 265,
+                    "angle_deg": 166.98648313395287,
+                    "step_vox": -21.833579888929876,
+                    "step_pitches": -1.8194649907441562,
+                    "x": 727.0405921118453,
+                    "y": 1302.4461815140457
+                  },
+                  {
+                    "col": 275,
+                    "angle_deg": 148.62243318591592,
+                    "step_vox": 37.48006503732497,
+                    "step_pitches": 3.2591360902021713,
+                    "x": 707.7544207369754,
+                    "y": 1474.5397934997875
+                  },
+                  {
+                    "col": 280,
+                    "angle_deg": 138.67791766005578,
+                    "step_vox": -8.805041459291665,
+                    "step_pitches": -0.7044033167433332,
+                    "x": 746.0282893134802,
+                    "y": 1560.1002862095922
+                  },
+                  {
+                    "col": 286,
+                    "angle_deg": 127.66204188473495,
+                    "step_vox": -40.85143201361297,
+                    "step_pitches": -2.7234288009075316,
+                    "x": 859.3882006312249,
+                    "y": 1581.59942637271
+                  },
+                  {
+                    "col": 302,
+                    "angle_deg": 89.99999700399962,
+                    "step_vox": 49.27068932008095,
+                    "step_pitches": 3.397978573798686,
+                    "x": 1150.3600263128035,
+                    "y": 1707.81840931159
+                  },
+                  {
+                    "col": 313,
+                    "angle_deg": 67.24513913109826,
+                    "step_vox": -31.33646473906857,
+                    "step_pitches": -2.3650162067221565,
+                    "x": 1347.3458605641727,
+                    "y": 1674.256229990106
+                  },
+                  {
+                    "col": 321,
+                    "angle_deg": 48.54575325953658,
+                    "step_vox": -12.971440729156518,
+                    "step_pitches": -0.8794197104512893,
+                    "x": 1459.2093847381796,
+                    "y": 1554.2629496493464
+                  },
+                  {
+                    "col": 330,
+                    "angle_deg": 26.23327668378289,
+                    "step_vox": 13.329197464186986,
+                    "step_pitches": 0.8330748415116866,
+                    "x": 1585.6861357055482,
+                    "y": 1419.1311532975708
+                  },
+                  {
+                    "col": 331,
+                    "angle_deg": 23.454627572827576,
+                    "step_vox": -21.356791194203367,
+                    "step_pitches": -1.2203880682401924,
+                    "x": 1591.1483332229873,
+                    "y": 1395.8553114758508
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "check": "spacing",
+            "status": "NOT JUDGED",
+            "reason": "grid shapes differ: 20260623164704-w116-117.tifxyz (130, 354) vs 20260623165230-w118-119.tifxyz (129, 357); the meshes must be traced on the same grid"
+          },
+          {
+            "check": "winding_offset",
+            "status": "FAIL",
+            "reason": "z=2073: B is +0.36 pitch from the nearest A sheet (whole sheets: +0), only 29% of its points are adjacent; z=2600: B is +0.32 pitch from the nearest A sheet (whole sheets: +0), only 22% of its points are adjacent; z=3128: B is +0.41 pitch from the nearest A sheet (whole sheets: +0), only 39% of its points are adjacent",
+            "heights": [
+              {
+                "z": 2073.0,
+                "status": "FAIL",
+                "n": 350,
+                "adjacent_fraction": 0.2885714285714286,
+                "median_offset_pitches": 0.36447176872513776,
+                "integer_offset": 0
+              },
+              {
+                "z": 2600.0,
+                "status": "FAIL",
+                "n": 343,
+                "adjacent_fraction": 0.21574344023323616,
+                "median_offset_pitches": 0.31582637729734414,
+                "integer_offset": 0
+              },
+              {
+                "z": 3128.0,
+                "status": "FAIL",
+                "n": 342,
+                "adjacent_fraction": 0.38596491228070173,
+                "median_offset_pitches": 0.40702506868520816,
+                "integer_offset": 0
+              }
+            ]
+          }
+        ],
+        "heights": [
+          {
+            "z": 2073.0,
+            "tracked": 0.4942857142857143,
+            "pitch": 17.25,
+            "n_switches": 9
+          },
+          {
+            "z": 2600.0,
+            "tracked": 0.4577259475218659,
+            "pitch": 17.0,
+            "n_switches": 9
+          },
+          {
+            "z": 3128.0,
+            "tracked": 0.41812865497076024,
+            "pitch": 14.0,
+            "n_switches": 6
+          }
+        ],
+        "verdict": "FAIL",
+        "reasons": [
+          "switch_finder: horizontal switch at z=2073 col 81 row 96.8 (inward, step -1.01 pitch, confidence 0.52); horizontal switch at z=2073 col 87 row 96.1 (outward, step +0.87 pitch, confidence 0.33); horizontal switch at z=2600 col 45 row 68.8 (outward, step +3.14 pitch, confidence 0.41)",
+          "winding_jumps: radius jumps +3.62 pitch at z=2073, col 18, angle 337 deg; radius jumps -3.55 pitch at z=2073, col 33, angle 303 deg; radius jumps -0.87 pitch at z=2073, col 39, angle 287 deg; radius jumps +0.84 pitch at z=2073, col 55, angle 247 deg; radius jumps -0.74 pitch at z=2073, col 56, angle 245 deg; radius jumps +2.10 pitch at z=2073, col 60, angle 237 deg; radius jumps +2.01 pitch at z=2073, col 69, angle 221 deg; radius jumps +0.78 pitch at z=2073, col 72, angle 215 deg; radius jumps -1.57 pitch at z=2073, col 78, angle 205 deg; radius jumps +0.72 pitch at z=2073, col 93, angle 170 deg; radius jumps -1.58 pitch at z=2073, col 98, angle 157 deg; radius jumps +1.96 pitch at z=2073, col 104, angle 139 deg; radius jumps -1.97 pitch at z=2073, col 111, angle 121 deg; radius jumps +1.60 pitch at z=2073, col 114, angle 111 deg; radius jumps +4.09 pitch at z=2073, col 122, angle 85 deg; radius jumps -13.20 pitch at z=2073, col 128, angle 68 deg; radius jumps +4.14 pitch at z=2073, col 139, angle 54 deg; radius jumps +1.11 pitch at z=2073, col 151, angle 38 deg; radius jumps -3.67 pitch at z=2073, col 163, angle 18 deg; radius jumps -6.31 pitch at z=2073, col 184, angle 355 deg; radius jumps +1.95 pitch at z=2073, col 193, angle 339 deg; radius jumps -3.41 pitch at z=2073, col 208, angle 304 deg; radius jumps -0.84 pitch at z=2073, col 215, angle 286 deg; radius jumps +2.28 pitch at z=2073, col 244, angle 221 deg; radius jumps -2.12 pitch at z=2073, col 253, angle 205 deg; radius jumps +0.99 pitch at z=2073, col 262, angle 186 deg; radius jumps -0.64 pitch at z=2073, col 265, angle 178 deg; radius jumps +0.71 pitch at z=2073, col 269, angle 167 deg; radius jumps -1.42 pitch at z=2073, col 274, angle 153 deg; radius jumps +2.32 pitch at z=2073, col 278, angle 140 deg; radius jumps -0.88 pitch at z=2073, col 282, angle 129 deg; radius jumps -1.40 pitch at z=2073, col 285, angle 123 deg; radius jumps +1.43 pitch at z=2073, col 289, angle 108 deg; radius jumps -0.62 pitch at z=2073, col 291, angle 100 deg; radius jumps +2.93 pitch at z=2073, col 296, angle 85 deg; radius jumps -13.01 pitch at z=2073, col 302, angle 68 deg; radius jumps +4.60 pitch at z=2073, col 310, angle 56 deg; radius jumps +1.59 pitch at z=2073, col 324, angle 40 deg; radius jumps -3.41 pitch at z=2073, col 334, angle 24 deg; radius jumps +1.16 pitch at z=2600, col 19, angle 337 deg; radius jumps +0.64 pitch at z=2600, col 23, angle 327 deg; radius jumps -4.05 pitch at z=2600, col 34, angle 302 deg; radius jumps -0.70 pitch at z=2600, col 42, angle 280 deg; radius jumps +1.22 pitch at z=2600, col 46, angle 271 deg; radius jumps +2.04 pitch at z=2600, col 57, angle 245 deg; radius jumps +2.81 pitch at z=2600, col 65, angle 232 deg; radius jumps -3.71 pitch at z=2600, col 75, angle 218 deg; radius jumps +3.89 pitch at z=2600, col 81, angle 205 deg; radius jumps -1.35 pitch at z=2600, col 86, angle 194 deg; radius jumps +2.50 pitch at z=2600, col 98, angle 160 deg; radius jumps +0.64 pitch at z=2600, col 110, angle 130 deg; radius jumps -1.18 pitch at z=2600, col 118, angle 110 deg; radius jumps +0.68 pitch at z=2600, col 123, angle 99 deg; radius jumps -0.67 pitch at z=2600, col 131, angle 82 deg; radius jumps -1.85 pitch at z=2600, col 137, angle 70 deg; radius jumps +1.47 pitch at z=2600, col 145, angle 54 deg; radius jumps +0.80 pitch at z=2600, col 164, angle 18 deg; radius jumps +1.86 pitch at z=2600, col 173, angle 5 deg; radius jumps -4.67 pitch at z=2600, col 182, angle 356 deg; radius jumps -2.72 pitch at z=2600, col 209, angle 300 deg; radius jumps +1.38 pitch at z=2600, col 220, angle 270 deg; radius jumps +1.51 pitch at z=2600, col 230, angle 246 deg; radius jumps -1.07 pitch at z=2600, col 237, angle 234 deg; radius jumps +2.56 pitch at z=2600, col 239, angle 231 deg; radius jumps -4.58 pitch at z=2600, col 247, angle 219 deg; radius jumps +4.09 pitch at z=2600, col 253, angle 207 deg; radius jumps -2.04 pitch at z=2600, col 260, angle 190 deg; radius jumps +2.52 pitch at z=2600, col 270, angle 160 deg; radius jumps -0.66 pitch at z=2600, col 286, angle 120 deg; radius jumps -1.39 pitch at z=2600, col 290, angle 110 deg; radius jumps -2.61 pitch at z=2600, col 309, angle 70 deg; radius jumps +1.65 pitch at z=2600, col 317, angle 54 deg; radius jumps +0.86 pitch at z=2600, col 328, angle 33 deg; radius jumps +0.98 pitch at z=2600, col 332, angle 26 deg; radius jumps -0.82 pitch at z=3128, col 34, angle 300 deg; radius jumps -0.67 pitch at z=3128, col 38, angle 291 deg; radius jumps -1.43 pitch at z=3128, col 41, angle 283 deg; radius jumps -1.39 pitch at z=3128, col 48, angle 266 deg; radius jumps +1.00 pitch at z=3128, col 53, angle 256 deg; radius jumps -3.18 pitch at z=3128, col 60, angle 244 deg; radius jumps +1.23 pitch at z=3128, col 64, angle 236 deg; radius jumps -0.64 pitch at z=3128, col 69, angle 226 deg; radius jumps -1.64 pitch at z=3128, col 74, angle 216 deg; radius jumps +0.62 pitch at z=3128, col 81, angle 200 deg; radius jumps -0.96 pitch at z=3128, col 85, angle 190 deg; radius jumps +1.26 pitch at z=3128, col 90, angle 176 deg; radius jumps -1.87 pitch at z=3128, col 93, angle 170 deg; radius jumps +3.20 pitch at z=3128, col 104, angle 150 deg; radius jumps -1.30 pitch at z=3128, col 109, angle 140 deg; radius jumps -2.95 pitch at z=3128, col 116, angle 127 deg; radius jumps +3.93 pitch at z=3128, col 131, angle 91 deg; radius jumps -2.31 pitch at z=3128, col 143, angle 67 deg; radius jumps +0.95 pitch at z=3128, col 176, angle 358 deg; radius jumps -1.01 pitch at z=3128, col 178, angle 354 deg; radius jumps +2.71 pitch at z=3128, col 181, angle 349 deg; radius jumps +0.83 pitch at z=3128, col 193, angle 327 deg; radius jumps +0.76 pitch at z=3128, col 196, angle 321 deg; radius jumps -1.75 pitch at z=3128, col 207, angle 297 deg; radius jumps -0.97 pitch at z=3128, col 213, angle 282 deg; radius jumps -1.44 pitch at z=3128, col 218, angle 269 deg; radius jumps +1.01 pitch at z=3128, col 224, angle 257 deg; radius jumps -3.02 pitch at z=3128, col 232, angle 243 deg; radius jumps +2.23 pitch at z=3128, col 235, angle 237 deg; radius jumps -1.32 pitch at z=3128, col 245, angle 216 deg; radius jumps +1.62 pitch at z=3128, col 253, angle 197 deg; radius jumps -1.37 pitch at z=3128, col 255, angle 192 deg; radius jumps -1.82 pitch at z=3128, col 265, angle 167 deg; radius jumps +3.26 pitch at z=3128, col 275, angle 149 deg; radius jumps -0.70 pitch at z=3128, col 280, angle 139 deg; radius jumps -2.72 pitch at z=3128, col 286, angle 128 deg; radius jumps +3.40 pitch at z=3128, col 302, angle 90 deg; radius jumps -2.37 pitch at z=3128, col 313, angle 67 deg; radius jumps -0.88 pitch at z=3128, col 321, angle 49 deg; radius jumps +0.83 pitch at z=3128, col 330, angle 26 deg; radius jumps -1.22 pitch at z=3128, col 331, angle 23 deg",
+          "spacing: grid shapes differ: 20260623164704-w116-117.tifxyz (130, 354) vs 20260623165230-w118-119.tifxyz (129, 357); the meshes must be traced on the same grid",
+          "winding_offset: z=2073: B is +0.36 pitch from the nearest A sheet (whole sheets: +0), only 29% of its points are adjacent; z=2600: B is +0.32 pitch from the nearest A sheet (whole sheets: +0), only 22% of its points are adjacent; z=3128: B is +0.41 pitch from the nearest A sheet (whole sheets: +0), only 39% of its points are adjacent"
+        ]
+      }
+    ],
+    "pair": {
+      "a": "20260623164704-w116-117.tifxyz",
+      "b": "20260623165230-w118-119.tifxyz",
+      "spacing": {
+        "check": "spacing",
+        "status": "NOT JUDGED",
+        "reason": "grid shapes differ: 20260623164704-w116-117.tifxyz (130, 354) vs 20260623165230-w118-119.tifxyz (129, 357); the meshes must be traced on the same grid"
+      },
+      "winding_offset": {
+        "check": "winding_offset",
+        "status": "FAIL",
+        "reason": "z=2073: B is +0.36 pitch from the nearest A sheet (whole sheets: +0), only 29% of its points are adjacent; z=2600: B is +0.32 pitch from the nearest A sheet (whole sheets: +0), only 22% of its points are adjacent; z=3128: B is +0.41 pitch from the nearest A sheet (whole sheets: +0), only 39% of its points are adjacent",
+        "heights": [
+          {
+            "z": 2073.0,
+            "status": "FAIL",
+            "n": 350,
+            "adjacent_fraction": 0.2885714285714286,
+            "median_offset_pitches": 0.36447176872513776,
+            "integer_offset": 0
+          },
+          {
+            "z": 2600.0,
+            "status": "FAIL",
+            "n": 343,
+            "adjacent_fraction": 0.21574344023323616,
+            "median_offset_pitches": 0.31582637729734414,
+            "integer_offset": 0
+          },
+          {
+            "z": 3128.0,
+            "status": "FAIL",
+            "n": 342,
+            "adjacent_fraction": 0.38596491228070173,
+            "median_offset_pitches": 0.40702506868520816,
+            "integer_offset": 0
+          }
+        ]
+      }
+    }
+  }
+}
