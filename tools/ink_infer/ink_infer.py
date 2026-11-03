@@ -111,6 +111,11 @@ def run_inference(model, vol, surf, *, depth, patch, stride, layer_step_vox, dev
     ys, xs = patch_grid(H, patch, stride), patch_grid(W, patch, stride)
     coords = [(y, x) for y in ys for x in xs
               if surf.valid[y:y + patch, x:x + patch].mean() >= min_valid_frac]
+    if not coords:                      # R3: otherwise the output is an all-black "no ink" picture, exit 0
+        raise InputError(
+            f"no {patch}x{patch} patch has >= {min_valid_frac:.0%} valid pixels (valid pixels: "
+            f"{int(surf.valid.sum())} of {H * W}); the surface is too small or too full of holes. "
+            "Lower --min-valid-frac, use a smaller --patch, or check the mesh")
     offs = layer_offsets(depth, layer_step_vox)
     win = blend_window(patch, blend)
     psum, wsum, done = np.zeros((H, W), np.float32), np.zeros((H, W), np.float32), 0
