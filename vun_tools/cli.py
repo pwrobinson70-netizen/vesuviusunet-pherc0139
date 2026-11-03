@@ -49,6 +49,10 @@ def phantom():
     return _run("phantom_scroll", "phantom_scroll")
 
 
+def crush():
+    return _run("crush_map", "crush_map")
+
+
 def ink():
     return _run("ink_infer", "ink_infer")
 
