@@ -1,0 +1,6 @@
+# crush_map: numpy scipy pillow (PNG) tifffile (via the shared readers) zarr (OME-Zarr input / --write-zarr only)
+numpy>=1.24
+scipy>=1.10
+pillow>=10.0
+tifffile>=2023.7.10
+zarr>=2.16

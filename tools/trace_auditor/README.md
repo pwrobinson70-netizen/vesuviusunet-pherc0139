@@ -137,3 +137,15 @@ FAIL carried no information. The real periodicity is weak (autocorrelation secon
 | `--min-pitch-confidence` | 0.3 | a region below this median local-pitch confidence is NOT JUDGED |
 | `--region-points` | 15 | region length in cut-line points |
 | `--min-judged-fraction` | 0.5 | PASS needs this fraction of the cut line judged, else NOT JUDGED |
+
+### `--crush-map` (tools/crush_map)
+
+`--crush-map CRUSH_MAP.npz` (written by `tools/crush_map/crush_map.py`) adds a second reason for a region to be NOT JUDGED: a
+region whose median crush severity (0..1, looked up at every cut-line point from the map of the nearest height) is at or above
+`--max-crush-severity` is not judged, exactly as for a low local-pitch confidence. Points the map has no value for (outside the
+scroll region, or further than the largest height spacing of the map from the map's heights) do not veto.
+
+| flag | default | meaning |
+|---|---|---|
+| `--crush-map` | none | crush_map.npz whose severity marks NOT JUDGED regions |
+| `--max-crush-severity` | 0.5 | judgement call: severity at or above this is NOT JUDGED (1 = spacing reduced 4x or more) |
