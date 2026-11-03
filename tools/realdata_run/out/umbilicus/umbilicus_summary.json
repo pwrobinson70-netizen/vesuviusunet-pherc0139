@@ -1,0 +1,74 @@
+{
+  "tool": "umbilicus_finder",
+  "version": "0.1.0",
+  "units": "level-0 voxels (z, y, x)",
+  "volume_shape_level": [
+    3,
+    2264,
+    2264
+  ],
+  "scale_z": 1.0,
+  "scale_xy": 1.0,
+  "n_slices": 3,
+  "n_ok": 0,
+  "n_low": 3,
+  "pitch_vox": 8.0,
+  "pitch_source": "flag",
+  "departure_vox": {
+    "median": 4.687428401686771e-13,
+    "max": 60.692765995222544,
+    "threshold": 10.0,
+    "ranges": [
+      {
+        "z_first": 1.0,
+        "z_last": 1.0,
+        "max_vox": 60.692765995222544
+      }
+    ]
+  },
+  "low_confidence_ranges": [
+    {
+      "z_first": 0.0,
+      "z_last": 2.0,
+      "reasons": [
+        "high_residual"
+      ]
+    }
+  ],
+  "params": {
+    "target_px": 1000,
+    "otsu_classes": 2,
+    "mask_sigma": 2.0,
+    "close_radius": 2,
+    "sigma_grad": 1.5,
+    "sigma_int": 4.0,
+    "coherence_min": 0.4,
+    "energy_min_frac": 0.1,
+    "energy_cap": 3.0,
+    "robust": "tukey",
+    "robust_iters": 8,
+    "tukey_c": 4.685,
+    "huber_k": 1.345,
+    "min_scale_px": 0.25,
+    "inlier_weight": 0.5,
+    "min_votes": 300,
+    "votes_full": 3000,
+    "min_coverage_deg": 180.0,
+    "coverage_full_deg": 300.0,
+    "coverage_bin_deg": 10.0,
+    "coverage_bin_min_frac": 0.005,
+    "max_residual_pitch": 1.0,
+    "min_confidence": 0.3,
+    "pitch_vox": 8.0,
+    "pitch_search_px": 40.0,
+    "pitch_samples": 1500,
+    "pitch_min_peak": 0.1,
+    "median_window": 5,
+    "spline_sigma_vox": 3.0,
+    "spline_degree": 3,
+    "min_weight": 0.02,
+    "departure_vox": 10.0,
+    "seed": 0
+  },
+  "villa_points_exported": 3
+}
