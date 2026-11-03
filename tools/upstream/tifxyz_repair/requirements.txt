@@ -1,0 +1,6 @@
+numpy>=1.24
+tifffile>=2023.7.10
+scipy>=1.10
+# tests only
+pytest>=7
+# upstream's optional extras (imagecodecs for compressed TIFFs, matplotlib for `tifxyz-repair inspect` figures) are NOT needed by our module or by the tests.
