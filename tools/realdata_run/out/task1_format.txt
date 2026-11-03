@@ -1,0 +1,36 @@
+== 20260623164704-w116-117.tifxyz
+files: ['meta.json', 'x.tif', 'y.tif', 'z.tif']
+  x.tif raw: shape=(130, 354) dtype=float32 tiled=False compression=NONE nonfinite=0 ==-1:6451 min/max(finite,!=-1)=605.20/1859.71
+  y.tif raw: shape=(130, 354) dtype=float32 tiled=False compression=NONE nonfinite=0 ==-1:6451 min/max(finite,!=-1)=576.69/1824.40
+  z.tif raw: shape=(130, 354) dtype=float32 tiled=False compression=NONE nonfinite=0 ==-1:6451 min/max(finite,!=-1)=1543.51/3655.55
+  sentinel cells: any=6451 all-three=6451 partial=0
+  z<=0 (store rule M2): 6451
+  ssc_io: shape=(130, 354) dtype=float64 n_invalid=6451 of 46020 (14.02%) scale=(0.05000000074505806, 0.05000000074505806) voxel_um=None mask.tif=no
+  computed bbox (xyz): [[605.2, 576.69, 1543.51], [1859.71, 1824.4, 3655.55]]
+  meta bbox:           [[605.2, 576.69, 1543.51], [1859.71, 1824.4, 3655.55]]  max|diff|= 0.0
+  meta bbox if reversed to zyx order: max|diff|= 1795.8470458984375
+  meta keys: ['area_vx2', 'bbox', 'format', 'scale', 'type', 'uuid'] uuid: out
+  nominal size (cols/sx, rows/sy) = 7080.0 x 2600.0 voxels
+  measured step along cols (u): median=19.83 vox (1/scale=20.00); along rows (v): median=19.92 (1/scale=20.00)
+  mean |dz| along rows=18.14, along cols=2.90
+  valid-cell z range 1543.5..3655.6; per-column valid counts min/med/max: 3 115 124
+  meta area_vx2: 15303799.846837925
+  invalid rows 0-129, cols 0-353
+== 20260623165230-w118-119.tifxyz
+files: ['meta.json', 'x.tif', 'y.tif', 'z.tif']
+  x.tif raw: shape=(129, 357) dtype=float32 tiled=False compression=NONE nonfinite=0 ==-1:6161 min/max(finite,!=-1)=599.19/1861.31
+  y.tif raw: shape=(129, 357) dtype=float32 tiled=False compression=NONE nonfinite=0 ==-1:6161 min/max(finite,!=-1)=571.75/1824.80
+  z.tif raw: shape=(129, 357) dtype=float32 tiled=False compression=NONE nonfinite=0 ==-1:6161 min/max(finite,!=-1)=1545.02/3655.02
+  sentinel cells: any=6161 all-three=6161 partial=0
+  z<=0 (store rule M2): 6161
+  ssc_io: shape=(129, 357) dtype=float64 n_invalid=6161 of 46053 (13.38%) scale=(0.05000000074505806, 0.05000000074505806) voxel_um=None mask.tif=no
+  computed bbox (xyz): [[599.19, 571.75, 1545.02], [1861.31, 1824.8, 3655.02]]
+  meta bbox:           [[599.19, 571.75, 1545.02], [1861.31, 1824.8, 3655.02]]  max|diff|= 0.0
+  meta bbox if reversed to zyx order: max|diff|= 1793.708251953125
+  meta keys: ['area_vx2', 'bbox', 'format', 'scale', 'type', 'uuid'] uuid: out
+  nominal size (cols/sx, rows/sy) = 7140.0 x 2580.0 voxels
+  measured step along cols (u): median=19.84 vox (1/scale=20.00); along rows (v): median=19.91 (1/scale=20.00)
+  mean |dz| along rows=18.17, along cols=2.85
+  valid-cell z range 1545.0..3655.0; per-column valid counts min/med/max: 5 115 124
+  meta area_vx2: 15425711.22840424
+  invalid rows 0-128, cols 0-356

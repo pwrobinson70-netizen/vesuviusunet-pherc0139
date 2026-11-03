@@ -1,0 +1,9 @@
+# calibration harness: the tools' own requirements (numpy scipy tifffile pillow zarr) plus
+numpy>=1.24
+scipy>=1.10
+tifffile>=2023.7.10
+pillow>=10.0
+zarr>=2.16
+matplotlib>=3.7      # report.py only (plots); the harness and its tests do not need it
+# tests only
+pytest>=7

@@ -108,3 +108,15 @@ What the tests do **not** show: that any real checkpoint produces meaningful ink
 orientation or pitch is right for your data, CUDA/AMP behaviour, or zarr 2.x (tested with zarr 3).
 Geometry is checked with a stub model that reports the brightest layer, because a random-weight
 network cannot localise a spot.
+
+## End to end on phantoms (synthetic; says nothing about real scans)
+
+`phantom_e2e.py` trains a tiny model (UNet3D `base_channels=3`, 188,350 parameters, depth 16, patch 32,
+about 10 CPU minutes) on patches sampled on the true surface of a phantom's ink turn, then runs this tool
+(`ink_infer.main`, the real CLI path) on a validation phantom, a test phantom's true surface and a test
+trace with a planted sheet switch, and scores the maps against the known letter mask. Results, commands
+and limits: `docs/ink_e2e/RESULTS.md`. The 0.77 MB checkpoint is `phantom_ckpt/tiny.pt`; it knows nothing
+about real scans and must not be used on them.
+
+R3 (`docs/REVIEW_ROUND1.md`): if no patch has at least `--min-valid-frac` valid pixels the tool now exits 2
+with an explanation instead of writing an all-black map.
