@@ -19,7 +19,7 @@ from scipy.interpolate import UnivariateSpline
 import uf_io
 from uf_io import InputError
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 
 @dataclass
@@ -35,6 +35,9 @@ class Params:
     coherence_min: float = field(default=0.4, metadata=dict(help="keep pixels with structure-tensor coherence >= this"))
     energy_min_frac: float = field(default=0.1, metadata=dict(help="keep pixels with gradient energy >= this fraction of the in-mask 95th percentile"))
     energy_cap: float = field(default=3.0, metadata=dict(help="vote weight = coherence * min(energy / median energy, cap)"))
+    widen_low_coherence: bool = field(default=False, metadata=dict(help="where the coherence is below --coherence-min, re-compute the structure tensor with a wider integration window (--sigma-int x --widen-factor^k, k = 1..--widen-steps) and keep a wider scale only where it raises the coherence (PR #17 finding 2: real slices have long flat wraps and weak sheets, every slice LOW)"))
+    widen_factor: float = field(default=2.0, metadata=dict(help="integration sigma multiplier per widening step"))
+    widen_steps: int = field(default=2, metadata=dict(help="number of widening steps"))
     # --- robust centre
     robust: str = field(default="tukey", metadata=dict(help="re-weighting: tukey or huber", choices=["tukey", "huber"]))
     robust_iters: int = field(default=8, metadata=dict(help="re-weighting iterations"))
@@ -136,6 +139,24 @@ def structure_tensor(img, sigma_grad, sigma_int):
     return np.cos(theta), np.sin(theta), coh, tr
 
 
+def structure_tensor_adaptive(img, sigma_grad, sigma_int, coherence_min, factor=2.0, steps=2):
+    """Structure tensor whose integration window is widened (sigma_int * factor^k) wherever the coherence is below
+    `coherence_min`. A pixel below the threshold adopts a wider scale only if that scale gives it a HIGHER coherence (wide windows
+    average towards isotropy in noise and mix orientations on curved sheets, so the widest scale is not always the best), so the
+    coherence never drops and pixels already at or above `coherence_min` are untouched."""
+    nx, ny, coh, en = structure_tensor(img, sigma_grad, sigma_int)
+    s = sigma_int
+    for _ in range(max(0, int(steps))):
+        low = coh < coherence_min
+        if not low.any():
+            break
+        s *= factor
+        nx2, ny2, coh2, en2 = structure_tensor(img, sigma_grad, s)
+        take = low & (coh2 > coh)
+        nx, ny, coh, en = (np.where(take, b, a) for a, b in ((nx, nx2), (ny, ny2), (coh, coh2), (en, en2)))
+    return nx, ny, coh, en
+
+
 def solve_centre(px, py, nx, ny, w):
     """argmin_c sum w_i |P_i (c - p_i)|^2, P_i = I - n_i n_i^T (closed form 2x2). None if degenerate."""
     a11 = np.sum(w * (1 - nx * nx))
@@ -231,7 +252,10 @@ def analyse_slice(img2d, p, scale_xy=1.0, keep_debug=False, rng=None):
     if mask is None or mask.sum() < 100:
         r.reasons.append("no_scroll")
         return r
-    nx, ny, coh, en = structure_tensor(img, p.sigma_grad, p.sigma_int)
+    if p.widen_low_coherence:
+        nx, ny, coh, en = structure_tensor_adaptive(img, p.sigma_grad, p.sigma_int, p.coherence_min, p.widen_factor, p.widen_steps)
+    else:
+        nx, ny, coh, en = structure_tensor(img, p.sigma_grad, p.sigma_int)
     e_ref = np.percentile(en[mask], 95)
     keep = mask & (coh >= p.coherence_min) & (en >= p.energy_min_frac * e_ref) & (en > 0)
     yy, xx = np.nonzero(keep)
@@ -469,6 +493,9 @@ def build_parser():
     ap.add_argument("--export-all", action="store_true", help="villa export includes LOW points (default: OK only)")
     for f in dataclasses.fields(Params):
         kw = dict(default=f.default, help=f.metadata.get("help", ""))
+        if isinstance(f.default, bool):
+            ap.add_argument("--" + f.name.replace("_", "-"), dest=f.name, action="store_true", help=kw["help"] + " (off by default)")
+            continue
         if "choices" in f.metadata:
             kw["choices"] = f.metadata["choices"]
         ap.add_argument("--" + f.name.replace("_", "-"), dest=f.name, type=type(f.default), **kw)
