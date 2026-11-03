@@ -50,16 +50,21 @@ def fired(trace):
     return sorted(c["check"] for c in trace["checks"] if c["status"] == ta.FAIL)
 
 
-def run_phantom(name, size, seed, mode, work, log):
+def run_phantom(name, size, seed, mode, work, log, global_pitch=False, reuse=False):
     p = bm.make_params(name, size, seed)
     out = os.path.join(work, name)
     nc = ps.Scroll(p).n_cols()
-    sc, vol, lab, truth = ps.build(p, out, zarr=False, bad_switches=bm.switch_specs(nc), bad_pairs=True)
+    vpath = os.path.join(out, "vol.npy")
+    if reuse and os.path.exists(vpath) and os.path.exists(os.path.join(out, "truth.json")):
+        sc, vol, truth = ps.Scroll(p), np.load(vpath), json.load(open(os.path.join(out, "truth.json")))
+    else:
+        sc, vol, lab, truth = ps.build(p, out, zarr=False, bad_switches=bm.switch_specs(nc), bad_pairs=True)
+        np.save(vpath, vol)
     centre, csrc = make_centre(mode, sc, vol, p)
     avol = ArrayVolume(vol)
     heights = [float(round(f * (p.nz - 1))) for f in (0.25, 0.4, 0.5, 0.6, 0.75)]
     ssf_p, ssc_p = ta.ssf.Params(vertical=1), ta.ssc.Params(band_height_vox=float(heights[1] - heights[0]))
-    par = ta.Params()
+    par = ta.Params(global_pitch=global_pitch)
     S = os.path.join(out, "surfaces")
     turn = lambda k: load_mesh(os.path.join(S, f"turn_{k:02d}"))  # noqa: E731
 
@@ -128,11 +133,14 @@ def main(argv=None):
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--phantoms", default="round,mild,bad,merged")
     ap.add_argument("--centre", choices=["estimated", "truth"], default="estimated")
+    ap.add_argument("--global-pitch", action="store_true", help="OLD pitch handling (before / after comparison)")
+    ap.add_argument("--reuse", action="store_true", help="with --out: reuse phantoms (vol.npy + truth.json) already there")
     ap.add_argument("--out")
     ap.add_argument("--json")
     a = ap.parse_args(argv)
     work = a.out or tempfile.mkdtemp(prefix="auditor_phantoms_")
-    res = [run_phantom(n, a.size, a.seed, a.centre, work, lambda m: print(m, file=sys.stderr)) for n in a.phantoms.split(",")]
+    res = [run_phantom(n, a.size, a.seed, a.centre, work, lambda m: print(m, file=sys.stderr), a.global_pitch, a.reuse)
+           for n in a.phantoms.split(",")]
     if a.json:
         with open(a.json, "w") as fh:
             json.dump(res, fh, indent=2, default=float)
