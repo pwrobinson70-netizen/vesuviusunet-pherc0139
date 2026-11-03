@@ -165,3 +165,24 @@ LOW; off-centre bright blob and case ring ignored; empty / constant / noise / Na
 LOW without a crash; low-coverage wedge LOW; bad slice down-weighted in z and reported as a
 departure; bad paths, wrong shapes, z range outside the volume; every `Params` field is a CLI flag;
 end-to-end CLI on OME-Zarr level 1 and on a PNG stack.
+
+## v0.2: `--widen-low-coherence` (off by default)
+
+Evidence: PR #17 (`tools/realdata_run/RESULTS.md`) finding 2: on the real PHerc. Paris 4 slices every slice was LOW (residual 9-17
+pitches) and the centre was not usable. The hypothesis there is a long, nearly flat outer wrap plus weak sheets, i.e. low
+structure-tensor coherence. With `--widen-low-coherence` the tensor is re-computed with a wider integration window
+(`--sigma-int` x `--widen-factor`^k, k = 1..`--widen-steps`) and a pixel whose coherence is below `--coherence-min` adopts a wider scale only
+where that scale RAISES its coherence (wide windows average towards isotropy in noise and mix orientations on curved sheets;
+taking the widest scale unconditionally lowered the mean coherence in a test). Pixels already coherent are untouched.
+
+**Measured effect: small.** On 192^3 phantoms (round, mild, crushed, merged, crushed-hard, three heights each) the centre moves by
+at most 0.15 voxel and the vote count rises by 0.0 to 5.5 %; on the three real slices the raw centre moves by 6.3, 2.3 and 0.2 px,
+the votes rise by 12, 11 and 8 %, the residual stays at 17.1, 10.7 and 12.0 pitches and every slice stays LOW. So the flag is
+opt-in and PR #17 finding 2 is NOT fixed by it; the other proposals there (`--pitch-min-peak`, a documented `--target-px` rule,
+ignoring the outer wrap) were not done.
+
+| flag | default | meaning |
+|---|---|---|
+| `--widen-low-coherence` | off | enable the wider window where coherence is low |
+| `--widen-factor` | 2.0 | integration sigma multiplier per step |
+| `--widen-steps` | 2 | number of widening steps |

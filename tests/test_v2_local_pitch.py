@@ -265,3 +265,114 @@ def test_ssf_real_break_is_flagged_and_the_original_is_not(tmp_path):
             rec, sw, st = F.analyse_height(mesh, vol, z, F.Params(vertical=0))
             hits += [s for s in sw if abs(s["col"] - 120) <= 6 and s["confidence"] >= 0.3]
     assert hit_b and not hit_o
+
+
+# ------------------------------------------------------------------ trace_auditor: confidence, NOT JUDGED, judged fraction
+def _truth_centre(sc):
+    import trace_auditor as ta
+    cl = sc.centre_line()                                   # rows (z, y, x) of the deformed axis
+    return ta.Centre(cl[:, 0], cl[:, 1], cl[:, 2], "truth", np.inf)
+
+
+def _audit(meshes, vol, centre, heights, **kw):
+    import trace_auditor as ta
+    p = ta.Params(**kw)
+    return ta.audit(meshes, vol, heights, centre, p, ta.ssf.Params(vertical=1), ta.ssc.Params())
+
+
+def _check(trace, name):
+    return next(c for c in trace["checks"] if c["check"] == name)
+
+
+def test_auditor_judged_fraction_and_pass_on_a_clean_phantom_trace(tmp_path):
+    A, B, vol, sc = _small_pair(tmp_path, seed=3)
+    rep = _audit([A], vol, _truth_centre(sc), [24.0, 32.0, 40.0])
+    t = rep["traces"][0]
+    assert t["judged_fraction"] >= 0.9, t.get("judged_fraction")
+    assert t["verdict"] == "PASS", t["reasons"]
+
+
+def test_auditor_still_fails_a_planted_switch_in_a_judged_region(tmp_path):
+    import phantom_scroll as ps
+    import ssc_io
+    A, B, vol, sc = _small_pair(tmp_path, seed=3)
+    xyz, _ = ps.switch_trace(sc, dict(turn=1, col=int(0.4 * sc.n_cols()), delta=1.0, width=0, row0=0))
+    ps.write_tifxyz(str(tmp_path / "sw"), xyz, (1 / 3, 1 / 3))
+    rep = _audit([ssc_io.load_mesh(str(tmp_path / "sw"))], vol, _truth_centre(sc), [24.0, 32.0, 40.0])
+    t = rep["traces"][0]
+    assert t["verdict"] == "FAIL" and _check(t, "switch_finder")["status"] == "FAIL"
+    assert t["judged_fraction"] >= 0.8
+
+
+def test_auditor_does_not_judge_a_crushed_region_and_says_how_much_it_judged(tmp_path):
+    """Spacing varies 3x and sheets overlap in the compressed sector: the local pitch there is not measurable. The true trace
+    must not be FAILed (or PASSed) on ground that was not judged."""
+    A, B, vol, sc = _small_pair(tmp_path, seed=3, spacing_ratio=3.0, squash=0.6, thickness=4.5)
+    rep = _audit([A], vol, _truth_centre(sc), [24.0, 32.0, 40.0])
+    t = rep["traces"][0]
+    assert 0.0 <= t["judged_fraction"] < 0.9
+    assert t["verdict"] != "FAIL", t["reasons"]
+
+
+@needs_data
+def test_auditor_real_unbroken_mesh_is_not_judged_not_failed():
+    """PR #17 finding 6 / P5: the auditor FAILED everything, the unbroken original included (112 radius 'jumps', 5 switches),
+    at pitch 17 vox and a centre from a LOW-confidence finder. The real periodicity is weak: the pitch is not trustworthy there
+    and a FAIL carries no information. Expected now: NOT JUDGED with a small judged fraction; --global-pitch is the old FAIL."""
+    import glob
+    import json
+    import trace_auditor as ta
+    import ssc_io
+    A = ssc_io.load_mesh(glob.glob(str(DATA / "*w116-117.tifxyz"))[0])
+    vol = ssc_io.PngVolume(str(DATA / "slices"), 45.532, 45.532)
+    cp = json.load(open(ROOT / "tools" / "realdata_run" / "out" / "umbilicus_estimated.json"))["control_points"]
+    centre = ta.Centre(*(np.array([c[k] for c in cp], float) for k in ("z", "y", "x")), "estimated", np.inf)
+    heights = [2073.0, 2600.0, 3128.0]
+    new = _audit([A], vol, centre, heights)["traces"][0]
+    assert new["verdict"] == "NOT JUDGED" and new["judged_fraction"] < 0.25, (new["verdict"], new["judged_fraction"])
+    old = _audit([A], vol, centre, heights, global_pitch=True)["traces"][0]
+    assert old["verdict"] == "FAIL"
+
+
+# ------------------------------------------------------------------ umbilicus_finder: wider structure-tensor window where coherence is low
+def _noisy_rings(noise_right=1.5, n=400, cx=205.0, cy=190.0, seed=0):
+    yy, xx = np.mgrid[0:n, 0:n]
+    r = np.hypot(xx - cx, yy - cy)
+    d = (r - 60 + 6.0) % 12.0 - 6.0
+    img = np.exp(-d ** 2 / (2 * 1.6 ** 2)) * (r < 170) * (r > 40)
+    rng = np.random.default_rng(seed)
+    noise = np.where(xx > cx, rng.normal(0, noise_right, img.shape), rng.normal(0, 0.3, img.shape))
+    return img + noise, xx > cx, (cx, cy)
+
+
+def test_uf_widening_raises_coherence_only_where_it_was_low():
+    import umbilicus_finder as uf
+    img, right, _ = _noisy_rings(2.5)
+    p = uf.Params()
+    nx0, ny0, c0, e0 = uf.structure_tensor(img, p.sigma_grad, p.sigma_int)
+    nx1, ny1, c1, e1 = uf.structure_tensor_adaptive(img, p.sigma_grad, p.sigma_int, p.coherence_min, 2.0, 2)
+    ok = c0 >= p.coherence_min
+    assert (c1[ok] == c0[ok]).all() and (nx1[ok] == nx0[ok]).all()           # untouched where the base window was already coherent
+    low = ~ok
+    assert c1[low].mean() > c0[low].mean() + 0.05                              # raised where it was low
+    assert (c1 >= c0).all()                                                    # and never lowered
+
+
+def test_uf_widen_flag_is_off_by_default_and_changes_nothing_then():
+    import umbilicus_finder as uf
+    img, right, (cx, cy) = _noisy_rings(1.5)
+    base = uf.analyse_slice(img, uf.Params(target_px=400, pitch_vox=12.0))
+    off = uf.analyse_slice(img, uf.Params(target_px=400, pitch_vox=12.0, widen_low_coherence=False))
+    assert (base.cx, base.cy, base.n_votes) == (off.cx, off.cy, off.n_votes)
+    assert uf.Params().widen_low_coherence is False
+    a = uf.build_parser().parse_args(["in", "--out-dir", "o", "--widen-low-coherence"])
+    assert a.widen_low_coherence is True and uf.build_parser().parse_args(["in", "--out-dir", "o"]).widen_low_coherence is False
+
+
+def test_uf_widening_keeps_votes_and_does_not_move_the_centre_on_noisy_rings():
+    import umbilicus_finder as uf
+    img, right, (cx, cy) = _noisy_rings(1.5)
+    off = uf.analyse_slice(img, uf.Params(target_px=400, pitch_vox=12.0))
+    on = uf.analyse_slice(img, uf.Params(target_px=400, pitch_vox=12.0, widen_low_coherence=True))
+    assert on.n_votes >= off.n_votes
+    assert np.hypot(on.cx - cx, on.cy - cy) <= np.hypot(off.cx - cx, off.cy - cy) + 0.5

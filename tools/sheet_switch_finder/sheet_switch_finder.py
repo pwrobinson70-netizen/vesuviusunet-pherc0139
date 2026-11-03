@@ -486,7 +486,7 @@ def vertical_switches(heights, states, p: Params):
 
 
 # ------------------------------------------------------------------- the run
-def run_finder(mesh, vol, heights, p: Params, overlay_cb=None):
+def run_finder(mesh, vol, heights, p: Params, overlay_cb=None, want_states=False):
     p.validate()
     hs = sorted({float(h) for h in heights})
     if not hs or not all(math.isfinite(h) for h in hs):
@@ -516,6 +516,8 @@ def run_finder(mesh, vol, heights, p: Params, overlay_cb=None):
                    fraction_tracked=tot("fraction_tracked"), fraction_off_sheet=tot("fraction_off_sheet"),
                    fraction_lost=tot("fraction_lost"))
     result = dict(heights=recs, switches=switches, summary=summary, warnings=warns)
+    if want_states:                  # per-height internals (line, per-point local pitch + confidence); not JSON-serialisable
+        result["states"] = states
     if overlay_cb:
         for r in recs:
             st = states.get(r["z"])
