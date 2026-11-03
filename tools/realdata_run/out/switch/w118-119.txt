@@ -1,0 +1,38 @@
+sheet_switch_finder 0.1.0
+mesh: testdata/pherc_paris4_45um/20260623165230-w118-119.tifxyz   CT: testdata/pherc_paris4_45um/slices
+heights: 3   cut-line points: 1035
+SWITCHES: 25 (horizontal 24, vertical 1, double/multi-sheet 11)
+line tracked: 45.7%   off-sheet: 16.0%   lost track: 38.3%
+
+per height:
+  z=2073: points 350, pitch 17.25 vox, tracked 49.4%, off-sheet 6.9%, lost 43.7%, switches 9 horizontal + 0 vertical
+  z=2600: points 343, pitch 17.00 vox, tracked 45.8%, off-sheet 17.8%, lost 36.4%, switches 9 horizontal + 0 vertical
+  z=3128: points 342, pitch 14.00 vox, tracked 41.8%, off-sheet 23.7%, lost 34.5%, switches 6 horizontal + 1 vertical
+
+switches (human: check these spots):
+  horizontal z=2073  row 96.5 col 62  xyz (839.8, 585.5, 2073)  outward  step +1.48  DOUBLE (2 sheets)  confidence 0.00
+  horizontal z=2073  row 96.8 col 81  xyz (744.7, 865.1, 2073)  inward  step -1.01  confidence 0.52
+  horizontal z=2073  row 96.1 col 87  xyz (751.4, 979.9, 2073)  outward  step +0.87  confidence 0.33
+  horizontal z=2073  row 99.6 col 219  xyz (1196.4, 616.7, 2073)  outward  step +1.37  confidence 0.00
+  horizontal z=2073  row 99.4 col 225  xyz (1081.3, 591.6, 2073)  outward  step +0.65  confidence 0.06
+  horizontal z=2073  row 99.1 col 240  xyz (788.1, 597.6, 2073)  outward  step +0.98  confidence 0.16
+  horizontal z=2073  row 98.3 col 256  xyz (749.7, 864.3, 2073)  inward  step -1.18  confidence 0.19
+  horizontal z=2073  row 97.4 col 261  xyz (754.0, 960.7, 2073)  outward  step +0.62  confidence 0.04
+  horizontal z=2073  row 93.6 col 286  xyz (1012.2, 1284.7, 2073)  inward  step -3.07  DOUBLE (3 sheets)  confidence 0.00
+  horizontal z=2600  row 68.8 col 45  xyz (1171.1, 681.0, 2600)  outward  step +3.14  DOUBLE (3 sheets)  confidence 0.41
+  horizontal z=2600  row 67.5 col 73  xyz (758.6, 738.1, 2600)  inward  step -3.21  DOUBLE (3 sheets)  confidence 0.00
+  horizontal z=2600  row 59.8 col 98  xyz (751.9, 1224.3, 2600)  outward  step +1.65  DOUBLE (2 sheets)  confidence 0.03
+  horizontal z=2600  row 58.2 col 109  xyz (856.6, 1398.5, 2600)  outward  step +0.71  confidence 0.16
+  horizontal z=2600  row 71.9 col 235  xyz (850.2, 609.3, 2600)  outward  step +1.28  confidence 0.00
+  horizontal z=2600  row 70.7 col 243  xyz (769.1, 676.4, 2600)  inward  step -1.63  DOUBLE (2 sheets)  confidence 0.00
+  horizontal z=2600  row 65.6 col 254  xyz (752.1, 891.4, 2600)  outward  step +2.13  DOUBLE (2 sheets)  confidence 0.00
+  horizontal z=2600  row 60.1 col 271  xyz (751.6, 1236.2, 2600)  outward  step +1.57  DOUBLE (2 sheets)  confidence 0.00
+  horizontal z=2600  row 57.9 col 282  xyz (868.9, 1409.7, 2600)  outward  step +0.76  confidence 0.21
+  horizontal z=3128  row 41.7 col 52  xyz (1044.7, 713.2, 3128)  outward  step +2.87  DOUBLE (3 sheets)  confidence 0.00
+  horizontal z=3128  row 45.5 col 217  xyz (1162.8, 773.7, 3128)  outward  step +1.10  confidence 0.29
+  horizontal z=3128  row 45.1 col 224  xyz (1036.7, 712.3, 3128)  outward  step +0.71  confidence 0.07
+  horizontal z=3128  row 38.7 col 250  xyz (725.4, 1004.0, 3128)  outward  step +0.67  confidence 0.12
+  horizontal z=3128  row 31.6 col 266  xyz (740.9, 1318.8, 3128)  outward  step +1.57  DOUBLE (2 sheets)  confidence 0.00
+  horizontal z=3128  row 29.0 col 287  xyz (879.5, 1581.4, 3128)  inward  step -1.69  DOUBLE (2 sheets)  confidence 0.00
+  vertical   z=2600->3128, cols 244-249  row 40.3 col 246  xyz (734.3, 919.6, 3128)  outward  step +0.87  confidence 0.00
+warning: 6161 grid cells have no data

@@ -33,6 +33,7 @@ import numpy as np
 
 __version__ = "0.1.0"
 TAU = 2 * math.pi
+MAX_IRREGULAR = 0.30                        # 2 pi * 0.522 * 0.30 = 0.98 < 1: the spiral stays a spiral
 
 
 @dataclass
@@ -48,7 +49,7 @@ class Params:
     noise: float = 0.04                  # white noise sigma (fraction of full scale)
     tilt: tuple = (0.0, 0.0)             # axis drift (y, x) voxels per slice
     squash: float = 1.0                  # affine squash factor (<1 compresses along --squash-angle)
-    squash_angle: float = 30.0           # degrees, direction that is compressed
+    squash_angle: float = 30.0           # degrees; this direction is left unchanged, the PERPENDICULAR one is compressed
     warp_amp: float = 0.0                # smooth non-rigid warp amplitude (voxels)
     warp_wavelength: float = 90.0        # warp wavelength (voxels)
     merge_strength: float = 0.0          # 0 = none; 0.8 = local pitch cut to 20% at the centre of the blob
@@ -126,11 +127,21 @@ class Fields:
             return 0.0 * psi
         return a * (0.55 * np.sin(psi * 0.37 + self.ir_a[0]) + 0.35 * np.sin(psi * 0.91 + self.ir_a[1]))
 
+    def dr_prime(self, psi):
+        """d dr / d psi (voxels per radian)."""
+        a = self.p.irregular * self.p.pitch
+        if a == 0:
+            return 0.0 * psi
+        return a * (0.55 * 0.37 * np.cos(psi * 0.37 + self.ir_a[0]) + 0.35 * 0.91 * np.cos(psi * 0.91 + self.ir_a[1]))
+
 
 # ------------------------------------------------------------------ the forward map T
 class Scroll:
     def __init__(self, p: Params):
         self.p, self.f = p, Fields(p)
+        if p.irregular >= MAX_IRREGULAR:       # REVIEW_ROUND2 P1: |dr'| <= 0.522 irregular pitch, the radius must keep growing with w
+            raise ValueError(f"irregular={p.irregular:g} makes neighbouring turns cross (1 + 2 pi dr'/pitch can reach 0): "
+                             f"use irregular < {MAX_IRREGULAR:g}")
         a = math.radians(p.squash_angle)
         R = np.array([[math.cos(a), -math.sin(a)], [math.sin(a), math.cos(a)]])
         self.A = R @ np.diag([1.0, p.squash]) @ R.T       # acts on (x, y) column vectors
@@ -195,9 +206,11 @@ class Scroll:
         r = np.hypot(rel[0], rel[1])
         phi = np.mod(np.arctan2(rel[1], rel[0]), TAU)
         w = (r - self.p.r0) / self.p.pitch - phi / TAU
-        if self.p.irregular:
-            for _ in range(6):
-                w = (r - self.p.r0 - self.f.dr(TAU * w + phi)) / self.p.pitch - phi / TAU
+        if self.p.irregular:                   # Newton on f(w) = (r - r0 - dr(2 pi w + phi)) / pitch - phi / 2 pi - w, f' < 0
+            for _ in range(8):
+                psi = TAU * w + phi
+                f = (r - self.p.r0 - self.f.dr(psi)) / self.p.pitch - phi / TAU - w
+                w = w - f / (-TAU * self.f.dr_prime(psi) / self.p.pitch - 1.0)
         return w, phi, r
 
     # ---- rendering
@@ -452,8 +465,12 @@ def main(argv=None):
     p = Params(shape=shape, **kw)
     if p.r_end + 4 > min(shape[1:]) / 2 * 1.2:
         print(f"warning: outer radius {p.r_end:.0f} vox is large for a {shape[1]}x{shape[2]} slice", file=sys.stderr)
-    build(p, a.out, zarr=not a.no_zarr, png=a.png, bad_switches=[parse_switch(s) for s in a.bad_switch],
-          bad_pairs=a.bad_pairs, log=lambda m: print(m, file=sys.stderr))
+    try:
+        build(p, a.out, zarr=not a.no_zarr, png=a.png, bad_switches=[parse_switch(s) for s in a.bad_switch],
+              bad_pairs=a.bad_pairs, log=lambda m: print(m, file=sys.stderr))
+    except ValueError as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 2
     print(f"phantom written to {a.out}")
     return 0
 
