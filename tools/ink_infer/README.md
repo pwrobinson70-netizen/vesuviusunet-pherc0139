@@ -88,7 +88,10 @@ in this folder ships scan data, labels or checkpoints.
 python -m pytest -p no:cacheprovider tools/ink_infer/tests -v
 ```
 
-Synthetic data only, CPU only, a few seconds:
+Synthetic data only, CPU only, a few seconds. `test_surface.py` needs no torch (geometry only);
+`test_ink_infer.py` calls `pytest.importorskip("torch")` first and is skipped where torch is
+absent. The repo CI runs only `tests/` and does not install torch, so it does not run these.
+
 
 - a painted single-voxel spot must land at the right output pixel (row = y, column = x) for a
   plain mesh, a non-square mesh, an anisotropic mesh scale, a 2-voxel output step, an OME level-1
