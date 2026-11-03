@@ -28,7 +28,7 @@ from dataclasses import asdict, dataclass
 import numpy as np
 
 _TOOLS = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-for _d in ("sheet_spacing_check", "sheet_switch_finder", "umbilicus_finder"):
+for _d in ("sheet_spacing_check", "sheet_switch_finder", "umbilicus_finder", "crush_map"):
     _p = os.path.join(_TOOLS, _d)
     if _p not in sys.path:
         sys.path.insert(0, _p)
@@ -36,6 +36,7 @@ import sheet_spacing_check as ssc  # noqa: E402
 import sheet_switch_finder as ssf  # noqa: E402
 import uf_io  # noqa: E402
 import umbilicus_finder as uf  # noqa: E402
+import crush_map as cmap  # noqa: E402  (tools/crush_map: CrushMap reader for --crush-map)
 from ssc_io import ArrayVolume, InputError, PngVolume, ZarrVolume, load_mesh  # noqa: E402
 
 __version__ = "0.2.0"
@@ -75,6 +76,8 @@ class Params:
     min_pitch_confidence: float = 0.3       # a region whose median local-pitch confidence is below this is NOT JUDGED (judgement call; see the PR)
     region_points: int = 15                 # a region = this many consecutive cut-line points (tumbling windows along each run)
     min_judged_fraction: float = 0.5        # PASS needs at least this fraction of the cut line judged; below it the verdict is NOT JUDGED
+    crush_map: str | None = None            # crush_map.npz from tools/crush_map: regions whose crush severity is at or above --max-crush-severity are NOT JUDGED
+    max_crush_severity: float = 0.5         # judgement call (see the PR); severity 0..1, 1 = local spacing reduced 4x or more
 
 
 def _sub_flags(ap, prefix, cls, skip=()):
@@ -238,18 +241,23 @@ def local_pitch(vol, line, z0, ssf_p, override=None):
     return median_filter(pp, size=15, mode="nearest")
 
 
-def judged_regions(conf, run, region_points, min_conf):
+def judged_regions(conf, run, region_points, min_conf, severity=None, max_severity=None):
     """Boolean per point: True where the REGION (a tumbling window of `region_points` consecutive points of one run) has a
-    median local-pitch confidence of at least `min_conf`. conf None = everything judged (override / --global-pitch)."""
+    median local-pitch confidence of at least `min_conf` and, if a crush-map `severity` per point is given, a median severity (over
+    the points that have one) below `max_severity`. conf None = no confidence test (override / --global-pitch)."""
     n = len(run)
-    if conf is None:
-        return np.ones(n, bool)
-    c = np.nan_to_num(np.asarray(conf, float), nan=0.0)
+    c = np.ones(n) if conf is None else np.nan_to_num(np.asarray(conf, float), nan=0.0)
     out = np.zeros(n, bool)
     for s, e in ssc._run_bounds(run):
         for i in range(s, e, max(1, region_points)):
             j = min(e, i + max(1, region_points))
-            out[i:j] = float(np.median(c[i:j])) >= min_conf
+            ok = float(np.median(c[i:j])) >= min_conf if conf is not None else True
+            if ok and severity is not None and max_severity is not None:
+                sv = np.asarray(severity[i:j], float)
+                sv = sv[np.isfinite(sv)]
+                if len(sv) and float(np.median(sv)) >= max_severity:
+                    ok = False
+            out[i:j] = ok
     return out
 
 
@@ -363,6 +371,7 @@ def audit(meshes, vol, heights, centre, p: Params, ssf_p, ssc_p, log=None):
     log = log or (lambda m: None)
     if p.global_pitch:                                         # one flag switches the whole auditor back to the old pitch handling
         ssf_p, ssc_p = dataclasses.replace(ssf_p, global_pitch=True), dataclasses.replace(ssc_p, global_pitch=True)
+    crush = cmap.CrushMap(p.crush_map) if p.crush_map else None
     traces = [dict(name=m.name, checks=[], heights=[], judged_fraction=0.0) for m in meshes]
     pitches = {}                                               # (trace index, height) -> pitch
     # ---- switch finder + winding jumps per trace
@@ -378,7 +387,8 @@ def audit(meshes, vol, heights, centre, p: Params, ssf_p, ssc_p, log=None):
             stt = states.get(float(h))
             if stt is None:
                 continue
-            jm = judged_regions(stt["pitch_conf"], stt["line"].run, p.region_points, p.min_pitch_confidence)
+            sev_pt = crush.at(float(h), stt["line"].xy) if crush is not None else None
+            jm = judged_regions(stt["pitch_conf"], stt["line"].run, p.region_points, p.min_pitch_confidence, sev_pt, p.max_crush_severity)
             jarr[float(h)], jtab[float(h)] = jm, _col_lookup(stt["line"].col, jm)
             tot_pts, ok_pts = tot_pts + len(jm), ok_pts + int(jm.sum())
         traces[ti]["judged_fraction"] = (ok_pts / tot_pts) if tot_pts else 0.0
@@ -582,7 +592,8 @@ def build_parser():
         if isinstance(v, bool):
             ap.add_argument("--" + f.name.replace("_", "-"), dest=f.name, action="store_true", help="(off by default)")
             continue
-        ap.add_argument("--" + f.name.replace("_", "-"), dest=f.name, type=(float if v is None else type(v)), default=v)
+        ap.add_argument("--" + f.name.replace("_", "-"), dest=f.name, type=(str if f.name == "crush_map" else float if v is None else type(v)),
+                        default=v)
     _sub_flags(ap, "ssf", ssf.Params)
     _sub_flags(ap, "ssc", ssc.Params)
     _sub_flags(ap, "uf", uf.Params)
