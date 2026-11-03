@@ -25,7 +25,7 @@ if _SSC_DIR not in sys.path:
 import sheet_spacing_check as ssc  # noqa: E402
 from ssc_io import (InputError, PngVolume, ZarrVolume, load_mesh, to_px)  # noqa: E402
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 _D = ssc.Params()      # defaults shared with sheet_spacing_check stay in sync
 
@@ -54,6 +54,13 @@ class Params:
     centre_x: float | None = None       # scroll axis x for 'radial' (default: centroid of the cut line)
     centre_y: float | None = None
     pitch_vox: float | None = None      # override the measured CT pitch (voxels)
+    global_pitch: bool = False          # OLD behaviour: one CT pitch per height; steps in units of it (PR #17 finding 5: 17 vox vs 9.5 measured)
+    pitch_prominence_frac: float = _D.pitch_prominence_frac   # local pitch (tools/common/local_pitch.py), same defaults as sheet_spacing_check
+    pitch_window_pitches: float = _D.pitch_window_pitches
+    pitch_cv_max: float = _D.pitch_cv_max
+    pitch_ac_full: float = _D.pitch_ac_full
+    pitch_smooth_points: int = 9        # running median of the local pitch along the line: beside a switch the normal profile straddles two sheets and reads about 2x
+    min_pitch_confidence: float = _D.min_pitch_confidence
     # --- vertical test (step 6)
     vertical: int = 1                   # 1 = run the vertical test, 0 = skip it
     # --- confidence
@@ -99,7 +106,10 @@ class Params:
             peak_prominence_frac=self.peak_prominence_frac,
             peak_min_distance_px=self.peak_min_distance_px, min_peaks=self.min_peaks,
             tangent_halfwidth=self.tangent_halfwidth, tile_pad_px=self.tile_pad_px,
-            invalid_value=self.invalid_value, max_gap_vox=max_gap_vox)
+            invalid_value=self.invalid_value, max_gap_vox=max_gap_vox, global_pitch=self.global_pitch,
+            pitch_prominence_frac=self.pitch_prominence_frac, pitch_window_pitches=self.pitch_window_pitches,
+            pitch_cv_max=self.pitch_cv_max, pitch_ac_full=self.pitch_ac_full,
+            pitch_smooth_points=self.pitch_smooth_points, min_pitch_confidence=self.min_pitch_confidence)
 
 
 OK, OFF, LOST = 0, 1, 2     # per-point status: tracked on-sheet / off the papyrus / on-sheet but track lost
@@ -212,6 +222,7 @@ def find_sheet_peaks(pr, s_vox, p: Params):
 def track_run(xy, nrm, mnrm, peaks, on, pitch, p: Params):
     """Track ONE CT sheet along one run. Returns (offset in pitches, segment id)."""
     n = len(xy)
+    pitch = np.broadcast_to(np.asarray(pitch, float), (n,))      # v0.2: local pitch per point (a scalar still works)
     off = np.full(n, np.nan)
     seg = np.full(n, -1)
     ref, lost, off_run, seg_id = None, 0, 0, -1
@@ -241,7 +252,7 @@ def track_run(xy, nrm, mnrm, peaks, on, pitch, p: Params):
             if len(pk):
                 d = np.abs((xy[i] + nrm[i] * pk[:, None] - ref) @ mnrm[i])
                 k = int(np.argmin(d))
-            gate = p.track_max_jump_pitch * pitch
+            gate = p.track_max_jump_pitch * pitch[i]
             if k < 0 or d[k] > gate:
                 lost += 1
                 if lost > p.max_lost_points:
@@ -249,7 +260,7 @@ def track_run(xy, nrm, mnrm, peaks, on, pitch, p: Params):
                 continue
             lost = 0
         ref = xy[i] + nrm[i] * pk[k]
-        off[i] = -pk[k] / pitch                          # (mesh - sheet) / pitch, mesh at 0
+        off[i] = -pk[k] / pitch[i]                       # (mesh - sheet) / LOCAL pitch, mesh at 0
         seg[i] = seg_id
     return off, seg
 
@@ -358,13 +369,21 @@ def analyse_height(mesh, vol, z0, p: Params):
 
     tile, origin = _tile_for(vol, line, p.profile_halflen_vox, p, z0)
     pitch = p.pitch_vox
+    lpc = None
     if pitch is None:
-        pp = ssc.ct_pitches(tile, origin, line, sc, sp)
+        if p.global_pitch:
+            pp = ssc.ct_pitches(tile, origin, line, sc, sp)
+        else:
+            lpc = ssc.ct_local_pitch(tile, origin, line, sc, sp)
+            pp = lpc.pitch
         pitch = float(np.nanmedian(pp)) if np.isfinite(pp).any() else float("nan")
     if not (np.isfinite(pitch) and pitch > 0):
         return _empty_height(z0, line.n, "no CT pitch could be measured (fewer than "
                                          f"{p.min_peaks} peaks anywhere on the line)"), [], None
-    half = p.sample_pitches * pitch
+    # per-point pitch: the LOCAL pitch (nearest valid one along the run where none was measured); the height value for
+    # --global-pitch or --pitch-vox
+    pitch_pp = np.full(line.n, pitch) if lpc is None else ssc._fill_along_run(pp, line.run, pitch)
+    half = p.sample_pitches * float(np.max(pitch_pp))
     if half > p.profile_halflen_vox:        # the tile must cover the sampling profile
         tile, origin = _tile_for(vol, line, half, p, z0)
 
@@ -378,6 +397,10 @@ def analyse_height(mesh, vol, z0, p: Params):
 
     fine = normal_runs(line, p.normal_break_factor)
     nrm, mnrm = tilt_filter(orient(ssc.normals(fine, sp), line, p), fine, p)
+    if lpc is not None:       # v0.2: re-measure the local pitch with the tilt-filtered normals (beside a hop the tangent normal is tilted and reads ~2x)
+        lpc = ssc.ct_local_pitch(tile, origin, line, sc, sp, nrm=nrm)
+        pitch_pp = ssc._fill_along_run(lpc.pitch, line.run, pitch)
+        pp = lpc.pitch
     s_vox, prof = sample_profiles(tile, origin, line, nrm, sc, half, p)
     peaks = [find_sheet_peaks(prof[i], s_vox, p) if np.isfinite(nrm[i, 0]) else np.zeros(0)
              for i in range(line.n)]
@@ -386,7 +409,7 @@ def analyse_height(mesh, vol, z0, p: Params):
     seg = np.full(line.n, -1)
     seg_base = 0
     for s, e in ssc._run_bounds(line.run):
-        o, sg = track_run(line.xy[s:e], nrm[s:e], mnrm[s:e], peaks[s:e], on[s:e], pitch, p)
+        o, sg = track_run(line.xy[s:e], nrm[s:e], mnrm[s:e], peaks[s:e], on[s:e], pitch_pp[s:e], p)
         offset[s:e] = o
         seg[s:e] = np.where(sg >= 0, sg + seg_base, -1)
         seg_base += int(sg.max()) + 1 if (sg >= 0).any() else 0
@@ -409,11 +432,16 @@ def analyse_height(mesh, vol, z0, p: Params):
                     persist_before=p.k_points, persist_after=p.k_points))
     switches.sort(key=lambda r: r["line_index"])
     rec = dict(z=float(z0), n_points=int(line.n), ct_pitch_vox=pitch,
+               pitch_mode="local" if lpc is not None else ("override" if p.pitch_vox is not None else "global"),
+               pitch_confidence_mean=float(np.mean(lpc.confidence)) if lpc is not None else None,
+               pitch_local_p10=float(np.nanpercentile(pp, 10)) if lpc is not None and np.isfinite(pp).any() else None,
+               pitch_local_p90=float(np.nanpercentile(pp, 90)) if lpc is not None and np.isfinite(pp).any() else None,
                fraction_tracked=float(np.mean(status == OK)),
                fraction_off_sheet=float(np.mean(status == OFF)),
                fraction_lost=float(np.mean(status == LOST)),
                n_switches=len(switches), n_runs=int(line.run.max()) + 1, note="")
-    state = dict(line=line, rows=rows, offset=offset, status=status, usable=usable, pitch=pitch)
+    state = dict(line=line, rows=rows, offset=offset, status=status, usable=usable, pitch=pitch, pitch_pp=pitch_pp,
+                 pitch_conf=(lpc.confidence if lpc is not None else None))
     return rec, switches, state
 
 
@@ -458,7 +486,7 @@ def vertical_switches(heights, states, p: Params):
 
 
 # ------------------------------------------------------------------- the run
-def run_finder(mesh, vol, heights, p: Params, overlay_cb=None):
+def run_finder(mesh, vol, heights, p: Params, overlay_cb=None, want_states=False):
     p.validate()
     hs = sorted({float(h) for h in heights})
     if not hs or not all(math.isfinite(h) for h in hs):
@@ -488,6 +516,8 @@ def run_finder(mesh, vol, heights, p: Params, overlay_cb=None):
                    fraction_tracked=tot("fraction_tracked"), fraction_off_sheet=tot("fraction_off_sheet"),
                    fraction_lost=tot("fraction_lost"))
     result = dict(heights=recs, switches=switches, summary=summary, warnings=warns)
+    if want_states:                  # per-height internals (line, per-point local pitch + confidence); not JSON-serialisable
+        result["states"] = states
     if overlay_cb:
         for r in recs:
             st = states.get(r["z"])
@@ -585,7 +615,10 @@ def build_parser():
     ap.add_argument("--overlay-dir", help="write one overlay PNG per height here")
     for f, v in asdict(Params()).items():
         flag = "--" + f.replace("_", "-")
-        ap.add_argument(flag, type=(float if v is None else type(v)), default=v)
+        if isinstance(v, bool):
+            ap.add_argument(flag, action="store_true", help="(off by default)")
+        else:
+            ap.add_argument(flag, type=(float if v is None else type(v)), default=v)
     return ap
 
 

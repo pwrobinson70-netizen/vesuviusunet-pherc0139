@@ -45,6 +45,7 @@ packages = [
     "vun_tools._tools.patch_merger",
     "vun_tools._tools.sheet_tracer",
     "vun_tools._tools.winding_sweep",
+    "vun_tools._tools.common",
 ]
 
 [tool.setuptools.package-dir]
@@ -59,3 +60,4 @@ vesuvius_unet = "vesuvius_unet"
 "vun_tools._tools.patch_merger" = "tools/patch_merger"
 "vun_tools._tools.sheet_tracer" = "tools/sheet_tracer"
 "vun_tools._tools.winding_sweep" = "tools/winding_sweep"
+"vun_tools._tools.common" = "tools/common"
