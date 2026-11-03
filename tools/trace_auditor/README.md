@@ -109,3 +109,31 @@ tools' READMEs. Volume input as in `sheet_spacing_check`: `--zarr`/`--zarr-level
   `--pitch-vox` is given.
 - Synthetic evidence only (concentric rings in the tests, phantoms in the pull request); nothing here has seen a
   real scroll.
+
+## v0.2: local-pitch confidence, NOT JUDGED regions, judged fraction
+
+Evidence: `tools/realdata_run/RESULTS.md` (PR #17), findings 3, 5 and 6 / proposal P5: on real data the pitch came out 14-17 vox
+against 9-10.5 measured, and the auditor FAILed everything, the unbroken originals included (112-142 radius "jumps" per trace), so a
+FAIL carried no information. The real periodicity is weak (autocorrelation second lobe < 0.1) and the local-pitch confidence
+(`tools/common/local_pitch.py`: peaks x regularity x autocorrelation at the pitch) is accordingly low there.
+
+- A *region* is `--region-points` consecutive cut-line points of one run. Its confidence is the median of the per-point local-pitch
+  confidence. Below `--min-pitch-confidence` the region is **NOT JUDGED**: switches (switch_finder) and radius jumps
+  (winding_jumps) that lie in it are not counted (the reason text says how many were left out), B points in it are left out of
+  winding_offset, and a pair height whose mean confidence is below it is left out of the spacing check.
+- PASS / FAIL therefore refer to judged regions only. Every trace reports `judged_fraction` (also in `audit.json`, per height and in
+  the text report). A trace with no FAIL whose judged fraction is below `--min-judged-fraction` is **NOT JUDGED** (check
+  `pitch_confidence`): a PASS would mean nothing. A FAIL in a judged region stands whatever the fraction.
+- `--min-pitch-confidence` 0.3, `--region-points` 15 and `--min-judged-fraction` 0.5 are **judgement calls** (docs/OPERATING_RANGE.md
+  gives no confidence threshold). Evidence for 0.3: share of 15-point regions with confidence >= 0.3 on the cut lines of turns 1-2
+  of 192^3 phantoms (5 heights): round 1.00, mild 1.00, folded / delaminated / torn / gappy 1.00, merged 0.94, crushed 0.50,
+  crushed-hard 0.07; real PHerc. Paris 4 meshes 0.00. 0.2 to 0.5 gives the same picture; no held-out set.
+- `--global-pitch` is the old behaviour (no confidence, every region judged, the old pitch estimator); it is also forwarded to
+  `--ssf-global-pitch` and `--ssc-global-pitch`.
+
+| flag | default | meaning |
+|---|---|---|
+| `--global-pitch` | off | old pitch handling, no NOT JUDGED regions |
+| `--min-pitch-confidence` | 0.3 | a region below this median local-pitch confidence is NOT JUDGED |
+| `--region-points` | 15 | region length in cut-line points |
+| `--min-judged-fraction` | 0.5 | PASS needs this fraction of the cut line judged, else NOT JUDGED |
