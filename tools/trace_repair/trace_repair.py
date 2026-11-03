@@ -59,10 +59,11 @@ def collect_switches(audit, trace_name=None, min_conf=0.3):
                 if s["confidence"] >= min_conf:
                     horiz = s["kind"] == "horizontal"
                     sw.append(dict(axis="cols" if horiz else "rows", line=int(s["col"]) if horiz else int(np.ceil(s["row"])),
+                                   orth=float(s["row"]) if horiz else float(s["col"]),      # where along the other axis it was seen
                                    source="switch_finder", direction=s["direction"], height=s["height"]))
         elif c["check"] == "winding_jumps":
             for j in c.get("jumps", []):
-                sw.append(dict(axis="cols", line=int(j["col"]), source="winding_jumps",
+                sw.append(dict(axis="cols", line=int(j["col"]), orth=None, source="winding_jumps",
                                direction="outward" if j["step_pitches"] > 0 else "inward", height=j["z"]))
     pit = [h["pitch"] for h in tr.get("heights", []) if h.get("pitch")]
     return sw, (float(np.median(pit)) if pit else None), tr["name"]
@@ -74,9 +75,12 @@ def repair_axis(P, start, T, pitch, a):
     R, C, _ = P.shape
     orig = P.copy()
     valid = orig[..., 0] != -1
-    out = dict(unsnapped=0, outliers=0)
+    out = dict(unsnapped=0, outliers=0, unreached=0)
+    reached = valid.copy()                       # REVIEW_ROUND2 R2: repaired from a repaired (or untouched) predecessor
     for c in range(max(start, 1), C):
-        rows = np.flatnonzero(valid[:, c] & valid[:, c - 1])
+        rows = np.flatnonzero(valid[:, c] & reached[:, c - 1])
+        out["unreached"] += int((valid[:, c] & ~reached[:, c - 1]).sum())      # behind a hole: left as it was, counted
+        reached[:, c] = valid[:, c] & reached[:, c - 1]
         if len(rows) == 0:
             continue
         q = P[rows, c - 1]
@@ -100,9 +104,49 @@ def repair_axis(P, start, T, pitch, a):
     return out
 
 
+def confirm_switches(P, orig, switches, pitch, a):
+    """REVIEW_ROUND2 R1. A switch is CONFIRMED if the repair moved some point at the reported place (within
+    margin + 3 lines of the reported line, and within --confirm-orth lines of where the audit saw it when it says)
+    by at least --confirm-pitch x pitch. A real hop is about one pitch, so removing it moves points by about one
+    pitch; a false alarm or a mislocated report is only nudged (sub-voxel to a few voxels) there. -> (confirmed, unconfirmed)."""
+    d = np.linalg.norm(P - orig, axis=-1)
+    w = int(a.margin) + 3
+    ow = int(getattr(a, "confirm_orth", 6))
+    need = float(getattr(a, "confirm_pitch", 0.5)) * pitch
+    yes, no = [], []
+    for s in switches:
+        L = s["line"]
+        blk = d[:, max(0, L - w):L + w + 1] if s["axis"] == "cols" else d[max(0, L - w):L + w + 1, :]
+        if s.get("orth") is not None:
+            o = int(round(s["orth"]))
+            blk = blk[max(0, o - ow):o + ow + 1] if s["axis"] == "cols" else blk[:, max(0, o - ow):o + ow + 1]
+        mv = float(blk.max()) if blk.size else 0.0
+        (yes if mv >= need else no).append(dict(s, move_vox=mv))
+    return yes, no
+
+
 def repair(xyz, switches, T, pitch, a):
+    """Re-snap beyond the switches, keep only the switches the repair itself confirms (see confirm_switches).
+    Returns (new xyz float32, info); info["confirmed"/"unconfirmed"] list the switches; with none confirmed the
+    input is returned unchanged."""
+    orig = np.array(xyz, np.float64)
+    active = list(switches)
+    unconfirmed = []
+    while active:
+        P, info = _repair_once(xyz, active, T, pitch, a)
+        yes, no = confirm_switches(P, orig, active, pitch, a)
+        unconfirmed += no
+        if not no:
+            info.update(confirmed=yes, unconfirmed=unconfirmed)
+            return P, info
+        active = [{k: v for k, v in s.items() if k != "move_vox"} for s in yes]
+    return orig.astype(np.float32), dict(cols=None, rows=None, unsnapped=0, outliers=0, unreached=0, confirmed=[],
+                                         unconfirmed=unconfirmed)
+
+
+def _repair_once(xyz, switches, T, pitch, a):
     P = np.array(xyz, np.float64)
-    info = dict(cols=None, rows=None, unsnapped=0, outliers=0)
+    info = dict(cols=None, rows=None, unsnapped=0, outliers=0, unreached=0)
     for axis in ("cols", "rows"):
         lines = [s["line"] for s in switches if s["axis"] == axis]
         if not lines:
@@ -128,6 +172,7 @@ def repair(xyz, switches, T, pitch, a):
             Q = np.ascontiguousarray(R_[:, ::-1]) if flip else R_
             info["unsnapped"] += r["unsnapped"]
             info["outliers"] += r["outliers"]
+            info["unreached"] += r["unreached"]
             info[axis] = dict(info[axis] or {}, **{("high_to_low" if flip else "low_to_high"): int(first)}, n_switches=len(lines))
         P = Q if axis == "cols" else np.ascontiguousarray(Q.transpose(1, 0, 2))
     return P.astype(np.float32), info
@@ -147,6 +192,10 @@ def build_parser():
     ap.add_argument("--origin-cell", type=int, nargs=2, metavar=("ROW", "COL"),
                     help="grid cell the trace was grown from (growth radiates from it, e.g. a sheet_tracer seed); overrides --origin")
     ap.add_argument("--min-switch-confidence", type=float, default=0.3)
+    ap.add_argument("--confirm-pitch", type=float, default=0.5,
+                    help="a reported switch is repaired only if the repair moves a point at that place by this x pitch (a hop is ~1)")
+    ap.add_argument("--confirm-orth", type=int, default=6,
+                    help="lines either side of where the audit saw the switch (other axis) searched for that move")
     ap.add_argument("--margin", type=int, default=2, help="lines before the first reported switch where repair starts")
     ap.add_argument("--snap-pitch", type=float, default=1.0, help="snap window +/- x pitch")
     ap.add_argument("--outlier-pitch", type=float, default=0.35,
@@ -169,7 +218,7 @@ def run(a):
     sw, apitch, tname = collect_switches(audit, os.path.basename(src.rstrip("/")) if not a.audit_trace else a.audit_trace,
                                          a.min_switch_confidence)
     summary = dict(tool_version=__version__, input=src, output=out, audit=os.path.abspath(a.audit), audit_trace=tname,
-                   switches=sw, repaired=False)
+                   switches=sw, repaired=False, confirmed=[], unconfirmed=[])
     if not sw:
         shutil.copytree(src, out)
         summary["note"] = "no switch to repair: input copied byte for byte"
@@ -182,6 +231,14 @@ def run(a):
                                      peak_prominence=a.peak_prominence))
         xyz0 = np.where(mesh.valid[..., None], np.stack([mesh.x, mesh.y, mesh.z], -1), -1.0)
         new, info = repair(xyz0, sw, T, pitch, a)
+        summary.update(confirmed=info["confirmed"], unconfirmed=info["unconfirmed"])
+        if not info["confirmed"]:
+            shutil.copytree(src, out)
+            summary["note"] = ("no switch confirmed: the repair moved no point at any reported place by >= --confirm-pitch x pitch, "
+                               "so the report is a false alarm or mislocated; input copied byte for byte, verdict NOT changed")
+            with open(os.path.join(out, "repair_summary.json"), "w") as fh:
+                json.dump(summary, fh, indent=2, default=float)
+            return summary
         new = np.where(mesh.valid[..., None], new, -1.0).astype(np.float32)
         meta = dict(mesh.meta)
         sc = meta.get("scale") or [0.25, 0.25]
@@ -191,12 +248,15 @@ def run(a):
         json.dump(meta, open(os.path.join(out, "meta.json"), "w"), indent=4)
         if os.path.isfile(os.path.join(src, "mask.tif")):
             shutil.copy(os.path.join(src, "mask.tif"), os.path.join(out, "mask.tif"))
+        if info["unreached"]:
+            print(f"warning: {info['unreached']} valid cells beyond a switch lie behind a hole and were NOT repaired "
+                  "(left on whatever sheet they were on); see n_unreached in repair_summary.json", file=sys.stderr)
         d = np.linalg.norm(new.astype(np.float64) - xyz0, axis=-1)[mesh.valid]
         moved = d > 0.5
         summary.update(repaired=True, pitch_vox=pitch, volume=desc, n_valid=int(mesh.valid.sum()),
                        n_moved_over_half_voxel=int(moved.sum()), fraction_moved=float(moved.mean()), max_move_vox=float(d.max()),
                        median_move_of_moved_vox=float(np.median(d[moved])) if moved.any() else 0.0,
-                       n_unsnapped=info["unsnapped"], n_outliers_replaced=info["outliers"],
+                       n_unsnapped=info["unsnapped"], n_outliers_replaced=info["outliers"], n_unreached=info["unreached"],
                        axes={k: info[k] for k in ("cols", "rows") if info[k]})
     with open(os.path.join(out, "repair_summary.json"), "w") as fh:
         json.dump(summary, fh, indent=2, default=float)
