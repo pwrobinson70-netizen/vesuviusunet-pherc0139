@@ -1,0 +1,178 @@
+[
+ {
+  "phantom": "round",
+  "source": "winding_sweep",
+  "centre": "estimated",
+  "size": 192,
+  "true_turns": 4,
+  "n_patches": 16,
+  "n_components": 1,
+  "seams_accepted": 42,
+  "seams_refused": 42,
+  "refused_by_reason": {
+   "shared-sheet mismatch": 42
+  },
+  "segments_dropped": 0,
+  "cuts": 0,
+  "on_turn_inputs": 0.9987677520717169,
+  "on_turn_merged": 1.0,
+  "on_sheet_merged": 1.0,
+  "t_span_merged": [
+   3.95
+  ],
+  "impure_inputs": 0,
+  "impure_merged": 0,
+  "area_inputs": 335591.6631980284,
+  "area_merged": 98872.24634144675,
+  "pitch": 16.5,
+  "wall": 35.457730531692505,
+  "notes": [],
+  "components": [
+   {
+    "name": "component_000",
+    "area": 98872.24634144675,
+    "n_patches": 16,
+    "n_segments": 16,
+    "on_sheet": 1.0,
+    "on_turn": 1.0,
+    "t_span": 3.948453608247423,
+    "n": 9665
+   }
+  ]
+ },
+ {
+  "phantom": "mild",
+  "source": "winding_sweep",
+  "centre": "estimated",
+  "size": 192,
+  "true_turns": 4,
+  "n_patches": 16,
+  "n_components": 1,
+  "seams_accepted": 42,
+  "seams_refused": 42,
+  "refused_by_reason": {
+   "shared-sheet mismatch": 42
+  },
+  "segments_dropped": 0,
+  "cuts": 0,
+  "on_turn_inputs": 0.9992241602252809,
+  "on_turn_merged": 1.0,
+  "on_sheet_merged": 1.0,
+  "t_span_merged": [
+   3.99
+  ],
+  "impure_inputs": 0,
+  "impure_merged": 0,
+  "area_inputs": 309843.41351598414,
+  "area_merged": 93832.02053384052,
+  "pitch": 16.5,
+  "wall": 57.34900641441345,
+  "notes": [],
+  "components": [
+   {
+    "name": "component_000",
+    "area": 93832.02053384052,
+    "n_patches": 16,
+    "n_segments": 16,
+    "on_sheet": 1.0,
+    "on_turn": 1.0,
+    "t_span": 3.9896907216494846,
+    "n": 13924
+   }
+  ]
+ },
+ {
+  "phantom": "bad",
+  "source": "winding_sweep",
+  "centre": "estimated",
+  "size": 192,
+  "true_turns": 4,
+  "n_patches": 16,
+  "n_components": 1,
+  "seams_accepted": 39,
+  "seams_refused": 64,
+  "refused_by_reason": {
+   "not judged": 5,
+   "shared-sheet mismatch": 56,
+   "off-sheet": 3
+  },
+  "segments_dropped": 0,
+  "cuts": 0,
+  "on_turn_inputs": 0.99849482173747,
+  "on_turn_merged": 0.9981445627621813,
+  "on_sheet_merged": 0.9981445627621813,
+  "t_span_merged": [
+   3.99
+  ],
+  "impure_inputs": 1,
+  "impure_merged": 0,
+  "area_inputs": 251431.3225877706,
+  "area_merged": 81216.67715389226,
+  "pitch": 16.5,
+  "wall": 62.84828281402588,
+  "notes": [
+   "angle 30, estimated centre: umbilicus_finder found a centre at only 0 of 10 slices in z [16, 176); give --umbilicus or a larger band",
+   "angle 30: swept with the true centre line (estimated centre failed)",
+   "angle 120, estimated centre: umbilicus_finder found a centre at only 0 of 10 slices in z [16, 176); give --umbilicus or a larger band",
+   "angle 120: swept with the true centre line (estimated centre failed)",
+   "angle 210, estimated centre: umbilicus_finder found a centre at only 0 of 10 slices in z [16, 176); give --umbilicus or a larger band",
+   "angle 210: swept with the true centre line (estimated centre failed)",
+   "angle 300, estimated centre: umbilicus_finder found a centre at only 0 of 10 slices in z [16, 176); give --umbilicus or a larger band",
+   "angle 300: swept with the true centre line (estimated centre failed)"
+  ],
+  "components": [
+   {
+    "name": "component_000",
+    "area": 81216.67715389226,
+    "n_patches": 16,
+    "n_segments": 16,
+    "on_sheet": 0.9981445627621813,
+    "on_turn": 0.9981445627621813,
+    "t_span": 3.9896907216494846,
+    "n": 37188
+   }
+  ]
+ },
+ {
+  "phantom": "merged",
+  "source": "winding_sweep",
+  "centre": "estimated",
+  "size": 192,
+  "true_turns": 4,
+  "n_patches": 16,
+  "n_components": 1,
+  "seams_accepted": 39,
+  "seams_refused": 59,
+  "refused_by_reason": {
+   "shared-sheet mismatch": 58,
+   "registration": 1
+  },
+  "segments_dropped": 0,
+  "cuts": 0,
+  "on_turn_inputs": 0.9471737852664577,
+  "on_turn_merged": 0.988026110287934,
+  "on_sheet_merged": 0.9965159585118738,
+  "t_span_merged": [
+   3.99
+  ],
+  "impure_inputs": 6,
+  "impure_merged": 1,
+  "area_inputs": 301646.0381585561,
+  "area_merged": 93890.8248122444,
+  "pitch": 16.5,
+  "wall": 67.29829525947571,
+  "notes": [],
+  "components": [
+   {
+    "name": "component_000",
+    "area": 93890.8248122444,
+    "n_patches": 16,
+    "n_segments": 16,
+    "on_sheet": 0.9965159585118738,
+    "on_turn": 0.988026110287934,
+    "t_span": 3.9896907216494846,
+    "n": 24971
+   }
+  ]
+ }
+]

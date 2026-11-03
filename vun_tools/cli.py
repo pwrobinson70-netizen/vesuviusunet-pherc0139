@@ -59,3 +59,5 @@ def ink():
 
 def sweep():
     return _run("winding_sweep", "winding_sweep")
+def merge():
+    return _run("patch_merger", "patch_merger")
