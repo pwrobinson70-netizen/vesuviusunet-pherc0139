@@ -48,6 +48,7 @@ import numpy as np
 
 __version__ = "0.2.0"
 TAU = 2 * math.pi
+FIBRE_BLOCKS = 12                           # v0.3 fibre texture: orientation steps per turn of the spiral
 MAX_IRREGULAR = 0.30                        # 2 pi * 0.522 * 0.30 = 0.98 < 1: the spiral stays a spiral
 
 
@@ -81,6 +82,11 @@ class Params:
     papyrus: float = 0.80                # sheet peak intensity (0..1)
     spacing_ratio: float = 1.0           # v0.2: max/min of the local sheet spacing within a slice (1 = off, up to 2.5 or more)
     features: tuple = ()                 # v0.2: tuple of dicts, see parse_feature (fold / delam / tear / gap)
+    fibre: float = 0.0                   # v0.3: anisotropic fibre texture amplitude (0 = off = v0.2 output, byte for byte; ~0.4 is visible)
+    fibre_period: float = 5.0            # v0.3: stripe period (voxels, in the sheet)
+    fibre_angle: float = 20.0            # v0.3: stripe family 1 direction at the start of the spiral (degrees from the arc direction, in the sheet)
+    fibre_cross: float = 0.5             # v0.3: amplitude of stripe family 2 relative to family 1 (1 = balanced; < 1 leaves a dominant direction)
+    fibre_drift: float = 40.0            # v0.3: degrees the stripe orientation turns per full turn of the spiral (family 2 stays 90 degrees from family 1)
 
     @property
     def nz(self):
@@ -442,6 +448,18 @@ class Scroll:
             prof[m] = pr
             bright[m] *= fc
             win[m] = np.maximum(win[m], ft.window(a[m], q[0][m]))
+        if p.fibre > 0:                                                   # v0.3: two perpendicular stripe families in the sheet
+            psi = k + phi / TAU                                           # position along the spiral (continuous across the angle-0 seam)
+            blk = np.floor(psi * FIBRE_BLOCKS)                            # the orientation drifts in FIBRE_BLOCKS steps per turn (a smooth drift of a stripe
+            th = np.radians(p.fibre_angle + p.fibre_drift * (blk + 0.5) / FIBRE_BLOCKS)       # phase field cannot keep a fixed period: it is not curl-free)
+            arc = lambda t: TAU * (p.r0 * t + 0.5 * p.pitch * t ** 2)     # arc length along the spiral (undeformed frame)
+            s_arc = arc(psi) - arc(blk / FIBRE_BLOCKS)                    # arc length from the start of this block
+            zc = q[0] - 0.5 * p.shape[0]
+            u1 = np.cos(th) * s_arc + np.sin(th) * zc
+            u2 = -np.sin(th) * s_arc + np.cos(th) * zc
+            ph = self.f.sv_ph
+            fib = (np.sin(TAU * u1 / p.fibre_period + ph[0]) + p.fibre_cross * np.sin(TAU * u2 / p.fibre_period + ph[1])) / (1.0 + p.fibre_cross)
+            bright = bright * (1 + p.fibre * fib)
         if p.ink and ink_mask is not None:
             h, wd = ink_mask.shape
             row = np.clip(np.rint(q[0] / p.grid_step).astype(int), 0, h - 1)
@@ -645,7 +663,11 @@ def build(p: Params, out, *, zarr=True, png=False, bad_switches=(), bad_pairs=Fa
         f.write("z,y,x\n" + "\n".join(f"{a:.4f},{b:.4f},{c:.4f}" for a, b, c in cl) + "\n")
     with open(os.path.join(out, "centreline_villa.json"), "w") as f:
         json.dump({"control_points": [{"z": float(a), "y": float(b), "x": float(c)} for a, b, c in cl]}, f, indent=2)
-    truth = dict(tool_version=__version__, params=dataclasses.asdict(p), n_rows=nr, n_cols=nc, grid_scale=list(scale),
+    params_d = dataclasses.asdict(p)
+    if p.fibre == 0:                                         # the v0.3 fibre fields only appear in truth.json when the texture is on
+        for key in ("fibre", "fibre_period", "fibre_angle", "fibre_cross", "fibre_drift"):
+            params_d.pop(key)
+    truth = dict(tool_version=__version__, params=params_d, n_rows=nr, n_cols=nc, grid_scale=list(scale),
                  n_turns=p.turns, pitch=p.pitch, units="voxels; x/y/z order in tifxyz, (z, y, x) in csv/volume",
                  switches=[], pairs=[], ink=None)
     if mask is not None:
