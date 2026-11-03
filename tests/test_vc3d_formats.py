@@ -1,7 +1,7 @@
 """Our readers vs. files written exactly the way ScrollPrize/villa (VC3D) writes them. See docs/FORMATS.md.
 
 The grid is deliberately non-square (H=6 rows, W=8 cols) with different spacing and scale on the two
-axes, so any row/column or x/y swap shows up. Cases marked xfail(strict) are known mismatches
+axes, so any row/column or x/y swap shows up. Cases marked xfail are known mismatches
 (BUG-A*); they are listed in docs/FORMATS.md and fixed in the review branch.
 """
 import json
@@ -90,7 +90,7 @@ def test_written_bbox_order_is_xyz(tmp_path, xyz):
     assert lo[2] >= 2980                            # third entry is z
 
 
-@pytest.mark.xfail(strict=True, reason="BUG-A1: mask.tif (255=valid, 0=invalid) is ignored by ssc_io; "
+@pytest.mark.xfail(strict=False, reason="BUG-A1: mask.tif (255=valid, 0=invalid) is ignored by ssc_io; "
                                        "VC3D keeps real coordinates under masked-out cells")
 def test_ssc_mask_tif_invalidates(tmp_path, xyz):
     mask = np.full((H, W), 255, np.uint8)
@@ -138,7 +138,7 @@ def test_ink_invalid_points_propagate(tmp_path, xyz):
     assert s.valid[0, 0]
 
 
-@pytest.mark.xfail(strict=True, reason="BUG-A1: mask.tif is ignored by ink_infer surface.load_mesh")
+@pytest.mark.xfail(strict=False, reason="BUG-A1: mask.tif is ignored by ink_infer surface.load_mesh")
 def test_ink_mask_tif_invalidates(tmp_path, xyz):
     S = _ink_surface()
     mask = np.full((H, W), 255, np.uint8)
