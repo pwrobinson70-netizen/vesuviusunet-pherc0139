@@ -16,7 +16,7 @@ python tools/phantom_scroll/benchmark.py --size 256 --json bench.json      # all
 ## Model
 
 The scroll axis is z. In each xy plane the sheet is an Archimedean spiral `r = r0 + pitch * (w + phi / 2 pi)`
-(`--irregular` adds a smooth wobble of that fraction of the pitch); sheet `k` is winding `w = k`,
+(`--irregular` adds a smooth wobble of that fraction of the pitch; it must be < 0.30, above which neighbouring turns cross and the tool refuses); sheet `k` is winding `w = k`,
 `k = 0 .. turns-1`. Sheet profile: Gaussian, FWHM `--thickness`; brightness texture (`--texture`), white
 noise (`--noise`). Deformation `T`, applied to **everything**: axis drift (`--tilt`), affine squash about the
 axis (`--squash`, `--squash-angle`), a smooth non-rigid warp (`--warp-amp`, `--warp-wavelength`; a few random

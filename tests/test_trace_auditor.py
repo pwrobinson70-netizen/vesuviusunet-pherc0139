@@ -93,9 +93,12 @@ def test_ramped_step_is_found_and_a_small_step_is_not():
     assert len(ta.detect_jumps(th, r + 0.4 * 22.0 * (np.arange(360) >= 200), 22.0, ta.Params(wn_jump_pitch=0.3))) == 1
 
 
-def test_step_inside_the_first_window_is_not_tested():
-    th, r = spiral(n=360, turns=1.5)                                # 20 deg = 1/18 turn = 20 of 540 deg... first ~13 points
-    assert ta.detect_jumps(th, r + 22.0 * (np.arange(360) >= 4), 22.0, P) == []
+def test_step_inside_the_first_window_is_tested_with_truncated_windows():
+    """REVIEW_ROUND2 A2: used to assert the opposite (the first and last 20 degrees were blind)."""
+    th, r = spiral(n=360, turns=1.5)
+    (j,) = ta.detect_jumps(th, r + 22.0 * (np.arange(360) >= 8), 22.0, P)
+    assert abs(j["index"] - 8) <= 1
+    assert ta.detect_jumps(th, r + 22.0 * (np.arange(360) >= 2), 22.0, P) == []   # fewer than 3 points before it: still untestable
 
 
 def test_local_pitch_is_measured_per_point_and_overridable(vol):
