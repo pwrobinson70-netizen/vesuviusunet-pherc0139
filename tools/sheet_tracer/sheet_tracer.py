@@ -64,6 +64,7 @@ class SeedError(ValueError):
 @dataclass
 class Params:
     pitch_vox: float | None = None        # CT sheet pitch (voxels); default: measured at the seed with ssc.ct_pitches
+    global_pitch: bool = False            # v0.2: measure the seed pitch with the OLD sheet_spacing_check estimator (default: the local one)
     step_vox: float | None = None         # arc length between grid points (voxels); default step_pitch_frac x pitch
     step_pitch_frac: float = 0.2          # ... used when step_vox is not given
     snap_pitch: float = 0.5               # snap window: +/- this x pitch along the normal
@@ -161,7 +162,7 @@ class Tracer:
         return newP, off, found, nearest
 
     # ---------------------------------------------------------------- pitch
-    def measure_pitch(self, seed, n):
+    def measure_pitch(self, seed, n, global_pitch=False):
         """CT pitch at the seed with sheet_spacing_check.ct_pitches on the seed's z slice (reused, not copied)."""
         nxy = np.array([n[0], n[1]])
         L = np.linalg.norm(nxy)
@@ -173,7 +174,7 @@ class Tracer:
         line = ssc.Line(xy, np.arange(len(k)), np.zeros(len(k), int), np.zeros(len(k)))
         zi = int(round(seed[2]))
         tile = self.raw[zi].astype(np.float32)
-        pp = ssc.ct_pitches(tile, (0, 0), line, 1.0, ssc.Params())
+        pp = ssc.ct_pitches(tile, (0, 0), line, 1.0, ssc.Params(global_pitch=global_pitch))
         pp = pp[np.isfinite(pp)]
         return float(np.median(pp)) if len(pp) else float("nan")
 
@@ -223,7 +224,7 @@ def trace(vol, seed_xyz, p: Params | None = None, tracer: Tracer | None = None, 
             "depends on where the seed is; patches grown from different seeds will have opposite handedness")
     n0, coh = T.normals_at(seed[None])
     n0 = canon(n0[0], seed)
-    pitch = p.pitch_vox if p.pitch_vox else T.measure_pitch(seed, n0)
+    pitch = p.pitch_vox if p.pitch_vox else T.measure_pitch(seed, n0, p.global_pitch)
     if not np.isfinite(pitch) or pitch <= 0:
         raise SeedError("no sheet structure around the seed: the CT sheet pitch could not be measured (the seed is in a gap, "
                         "outside the scroll, or on a flat-lying sheet); move the seed onto a sheet or give --pitch-vox")
@@ -430,6 +431,8 @@ def build_parser():
         elif f.name == "axis_xy":
             ap.add_argument(flag, type=float, nargs=2, metavar=("X", "Y"), default=None,
                             help="scroll axis (x, y) in voxels: orient normals away from it (one handedness for all patches)")
+        elif isinstance(v, bool):
+            ap.add_argument(flag, action="store_true", help="(off by default)")
         else:
             ap.add_argument(flag, type=type(v), default=v)
     return ap

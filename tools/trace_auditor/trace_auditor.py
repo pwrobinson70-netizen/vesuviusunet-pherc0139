@@ -38,7 +38,7 @@ import uf_io  # noqa: E402
 import umbilicus_finder as uf  # noqa: E402
 from ssc_io import ArrayVolume, InputError, PngVolume, ZarrVolume, load_mesh  # noqa: E402
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 PASS, FAIL, NJ = "PASS", "FAIL", "NOT JUDGED"
 
 
@@ -70,6 +70,11 @@ class Params:
     min_clean_fraction: float = 0.8         # sheet_spacing_check: mean clean fraction over heights
     expect_side: str = "either"             # 'either', 'outward' (B further out than A) or 'inward'
     pitch_vox: float | None = None          # override the measured CT pitch (voxels)
+    # --- v0.2: local pitch confidence -> NOT JUDGED regions (PR #17 finding 6: on real data every trace FAILed, the unbroken ones too)
+    global_pitch: bool = False              # OLD behaviour: no confidence, every region judged, one-estimator pitch (also forwarded to --ssf-/--ssc-)
+    min_pitch_confidence: float = 0.3       # a region whose median local-pitch confidence is below this is NOT JUDGED (judgement call; see the PR)
+    region_points: int = 15                 # a region = this many consecutive cut-line points (tumbling windows along each run)
+    min_judged_fraction: float = 0.5        # PASS needs at least this fraction of the cut line judged; below it the verdict is NOT JUDGED
 
 
 def _sub_flags(ap, prefix, cls, skip=()):
@@ -77,6 +82,10 @@ def _sub_flags(ap, prefix, cls, skip=()):
         if f.name in skip:
             continue
         v = f.default
+        if isinstance(v, bool):
+            ap.add_argument(f"--{prefix}-" + f.name.replace("_", "-"), dest=f"{prefix}__{f.name}", action="store_const", const=True,
+                            default=None, help=f"{cls.__module__}.Params.{f.name} (default {v})")
+            continue
         t = float if v is None else type(v)
         ap.add_argument(f"--{prefix}-" + f.name.replace("_", "-"), dest=f"{prefix}__{f.name}", type=t, default=None,
                         help=f"{cls.__module__}.Params.{f.name} (default {v})")
@@ -229,23 +238,52 @@ def local_pitch(vol, line, z0, ssf_p, override=None):
     return median_filter(pp, size=15, mode="nearest")
 
 
-def cut_polar(line, centre_yx, pitch):
-    """Cut line as runs of (col, angle unwrapped, radius, xy, pitch). Runs are consecutive columns."""
+def judged_regions(conf, run, region_points, min_conf):
+    """Boolean per point: True where the REGION (a tumbling window of `region_points` consecutive points of one run) has a
+    median local-pitch confidence of at least `min_conf`. conf None = everything judged (override / --global-pitch)."""
+    n = len(run)
+    if conf is None:
+        return np.ones(n, bool)
+    c = np.nan_to_num(np.asarray(conf, float), nan=0.0)
+    out = np.zeros(n, bool)
+    for s, e in ssc._run_bounds(run):
+        for i in range(s, e, max(1, region_points)):
+            j = min(e, i + max(1, region_points))
+            out[i:j] = float(np.median(c[i:j])) >= min_conf
+    return out
+
+
+def _col_lookup(cols, mask):
+    return {int(c): bool(m) for c, m in zip(cols, mask)}
+
+
+def _judged_at(table, col, reach=2):
+    """Judged flag of grid column `col` (nearest cut point within `reach` columns); False if the trace has none there."""
+    for d in sorted(range(-reach, reach + 1), key=abs):
+        if int(col) + d in table:
+            return table[int(col) + d]
+    return False
+
+
+def cut_polar(line, centre_yx, pitch, judged=None):
+    """Cut line as runs of (col, angle unwrapped, radius, xy, pitch, judged). Runs are consecutive columns."""
     cy, cx = centre_yx
     runs = []
     for s, e in ssc._run_bounds(line.run):
         xy = line.xy[s:e]
         ang = np.unwrap(np.arctan2(xy[:, 1] - cy, xy[:, 0] - cx))
-        runs.append(dict(col=line.col[s:e], theta=ang, r=np.hypot(xy[:, 0] - cx, xy[:, 1] - cy), xy=xy, pitch=pitch[s:e]))
+        runs.append(dict(col=line.col[s:e], theta=ang, r=np.hypot(xy[:, 0] - cx, xy[:, 1] - cy), xy=xy, pitch=pitch[s:e],
+                         judged=np.ones(e - s, bool) if judged is None else judged[s:e]))
     return runs
 
 
-def winding_check_height(line, centre, pitch, p: Params):
-    """-> dict(status, reason, jumps=[...], runs=[...]) for one trace at one height (pitch: per cut-line point)."""
-    runs = cut_polar(line, centre, pitch)
+def winding_check_height(line, centre, pitch, p: Params, judged=None):
+    """-> dict(status, reason, jumps=[...], runs=[...]) for one trace at one height (pitch: per cut-line point). Jumps in regions
+    that are not judged (`judged` per point) are left out and counted in `n_jumps_unjudged`."""
+    runs = cut_polar(line, centre, pitch, judged)
     if not runs:
         return dict(status=NJ, reason="trace has no cut line at this height", jumps=[], runs=[])
-    jumps, judged, why = [], 0, []
+    jumps, judged, why, skipped_jumps = [], 0, [], 0
     for ru in runs:
         th = ru["theta"]
         n = len(th)
@@ -259,12 +297,18 @@ def winding_check_height(line, centre, pitch, p: Params):
             continue
         judged += 1
         for j in detect_jumps(th, ru["r"], ru["pitch"], p):
+            if not ru["judged"][j["index"]]:
+                skipped_jumps += 1
+                continue
             jumps.append(dict(col=int(ru["col"][j["index"]]), angle_deg=float(math.degrees(th[j["index"]]) % 360.0),
                               step_vox=j["step"], step_pitches=j["pitches"],
                               x=float(ru["xy"][j["index"], 0]), y=float(ru["xy"][j["index"], 1])))
     if judged == 0:
-        return dict(status=NJ, reason="; ".join(why) or "no usable run", jumps=[], runs=runs)
-    return dict(status=FAIL if jumps else PASS, reason="", jumps=jumps, runs=runs)
+        return dict(status=NJ, reason="; ".join(why) or "no usable run", jumps=[], runs=runs, n_jumps_unjudged=skipped_jumps)
+    if not any(ru["judged"].any() for ru in runs):
+        return dict(status=NJ, reason="local pitch confidence too low everywhere on this line", jumps=[], runs=runs,
+                    n_jumps_unjudged=skipped_jumps)
+    return dict(status=FAIL if jumps else PASS, reason="", jumps=jumps, runs=runs, n_jumps_unjudged=skipped_jumps)
 
 
 def pair_offsets(runs_a, runs_b):
@@ -317,15 +361,30 @@ def _check(name, status, reason, **extra):
 def audit(meshes, vol, heights, centre, p: Params, ssf_p, ssc_p, log=None):
     """Returns the report dict. meshes = [A] or [A, B]."""
     log = log or (lambda m: None)
-    traces = [dict(name=m.name, checks=[], heights=[]) for m in meshes]
+    if p.global_pitch:                                         # one flag switches the whole auditor back to the old pitch handling
+        ssf_p, ssc_p = dataclasses.replace(ssf_p, global_pitch=True), dataclasses.replace(ssc_p, global_pitch=True)
+    traces = [dict(name=m.name, checks=[], heights=[], judged_fraction=0.0) for m in meshes]
     pitches = {}                                               # (trace index, height) -> pitch
     # ---- switch finder + winding jumps per trace
     polar = {}
     for ti, m in enumerate(meshes):
         log(f"sheet_switch_finder on {m.name}")
-        res = ssf.run_finder(m, vol, heights, ssf_p)
+        res = ssf.run_finder(m, vol, heights, ssf_p, want_states=True)
+        states = res.pop("states")
         recs = {r["z"]: r for r in res["heights"]}
-        bad_sw = [s for s in res["switches"] if s["confidence"] >= p.min_switch_confidence]
+        # regions whose local-pitch confidence is too low are NOT JUDGED: their switches and jumps do not count
+        jarr, jtab, tot_pts, ok_pts = {}, {}, 0, 0
+        for h in heights:
+            stt = states.get(float(h))
+            if stt is None:
+                continue
+            jm = judged_regions(stt["pitch_conf"], stt["line"].run, p.region_points, p.min_pitch_confidence)
+            jarr[float(h)], jtab[float(h)] = jm, _col_lookup(stt["line"].col, jm)
+            tot_pts, ok_pts = tot_pts + len(jm), ok_pts + int(jm.sum())
+        traces[ti]["judged_fraction"] = (ok_pts / tot_pts) if tot_pts else 0.0
+        cand_sw = [s for s in res["switches"] if s["confidence"] >= p.min_switch_confidence]
+        bad_sw = [s for s in cand_sw if _judged_at(jtab.get(float(s["height"]), {}), s["col"])]
+        unj_sw = len(cand_sw) - len(bad_sw)
         judged = [h for h in heights if recs[float(h)]["n_points"] > 0 and not recs[float(h)]["note"]
                   and recs[float(h)]["fraction_tracked"] >= p.min_tracked_fraction]
         unj = len(heights) - len(judged)
@@ -340,12 +399,15 @@ def audit(meshes, vol, heights, centre, p: Params, ssf_p, ssc_p, log=None):
                                                    f"z={h:g}: {recs[float(h)]['note'] or 'tracked ' + format(recs[float(h)]['fraction_tracked'], '.2f')}"
                                                    for h in heights if h not in judged)))
         else:
-            traces[ti]["checks"].append(_check("switch_finder", PASS, f"no switch at {len(judged)} judged heights"))
+            traces[ti]["checks"].append(_check("switch_finder", PASS, f"no switch at {len(judged)} judged heights" + (
+                f" ({unj_sw} switch(es) of confidence >= {p.min_switch_confidence:g} lie in regions whose local pitch is not "
+                f"trusted and are not counted)" if unj_sw else "")))
         for h in heights:
             r = recs[float(h)]
             pitches[(ti, float(h))] = p.pitch_vox or r["ct_pitch_vox"]
             traces[ti]["heights"].append(dict(z=float(h), tracked=r["fraction_tracked"], pitch=r["ct_pitch_vox"],
-                                              n_switches=r["n_switches"]))
+                                              n_switches=r["n_switches"], pitch_confidence=r.get("pitch_confidence_mean"),
+                                              judged_fraction=float(jarr[float(h)].mean()) if float(h) in jarr else 0.0))
         # ---- winding jumps
         log(f"winding-number check on {m.name}")
         sp = ssc.Params(max_gap_vox=float("inf"), invalid_value=ssf_p.invalid_value)
@@ -353,15 +415,22 @@ def audit(meshes, vol, heights, centre, p: Params, ssf_p, ssc_p, log=None):
         for h in heights:
             c = centre.at(float(h)) if centre else None
             line = ssc.cut_line(m, float(h), sp)
-            parr = local_pitch(vol, line, float(h), ssf_p, p.pitch_vox) if c is not None else None
+            stp = states.get(float(h))
+            if c is None:
+                parr = None
+            elif (not p.global_pitch) and p.pitch_vox is None and stp is not None and len(stp["pitch_pp"]) == line.n:
+                parr = stp["pitch_pp"]                          # the finder's local pitch (tilt-filtered normals, smoothed)
+            else:
+                parr = local_pitch(vol, line, float(h), ssf_p, p.pitch_vox)
             if c is None or parr is None:
                 unj_w += 1
                 wres.append(dict(z=float(h), status=NJ, reason="no centre here" if c is None else
                                  ("no cut line at this height" if line.n == 0 else "no CT pitch")))
                 continue
-            w = winding_check_height(line, c, parr, p)
+            w = winding_check_height(line, c, parr, p, jarr.get(float(h)) if len(jarr.get(float(h), [])) == line.n else None)
             polar[(ti, float(h))] = (w["runs"], c, float(np.median(parr)), w["jumps"])
-            wres.append(dict(z=float(h), status=w["status"], reason=w["reason"], jumps=w["jumps"]))
+            wres.append(dict(z=float(h), status=w["status"], reason=w["reason"], jumps=w["jumps"],
+                             n_jumps_unjudged=w.get("n_jumps_unjudged", 0)))
             unj_w += w["status"] == NJ
             fails += [dict(z=float(h), **j) for j in w["jumps"]]
         if fails:
@@ -372,8 +441,10 @@ def audit(meshes, vol, heights, centre, p: Params, ssf_p, ssc_p, log=None):
             traces[ti]["checks"].append(_check("winding_jumps", NJ, f"{unj_w} of {len(heights)} heights not judged: " + "; ".join(
                 f"z={w['z']:g}: {w['reason']}" for w in wres if w["status"] == NJ), heights=wres))
         else:
-            traces[ti]["checks"].append(_check("winding_jumps", PASS, f"no radius jump at {len(heights) - unj_w} judged heights",
-                                               heights=wres))
+            skipped = sum(w.get("n_jumps_unjudged", 0) for w in wres)
+            traces[ti]["checks"].append(_check("winding_jumps", PASS, f"no radius jump at {len(heights) - unj_w} judged heights" + (
+                f" ({skipped} jump(s) lie in regions whose local pitch is not trusted and are not counted)" if skipped else ""),
+                heights=wres))
     pair = None
     if len(meshes) == 2:
         A, B = meshes
@@ -384,8 +455,12 @@ def audit(meshes, vol, heights, centre, p: Params, ssf_p, ssc_p, log=None):
                 ssc_p = dataclasses.replace(ssc_p, band_height_vox=1.0)
             rs = ssc.run_check(A, B, vol, heights, ssc_p)
             hh = [h for h in rs["heights"] if h["n_points_a"] and h["n_points_b"]]
+            n_all = len(hh)
+            if not ssc_p.global_pitch:                          # heights whose local pitch is not trusted are not judged
+                hh = [h for h in hh if h.get("pitch_confidence_mean", 0.0) >= p.min_pitch_confidence]
             if not hh:
-                sc = _check("spacing", NJ, "no height where both traces have a cut line")
+                sc = _check("spacing", NJ, "no height where both traces have a cut line" if not n_all else
+                            f"local pitch confidence below {p.min_pitch_confidence:g} at all {n_all} heights")
             else:
                 clean = float(np.mean([h["clean_fraction"] for h in hh]))
                 sh, sk, un = (float(np.mean([h[k] for h in hh])) for k in ("shared_fraction", "skipped_fraction", "uncovered_fraction"))
@@ -406,9 +481,10 @@ def audit(meshes, vol, heights, centre, p: Params, ssf_p, ssc_p, log=None):
             rb, _, pb, _ = polar[kb]
             pit = np.concatenate([ru["pitch"] for ru in rb])         # B's local pitch at each of its points
             d = pair_offsets(ra, rb) / pit
+            d = np.where(np.concatenate([ru["judged"] for ru in rb]), d, np.nan)     # B points in regions not judged are left out
             d = d[np.isfinite(d)]
             if d.size == 0:
-                rows.append(dict(z=float(h), status=NJ, reason="A has no sheet at the angles of B"))
+                rows.append(dict(z=float(h), status=NJ, reason="A has no sheet at the angles of B (or B's local pitch is not trusted there)"))
                 continue
             near = np.abs(d)
             sign_ok = np.ones(d.size, bool) if p.expect_side == "either" else (
@@ -432,6 +508,10 @@ def audit(meshes, vol, heights, centre, p: Params, ssf_p, ssc_p, log=None):
         traces[1]["checks"] += [sc, wo]
         pair = dict(a=A.name, b=B.name, spacing=sc, winding_offset=wo)
     for t in traces:
+        if not any(c["status"] == FAIL for c in t["checks"]) and t["judged_fraction"] < p.min_judged_fraction:
+            t["checks"].append(_check("pitch_confidence", NJ, f"only {100 * t['judged_fraction']:.0f}% of the cut line has a trusted local "
+                                      f"pitch (confidence >= {p.min_pitch_confidence:g} over {p.region_points} points; need "
+                                      f"{100 * p.min_judged_fraction:.0f}%): a PASS would mean nothing here"))
         st = [c["status"] for c in t["checks"]]
         t["verdict"] = FAIL if FAIL in st else (NJ if NJ in st else PASS)
         t["reasons"] = [f"{c['check']}: {c['reason']}" for c in t["checks"] if c["status"] != PASS] or \
@@ -444,7 +524,7 @@ def text_report(rep, inputs):
     out = [f"trace_auditor {__version__}", f"CT: {inputs['ct']}   centre: {inputs['centre']}   heights: "
            + ", ".join(f"{h:g}" for h in inputs["heights"]), ""]
     for t in rep["traces"]:
-        out.append(f"{t['name']}: {t['verdict']}")
+        out.append(f"{t['name']}: {t['verdict']}   (judged {100 * t['judged_fraction']:.0f}% of the cut line)")
         for c in t["checks"]:
             out.append(f"    [{c['status']:<10}] {c['check']}: {c['reason']}")
     for w in inputs.get("warnings", []):
@@ -499,6 +579,9 @@ def build_parser():
     d = Params()
     for f in dataclasses.fields(Params):
         v = getattr(d, f.name)
+        if isinstance(v, bool):
+            ap.add_argument("--" + f.name.replace("_", "-"), dest=f.name, action="store_true", help="(off by default)")
+            continue
         ap.add_argument("--" + f.name.replace("_", "-"), dest=f.name, type=(float if v is None else type(v)), default=v)
     _sub_flags(ap, "ssf", ssf.Params)
     _sub_flags(ap, "ssc", ssc.Params)
@@ -517,6 +600,8 @@ def main(argv=None):
         ssf_p = _sub_params(a, "ssf", ssf.Params, vertical=1, **({"pitch_vox": p.pitch_vox} if p.pitch_vox else {}))
         ssf_p.validate()
         ssc_p = _sub_params(a, "ssc", ssc.Params)
+        if p.global_pitch:
+            ssf_p, ssc_p = dataclasses.replace(ssf_p, global_pitch=True), dataclasses.replace(ssc_p, global_pitch=True)
         uf_p = _sub_params(a, "uf", uf.Params)
         meshes = [load_mesh(t, ssf_p.invalid_value, a.transpose) for t in (a.trace_a, a.trace_b) if t]
         vox = a.voxel_size_um or next((m.voxel_um for m in meshes if m.voxel_um), None)

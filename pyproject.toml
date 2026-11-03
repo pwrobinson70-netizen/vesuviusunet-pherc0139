@@ -43,6 +43,7 @@ packages = [
     "vun_tools._tools.ink_infer",
     "vun_tools._tools.sheet_tracer",
     "vun_tools._tools.winding_sweep",
+    "vun_tools._tools.common",
 ]
 
 [tool.setuptools.package-dir]
@@ -56,3 +57,4 @@ vesuvius_unet = "vesuvius_unet"
 "vun_tools._tools.ink_infer" = "tools/ink_infer"
 "vun_tools._tools.sheet_tracer" = "tools/sheet_tracer"
 "vun_tools._tools.winding_sweep" = "tools/winding_sweep"
+"vun_tools._tools.common" = "tools/common"
