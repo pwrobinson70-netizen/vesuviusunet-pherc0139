@@ -36,22 +36,11 @@ import umbilicus_finder as uf  # noqa: E402
 import uf_io  # noqa: E402
 from ssc_io import ArrayVolume, load_mesh  # noqa: E402
 
-PRESETS = {
-    "round": dict(),
-    "mild": dict(squash=0.85, squash_angle=30.0, warp_amp=3.0, irregular=0.05, tilt=(0.05, -0.03)),
-    "bad": dict(squash=0.55, squash_angle=30.0, warp_amp=7.0, irregular=0.12, tilt=(0.10, -0.08)),
-    "merged": dict(squash=0.8, warp_amp=3.0, irregular=0.05, merge_strength=0.85, merge_turn=1.5,
-                   merge_phi=90.0, merge_sigma=0.09),      # merge_sigma given as a fraction of --size
-}
+PRESETS = ps.PRESETS                      # v0.2: the table lives in phantom_scroll.py (round, mild, bad = crushed, merged + the harder ones)
 
 
 def make_params(name, size, seed):
-    kw = dict(PRESETS[name])
-    if "merge_sigma" in kw:
-        kw["merge_sigma"] = kw["merge_sigma"] * size
-    scale = size / 256.0
-    return ps.Params(shape=(size,) * 3, seed=seed, turns=4, r0=18.0 * scale, pitch=22.0 * scale,
-                     thickness=6.0 * scale, grid_step=4.0 * scale, **kw)
+    return ps.make_params(name, size, seed)
 
 
 def switch_specs(n_cols):

@@ -1,0 +1,20 @@
+- sheet_spacing_check.ratio_min: keep (best value 0.4 gains only +0.000: flat)
+- sheet_spacing_check.ratio_max: keep (best value 1.5 gains only +0.000: flat)
+- sheet_spacing_check.median_window: change to 41 (0.957 -> 0.993, plateau 25 to 41); CHOSEN VALUE IS AT THE EDGE OF THE SWEPT RANGE, sweep wider before adopting
+- sheet_spacing_check.onsheet_radius_px: keep (best value 1.5 gains only +0.000: flat)
+- sheet_switch_finder.step_min: keep (best value 0.45 gains only +0.000: flat)
+- sheet_switch_finder.step_max: keep (best value 1.4 gains only +0.000: flat)
+- sheet_switch_finder.k_points: keep (best value 8 gains only -0.002: flat)
+- sheet_switch_finder.median_window: change to 1 (0.939 -> 0.946, plateau 1 to 41); CHOSEN VALUE IS AT THE EDGE OF THE SWEPT RANGE, sweep wider before adopting
+- sheet_switch_finder.onsheet_radius_px: keep (best value 2 gains only +0.000: flat)
+- sheet_switch_finder.track_max_jump_pitch: change to 0.7 (0.939 -> 0.946, plateau 0.5 to 1)
+- sheet_switch_finder.max_tilt_deg: change to 60 (0.939 -> 0.981, plateau 40 to 85)
+- umbilicus_finder.coherence_min: change to 0.2 (0.867 -> 0.877, plateau 0.1 to 0.4)
+- umbilicus_finder.min_coverage_deg: keep (best value 180 gains only +0.000: flat)
+- umbilicus_finder.max_residual_pitch: change to 3 (0.867 -> 0.875, plateau 1 to 3); CHOSEN VALUE IS AT THE EDGE OF THE SWEPT RANGE, sweep wider before adopting
+- trace_auditor.wn_jump_pitch: keep (best value 0.6 gains only +0.000: flat)
+- trace_auditor.wn_pair_lo: keep (best value 0.5 gains only +0.000: flat)
+- trace_auditor.wn_pair_hi: change to 2 (0.880 -> 0.895, plateau 1.7 to 2.5)
+- trace_auditor.wn_pair_frac: change to 0.5 (0.880 -> 0.895, plateau 0.5 to 0.65); CHOSEN VALUE IS AT THE EDGE OF THE SWEPT RANGE, sweep wider before adopting
+- trace_auditor.min_clean_fraction: keep (best value 0.5 gains only +0.003: flat)
+- trace_auditor.min_switch_confidence: change to 0.9 (0.880 -> 0.899, plateau 0.9 to 0.9); CHOSEN VALUE IS AT THE EDGE OF THE SWEPT RANGE, sweep wider before adopting
