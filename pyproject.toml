@@ -40,6 +40,7 @@ packages = [
     "vun_tools._tools.trace_auditor",
     "vun_tools._tools.phantom_scroll",
     "vun_tools._tools.ink_infer",
+    "vun_tools._tools.common",
 ]
 
 [tool.setuptools.package-dir]
@@ -51,3 +52,4 @@ vesuvius_unet = "vesuvius_unet"
 "vun_tools._tools.trace_auditor" = "tools/trace_auditor"
 "vun_tools._tools.phantom_scroll" = "tools/phantom_scroll"
 "vun_tools._tools.ink_infer" = "tools/ink_infer"
+"vun_tools._tools.common" = "tools/common"
