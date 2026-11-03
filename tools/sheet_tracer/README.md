@@ -30,6 +30,7 @@ Pitch is measured at the seed by `sheet_spacing_check.ct_pitches` (imported), or
 | `--sigma-smooth`, `--sigma-grad`, `--sigma-tensor` | 1, 1.5, 3 | voxels |
 | `--seed-snap-pitch`, `--seed-min-coherence` | 0.25, 0.3 | the seed must be this close to a peak and on a planar structure tensor |
 | `--edge-margin` | 2 | voxels from the volume border where growth stops |
+| `--axis-xy X Y` | none | scroll axis (x, y) in voxels: every normal is oriented away from it, so all patches have the same handedness. Without it the direction the columns run (CW / CCW) depends on where the seed is (REVIEW_ROUND2 T1) and a warning is logged |
 
 ## Limits
 

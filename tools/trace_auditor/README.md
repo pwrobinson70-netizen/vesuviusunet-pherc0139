@@ -70,6 +70,7 @@ judged; else PASS. A trace is never PASS because a check was skipped.
 | `--wn-jump-pitch` | 0.6 | radius step (CT pitches) that counts as a jump |
 | `--wn-window-deg` | 20 | angle window on each side of a candidate step |
 | `--wn-window-min-points` | 3 | points each window needs |
+| `--wn-slope-mismatch` | 1.0 | where the two windows' own slopes differ by more than this x the jump threshold (over half a window) the step is the offset of two separately fitted lines (a bend is not a step) |
 | `--wn-min-points` | 12 | points a cut-line run needs |
 | `--wn-min-span-deg` | 60 | angle a run must span |
 | `--wn-monotonic` | 0.95 | fraction of steps that must run the same way in angle |
@@ -90,8 +91,12 @@ tools' READMEs. Volume input as in `sheet_spacing_check`: `--zarr`/`--zarr-level
   where the trace is relative to anything but the CT and the reference.
 - One trace on its own cannot be told from a trace that lies on the wrong sheet throughout: the offset check needs
   a reference A that is right. If A is wrong, B can pass against it.
-- The first and last `--wn-window-deg` degrees of every run are not tested for jumps (as for the switch finder's end
-  zones); a closed ring is cut at its seam.
+- Windows are cut at the ends of a run (a step needs `--wn-window-min-points` points on each side), so a jump
+  within the last 20 degrees is tested, with less evidence (REVIEW_ROUND2 A2); the switch finder's end zones are
+  unchanged. A closed ring is cut at its seam.
+- A trace that slides from one sheet to a TOUCHING one (sheets 3 voxels apart where a CT pitch is 20) has no step
+  of the size of a pitch and passes every check here (REVIEW_ROUND2 A3, strict xfail test). Where sheets merge, a
+  PASS means nothing.
 - The winding checks need the centre line. A bad centre (or a scroll whose cross-section is far from concentric
   rings, e.g. tears) gives jumps or offsets that are not switches; look at the PNGs.
 - The winding offset measures geometry only. A B that is exactly one pitch from A but in a dark gap passes it;

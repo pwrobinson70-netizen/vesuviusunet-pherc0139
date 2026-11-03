@@ -81,6 +81,7 @@ class Params:
     seed_snap_pitch: float = 0.25         # the seed must lie within this x pitch of a sheet peak
     seed_min_coherence: float = 0.3       # (l1 - l2) / l1 of the structure tensor at the seed
     edge_margin: float = 2.0              # voxels from the volume border where growth stops
+    axis_xy: tuple | None = None          # (x, y) of the scroll axis: orient every normal away from it, so the grid has one handedness
 
 
 class Tracer:
@@ -209,9 +210,19 @@ def trace(vol, seed_xyz, p: Params | None = None, tracer: Tracer | None = None, 
     seed = np.asarray(seed_xyz, float)
     if not T.inside(seed, 0.0)[0]:
         raise SeedError(f"seed {seed.tolist()} is outside the volume (x,y,z < {T.shape[2]},{T.shape[1]},{T.shape[0]})")
+    def canon(n, at):
+        """Sign of the seed normal. With --axis-xy: away from the axis (REVIEW_ROUND2 T1: one handedness for every patch).
+        Without: the largest component positive, so the direction the columns run depends on where the seed is."""
+        if p.axis_xy is not None:
+            out = np.asarray(at[:2], float) - np.asarray(p.axis_xy, float)
+            return n * (1.0 if float(n[:2] @ out) >= 0 else -1.0)
+        return n * (1.0 if n[int(np.argmax(np.abs(n)))] > 0 else -1.0)
+
+    if p.axis_xy is None:
+        log("warning: no --axis-xy: the direction the columns run (clockwise or counter-clockwise round the scroll) "
+            "depends on where the seed is; patches grown from different seeds will have opposite handedness")
     n0, coh = T.normals_at(seed[None])
-    n0 = n0[0]
-    n0 = n0 * (1.0 if n0[int(np.argmax(np.abs(n0)))] > 0 else -1.0)
+    n0 = canon(n0[0], seed)
     pitch = p.pitch_vox if p.pitch_vox else T.measure_pitch(seed, n0)
     if not np.isfinite(pitch) or pitch <= 0:
         raise SeedError("no sheet structure around the seed: the CT sheet pitch could not be measured (the seed is in a gap, "
@@ -226,8 +237,7 @@ def trace(vol, seed_xyz, p: Params | None = None, tracer: Tracer | None = None, 
                         "move the seed onto a sheet (the tracer never jumps to the neighbouring sheet)" % (
                             p.seed_snap_pitch * pitch, p.seed_snap_pitch, pitch,
                             "" if not np.isfinite(d) else f"; the nearest peak is {abs(d):.1f} voxels away"))
-    n0 = T.normals_at(s0)[0][0]
-    n0 = n0 * (1.0 if n0[int(np.argmax(np.abs(n0)))] > 0 else -1.0)
+    n0 = canon(T.normals_at(s0)[0][0], s0[0])
     step = p.step_vox if p.step_vox else p.step_pitch_frac * pitch
     snapW = p.snap_pitch * pitch
     guard = p.guard_pitch * pitch
@@ -417,6 +427,9 @@ def build_parser():
             ap.add_argument(flag, type=float, default=None)
         elif f.name == "guard_grid_radius":
             ap.add_argument(flag, type=int, default=None)
+        elif f.name == "axis_xy":
+            ap.add_argument(flag, type=float, nargs=2, metavar=("X", "Y"), default=None,
+                            help="scroll axis (x, y) in voxels: orient normals away from it (one handedness for all patches)")
         else:
             ap.add_argument(flag, type=type(v), default=v)
     return ap
@@ -425,6 +438,8 @@ def build_parser():
 def main(argv=None):
     a = build_parser().parse_args(argv)
     p = Params(**{f.name: getattr(a, f.name) for f in dataclasses.fields(Params)})
+    if p.axis_xy is not None:
+        p.axis_xy = tuple(p.axis_xy)
     try:
         vol, desc = load_volume(a)
         res = trace(vol, a.seed, p, log=lambda m: print(m, file=sys.stderr))

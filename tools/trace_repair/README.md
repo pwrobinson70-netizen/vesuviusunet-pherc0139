@@ -17,6 +17,14 @@ chain starts before the first one. Snaps that disagree with the neighbouring lin
 repair the input files are copied byte for byte. `repair_summary.json` in `--out` is the diff summary (points moved,
 max / median move, unsnapped points, outliers replaced).
 
+A reported switch is repaired only if the repair CONFIRMS it (REVIEW_ROUND2 R1): some point within `--margin` + 3 lines of
+the reported line (and within `--confirm-orth` (6) lines of where the audit saw it, when it says) must move by at least
+`--confirm-pitch` (0.5) x pitch; a real hop is about 1 pitch, a false alarm or a mislocated report is only nudged. Unconfirmed
+switches are left alone and listed in `repair_summary.json` (`unconfirmed`, with the largest move seen); with none
+confirmed the input is copied byte for byte and the verdict is NOT changed. Before this, a false alarm was "repaired" by a
+sub-voxel to 1-voxel nudge that flipped the verdict FAIL to PASS with the truth unchanged, and a mislocated report carried a
+leak down the trace.
+
 ## Limits
 
 - The growth side must be given (`--origin`); the audit does not know it. Wrong side = the wrong part is trusted.

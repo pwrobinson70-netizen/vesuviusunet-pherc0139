@@ -1,0 +1,122 @@
+{
+  "tool_version": "0.1.1",
+  "inputs": {
+    "mesh_a": "/tmp/claude-0/-home-user/ba372791-6d43-5b82-a7e7-8d8f18b96ac2/scratchpad/pad/20260623164704-w116-117.tifxyz",
+    "mesh_b": "/tmp/claude-0/-home-user/ba372791-6d43-5b82-a7e7-8d8f18b96ac2/scratchpad/pad/20260623165230-w118-119.tifxyz",
+    "ct": "testdata/pherc_paris4_45um/slices",
+    "heights": [
+      2073.0,
+      2600.0,
+      3128.0
+    ],
+    "voxel_um": 45.532
+  },
+  "params": {
+    "ratio_min": 0.5,
+    "ratio_max": 1.5,
+    "onsheet_radius_px": 2.0,
+    "otsu_bins": 256,
+    "median_window": 5,
+    "pitch_flag_frac": 0.25,
+    "profile_halflen_vox": 60.0,
+    "profile_step_px": 0.5,
+    "profile_sigma_px": 1.0,
+    "peak_prominence_frac": 0.05,
+    "peak_min_distance_px": 3.0,
+    "min_peaks": 3,
+    "tangent_halfwidth": 3,
+    "max_gap_vox": 20.0,
+    "densify_step_vox": 0.5,
+    "b_missing_cols": 5,
+    "tile_pad_px": 32,
+    "invalid_value": -1.0,
+    "min_clean_heights": null,
+    "band_height_vox": null,
+    "area_min_cos": 0.1
+  },
+  "result": {
+    "heights": [
+      {
+        "z": 2073.0,
+        "n_points_a": 347,
+        "n_points_b": 350,
+        "uncovered_a": false,
+        "uncovered_b": false,
+        "uncovered_fraction": 0.0,
+        "clean_fraction": 0.5043227665706052,
+        "shared_fraction": 0.5043227665706052,
+        "skipped_fraction": 0.023054755043227664,
+        "no_pitch_fraction": 0.0,
+        "median_ratio": 0.49214202126844286,
+        "ct_pitch_vox": 10.5,
+        "mesh_pitch_vox": 5.179244505538441,
+        "pitch_mismatch_flag": true,
+        "onsheet_fraction_a": 0.9596541786743515,
+        "onsheet_fraction_b": 0.9481268011527377,
+        "otsu_threshold": 53.291015625,
+        "pitch_fallback_fraction": 0.0,
+        "note": ""
+      },
+      {
+        "z": 2600.0,
+        "n_points_a": 340,
+        "n_points_b": 343,
+        "uncovered_a": false,
+        "uncovered_b": false,
+        "uncovered_fraction": 0.0,
+        "clean_fraction": 0.3764705882352941,
+        "shared_fraction": 0.5352941176470588,
+        "skipped_fraction": 0.01764705882352941,
+        "no_pitch_fraction": 0.0,
+        "median_ratio": 0.44913356508488156,
+        "ct_pitch_vox": 10.0,
+        "mesh_pitch_vox": 4.6405083680040775,
+        "pitch_mismatch_flag": true,
+        "onsheet_fraction_a": 0.8117647058823529,
+        "onsheet_fraction_b": 0.8029411764705883,
+        "otsu_threshold": 54.287109375,
+        "pitch_fallback_fraction": 0.11470588235294117,
+        "note": ""
+      },
+      {
+        "z": 3128.0,
+        "n_points_a": 336,
+        "n_points_b": 342,
+        "uncovered_a": false,
+        "uncovered_b": false,
+        "uncovered_fraction": 0.0,
+        "clean_fraction": 0.47023809523809523,
+        "shared_fraction": 0.40773809523809523,
+        "skipped_fraction": 0.02976190476190476,
+        "no_pitch_fraction": 0.0,
+        "median_ratio": 0.5788074966447022,
+        "ct_pitch_vox": 9.5,
+        "mesh_pitch_vox": 5.694620923882976,
+        "pitch_mismatch_flag": true,
+        "onsheet_fraction_a": 0.7619047619047619,
+        "onsheet_fraction_b": 0.75,
+        "otsu_threshold": 54.287109375,
+        "pitch_fallback_fraction": 0.13988095238095238,
+        "note": ""
+      }
+    ],
+    "area": {
+      "min_clean_heights": 2,
+      "n_heights": 3,
+      "voxel_um": 45.532,
+      "clean_columns": 140,
+      "columns_with_data": 346,
+      "clean_area_vox2": 4837294.464116398,
+      "sampled_area_vox2": 11599769.268201366,
+      "excluded_nan_normal_points": 6,
+      "excluded_nan_normal_arc_vox": 60.47077479820371,
+      "clean_area_cm2": 100.2850001920601,
+      "sampled_area_cm2": 240.48212733766604
+    },
+    "warnings": [
+      "mesh 20260623164704-w116-117.tifxyz: 6841 of 46410 grid cells have no valid data (a coordinate equals -1 or is non-finite); cut lines skip them",
+      "mesh 20260623165230-w118-119.tifxyz: 6518 of 46410 grid cells have no valid data (a coordinate equals -1 or is non-finite); cut lines skip them",
+      "6 cut points (arc 60.5 vox) have an undefined surface normal next to holes; they are excluded from the area and count as not clean"
+    ]
+  }
+}
