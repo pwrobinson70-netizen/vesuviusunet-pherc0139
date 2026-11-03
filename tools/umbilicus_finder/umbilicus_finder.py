@@ -494,6 +494,9 @@ def main(argv=None):
     uf_io.write_csv(out / "umbilicus.csv", rows)
     summary["villa_points_exported"] = uf_io.write_villa_json(out / "umbilicus_villa.json", rows, a.export_all)
     uf_io.write_json(out / "umbilicus_summary.json", summary)
+    if summary["villa_points_exported"] == 0:
+        print("warning: no OK slice, so umbilicus_villa.json holds no control points (see 'reason' in "
+              "umbilicus.csv; --export-all writes the LOW ones)", file=sys.stderr)
     print(f"{summary['n_ok']} OK / {summary['n_low']} LOW of {summary['n_slices']} slices; "
           f"pitch {summary['pitch_vox']:.1f} vox ({summary['pitch_source']}); outputs in {out}")
     if all(not np.isfinite(r["y"]) for r in rows):

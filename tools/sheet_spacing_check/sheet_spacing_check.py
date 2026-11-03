@@ -90,7 +90,11 @@ def cut_line(mesh, z0, p: Params) -> Line:
     g = _nz2_grid(mesh)
     nz2 = g[r, c] + t * (g[r + 1, c] - g[r, c])
     step = np.hypot(*np.diff(xy, axis=0).T) if len(c) > 1 else np.zeros(0)
-    brk = (np.diff(c) != 1) | (step > p.max_gap_vox)
+    # max_gap_vox is a floor: on a coarse grid (VC3D scale 0.05 = 20 vox per cell) the usual
+    # point-to-point step already exceeds it, which used to cut every point into its own run.
+    consecutive = np.diff(c) == 1
+    typical = float(np.median(step[consecutive])) if consecutive.any() else 0.0
+    brk = ~consecutive | (step > max(p.max_gap_vox, 3.0 * typical))
     run = np.concatenate([[0], np.cumsum(brk)])
     return Line(xy, c, run, nz2)
 
@@ -365,6 +369,12 @@ def run_check(A, B, vol, heights, p: Params, voxel_um=None, overlay_cb=None):
             warnings.append(f"mesh {m.name}: {m.n_invalid} of {m.valid.size} grid cells have no valid "
                             f"data (a coordinate equals {p.invalid_value:g} or is non-finite); "
                             "cut lines skip them")
+    unmeasured = [r["z"] for r in rows if r["no_pitch_fraction"] > 0.5 and not r["note"]]
+    if unmeasured:
+        warnings.append(f"no CT sheet pitch could be measured at z = {', '.join(f'{z:g}' for z in unmeasured)} "
+                        f"(fewer than {p.min_peaks} peaks within +/-{p.profile_halflen_vox:g} vox of the cut line, or "
+                        "runs too short for a tangent): those points count as not clean. If the sheets are more than "
+                        "about a third of --profile-halflen-vox apart, raise --profile-halflen-vox")
     if excl_pts:
         warnings.append(f"{excl_pts} cut points (arc {excl_arc:.1f} vox) have an undefined surface "
                         "normal next to holes; they are excluded from the area and count as not clean")
