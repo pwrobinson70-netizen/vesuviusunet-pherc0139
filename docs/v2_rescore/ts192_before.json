@@ -1,0 +1,341 @@
+[
+  {
+    "phantom": "crushed",
+    "seed": "t1-mid",
+    "turn": 1,
+    "seed_xyz": [
+      64.76318359375,
+      87.40550994873047,
+      92.94774627685547
+    ],
+    "points": 2501,
+    "area_vx2": 22120.08203125,
+    "stop": "max_rows_cols",
+    "on_turn_before": 1.0,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "PASS",
+    "repaired": false
+  },
+  {
+    "phantom": "crushed",
+    "seed": "t2-mid",
+    "turn": 2,
+    "seed_xyz": [
+      49.14076232910156,
+      82.76460266113281,
+      93.65235900878906
+    ],
+    "points": 2501,
+    "area_vx2": 21850.453125,
+    "stop": "max_rows_cols",
+    "on_turn_before": 1.0,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "PASS",
+    "repaired": false
+  },
+  {
+    "phantom": "crushed",
+    "seed": "t2-low",
+    "turn": 2,
+    "seed_xyz": [
+      77.2575454711914,
+      110.18202209472656,
+      54.89120864868164
+    ],
+    "points": 1974,
+    "area_vx2": 17065.466796875,
+    "stop": "ring_no_accepted",
+    "on_turn_before": 1.0,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "PASS",
+    "repaired": false
+  },
+  {
+    "phantom": "folded",
+    "seed": "t1-mid",
+    "turn": 1,
+    "seed_xyz": [
+      60.08409881591797,
+      93.53994750976562,
+      92.96914672851562
+    ],
+    "points": 2501,
+    "area_vx2": 21824.29296875,
+    "stop": "max_rows_cols",
+    "on_turn_before": 1.0,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "PASS",
+    "repaired": false
+  },
+  {
+    "phantom": "folded",
+    "seed": "t2-mid",
+    "turn": 2,
+    "seed_xyz": [
+      43.752471923828125,
+      92.05042266845703,
+      93.28759002685547
+    ],
+    "points": 2501,
+    "area_vx2": 21573.072265625,
+    "stop": "max_rows_cols",
+    "on_turn_before": 0.9996001599360256,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 0.9996001599360256,
+    "verdict_after": "PASS",
+    "repaired": false
+  },
+  {
+    "phantom": "folded",
+    "seed": "t2-low",
+    "turn": 2,
+    "seed_xyz": [
+      70.3827896118164,
+      128.65780639648438,
+      54.3740234375
+    ],
+    "points": 1968,
+    "area_vx2": 16991.353515625,
+    "stop": "ring_no_accepted",
+    "on_turn_before": 1.0,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "PASS",
+    "repaired": false
+  },
+  {
+    "phantom": "delaminated",
+    "seed": "t1-mid",
+    "turn": 1,
+    "seed_xyz": [
+      60.08409881591797,
+      93.53994750976562,
+      92.96914672851562
+    ],
+    "points": 2501,
+    "area_vx2": 21826.076171875,
+    "stop": "max_rows_cols",
+    "on_turn_before": 1.0,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "PASS",
+    "repaired": false
+  },
+  {
+    "phantom": "delaminated",
+    "seed": "t2-mid",
+    "turn": 2,
+    "seed_xyz": [
+      43.752471923828125,
+      92.05042266845703,
+      93.28759002685547
+    ],
+    "points": 2501,
+    "area_vx2": 21837.861328125,
+    "stop": "max_rows_cols",
+    "on_turn_before": 1.0,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "PASS",
+    "repaired": false
+  },
+  {
+    "phantom": "delaminated",
+    "seed": "t2-low",
+    "turn": 2,
+    "seed_xyz": [
+      70.3827896118164,
+      128.65780639648438,
+      54.3740234375
+    ],
+    "points": 1968,
+    "area_vx2": 17238.53515625,
+    "stop": "ring_no_accepted",
+    "on_turn_before": 1.0,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "PASS",
+    "repaired": false
+  },
+  {
+    "phantom": "torn",
+    "seed": "t1-mid",
+    "turn": 1,
+    "seed_xyz": [
+      60.08409881591797,
+      93.53994750976562,
+      92.96914672851562
+    ],
+    "points": 2501,
+    "area_vx2": 21835.216796875,
+    "stop": "max_rows_cols",
+    "on_turn_before": 1.0,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "PASS",
+    "repaired": false
+  },
+  {
+    "phantom": "torn",
+    "seed": "t2-mid",
+    "turn": 2,
+    "seed_xyz": [
+      43.752471923828125,
+      92.05042266845703,
+      93.28759002685547
+    ],
+    "points": 2501,
+    "area_vx2": 21703.130859375,
+    "stop": "max_rows_cols",
+    "on_turn_before": 1.0,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "PASS",
+    "repaired": false
+  },
+  {
+    "phantom": "torn",
+    "seed": "t2-low",
+    "turn": 2,
+    "seed_xyz": [
+      70.3827896118164,
+      128.65780639648438,
+      54.3740234375
+    ],
+    "points": 1968,
+    "area_vx2": 16988.013671875,
+    "stop": "ring_no_accepted",
+    "on_turn_before": 1.0,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "PASS",
+    "repaired": false
+  },
+  {
+    "phantom": "gappy",
+    "seed": "t1-mid",
+    "turn": 1,
+    "seed_xyz": [
+      60.08409881591797,
+      93.53994750976562,
+      92.96914672851562
+    ],
+    "points": 2501,
+    "area_vx2": 21824.755859375,
+    "stop": "max_rows_cols",
+    "on_turn_before": 1.0,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "PASS",
+    "repaired": false
+  },
+  {
+    "phantom": "gappy",
+    "seed": "t2-mid",
+    "turn": 2,
+    "seed_xyz": [
+      43.752471923828125,
+      92.05042266845703,
+      93.28759002685547
+    ],
+    "points": 2460,
+    "area_vx2": 20972.7109375,
+    "stop": "ring_no_accepted",
+    "on_turn_before": 1.0,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "PASS",
+    "repaired": false
+  },
+  {
+    "phantom": "gappy",
+    "seed": "t2-low",
+    "turn": 2,
+    "seed_xyz": [
+      70.3827896118164,
+      128.65780639648438,
+      54.3740234375
+    ],
+    "points": 1914,
+    "area_vx2": 16324.18359375,
+    "stop": "ring_no_accepted",
+    "on_turn_before": 1.0,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "PASS",
+    "repaired": false
+  },
+  {
+    "phantom": "crushed-hard",
+    "seed": "t1-mid",
+    "turn": 1,
+    "seed_xyz": [
+      72.76751708984375,
+      87.91908264160156,
+      92.94998931884766
+    ],
+    "points": 1356,
+    "area_vx2": 10695.23828125,
+    "stop": "ring_no_accepted",
+    "on_turn_before": 0.8407079646017699,
+    "verdict_before": "FAIL",
+    "fails_before": [
+      "winding_jumps"
+    ],
+    "on_turn_after": 0.8738938053097345,
+    "verdict_after": "FAIL",
+    "repaired": true,
+    "fails_after": [
+      "winding_jumps"
+    ]
+  },
+  {
+    "phantom": "crushed-hard",
+    "seed": "t2-mid",
+    "turn": 2,
+    "seed_xyz": [
+      60.08784484863281,
+      83.37834930419922,
+      93.73696899414062
+    ],
+    "points": 1775,
+    "area_vx2": 14530.73046875,
+    "stop": "ring_no_accepted",
+    "on_turn_before": 0.8895774647887323,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 0.8895774647887323,
+    "verdict_after": "PASS",
+    "repaired": false
+  },
+  {
+    "phantom": "crushed-hard",
+    "seed": "t2-low",
+    "turn": 2,
+    "seed_xyz": [
+      86.82122039794922,
+      94.32666015625,
+      55.01869583129883
+    ],
+    "error": "seed rejected: seed is in a gap: no sheet peak within +/- 2.0 voxels (0.25 x pitch 8.0) along the normal; move the seed onto a sheet (the tracer never jumps to the neighbouring sheet)"
+  }
+]
