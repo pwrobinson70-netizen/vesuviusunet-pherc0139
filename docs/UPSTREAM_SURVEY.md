@@ -26,3 +26,17 @@ Fallback/cheap fourth: **vesuvius-unmerge**. **automesh**: lower priority. **scr
 - Reading each repo's main code; running their tests; confirming CPU-only.
 - Replacing "likely gain" with measured before/after on the phantom set.
 - Final ranking by (licence) x (gain to trace-quality judging).
+
+
+## Brief 22 outcome (3 Nov 2026): what was done, and how much was actually read
+
+Picks confirmed: **tifxyz-repair** (PR from `tool/upstream-advance`) and **windcheck** (PR from `tool/upstream-windcheck`, stacked on the first). Code under `tools/upstream/<name>/`, each with the
+upstream `LICENSE` unchanged, an `ATTRIBUTION.md` (author as in LICENSE, GitHub owner, repo, commit sha, what we changed) and a README that says what came from whom.
+
+| Repo | Read before use | Taken (unchanged) | Ours | Measured result |
+|---|---|---|---|---|
+| tifxyz-repair `4d6c98d` | `core.py`, `repair.py`, `checks.py` (signatures), `pyproject.toml`, the test file's imports; not `deep.py` / `report.py` / `cli.py` line by line | the whole package + its 39 tests | `geometric_repair.py`: infill from neighbours, scale re-measure, bbox after infill, `mask.tif`; `benchmark_infill.py` | 6451 / 6161 invalid vertices -> 3850 / 3595 (13-14% -> 8%); hold-out RMS 7.0 vox vs 21.5 for nearest-copy (outer ring) |
+| windcheck `2b0fb2f` | `engines/selfcross.cpp` header and CLI, `tests/test_selfcross.py`, heads of `check.py` and `ct_check.py`, `pyproject.toml`; the other ~17k lines of Python were not read | `engines/selfcross.cpp`, its 11 tests | `ct_aware_check.py` (engine call + off-sheet), `phantom_defects.py`, `score_on_phantoms.py`, `trace_auditor --windcheck` | folded phantom with planted cut and crossings: correct verdicts 4/7 -> 6/7 (128), 3/7 -> 6/7 (256); see `tools/upstream/windcheck/BENCHMARK.md` |
+
+Not done: spiral-winding-audit, vesuvius-automesh, vesuvius-unmerge (not picked: Brief 22 says exactly two); scrollreading is GPL-3.0 and was not touched. The "likely gain" column
+of the draft table above is superseded for the two picks by the measured numbers; for the other four it is still unverified.
