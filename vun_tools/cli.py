@@ -67,3 +67,7 @@ def sweep():
 
 def drift():
     return _run("label_drift", "label_drift")
+def sweep():
+    return _run("winding_sweep", "winding_sweep")
+def merge():
+    return _run("patch_merger", "patch_merger")

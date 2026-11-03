@@ -33,6 +33,8 @@ vun-ink = "vun_tools.cli:ink"
 vun-merge = "vun_tools.cli:merge"
 vun-sweep = "vun_tools.cli:sweep"
 vun-drift = "vun_tools.cli:drift"
+vun-sweep = "vun_tools.cli:sweep"
+vun-merge = "vun_tools.cli:merge"
 
 [tool.setuptools]
 packages = [
@@ -50,6 +52,7 @@ packages = [
     "vun_tools._tools.common",
     "vun_tools._tools.label_drift",
     "vun_tools._tools.crush_map",
+    "vun_tools._tools.patch_merger",
 ]
 
 [tool.setuptools.package-dir]
@@ -67,3 +70,4 @@ vesuvius_unet = "vesuvius_unet"
 "vun_tools._tools.common" = "tools/common"
 "vun_tools._tools.label_drift" = "tools/label_drift"
 "vun_tools._tools.crush_map" = "tools/crush_map"
+"vun_tools._tools.patch_merger" = "tools/patch_merger"
