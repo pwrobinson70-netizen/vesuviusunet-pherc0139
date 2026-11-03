@@ -178,12 +178,14 @@ def pitch_params(p: Params) -> "lpm.PitchParams":
                            ac_full=p.pitch_ac_full, smooth_points=p.pitch_smooth_points).validate()
 
 
-def ct_local_pitch(tile, origin, line: Line, ct_scale, p: Params) -> "lpm.LocalPitch":
-    """Local pitch (mesh voxels) and confidence at every cut-line point (tools/common/local_pitch.py)."""
+def ct_local_pitch(tile, origin, line: Line, ct_scale, p: Params, nrm=None) -> "lpm.LocalPitch":
+    """Local pitch (mesh voxels) and confidence at every cut-line point (tools/common/local_pitch.py). `nrm` = unit in-plane
+    normals (default: the tangent-based ones; callers that filter out tilted normals pass theirs, NaN = no pitch there)."""
     if line.n == 0:
         z = np.zeros(0)
         return lpm.LocalPitch(z, z, z.astype(int), z)
-    lp = lpm.local_pitch(tile, origin, to_px(line.xy, ct_scale), normals(line, p), ct_scale, line.run, pitch_params(p))
+    lp = lpm.local_pitch(tile, origin, to_px(line.xy, ct_scale), normals(line, p) if nrm is None else nrm, ct_scale,
+                         line.run, pitch_params(p))
     if p.min_pitch_confidence > 0:
         lp.pitch[lp.confidence < p.min_pitch_confidence] = np.nan
     return lp

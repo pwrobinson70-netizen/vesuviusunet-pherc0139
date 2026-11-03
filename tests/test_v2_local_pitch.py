@@ -180,3 +180,88 @@ def test_ssc_cli_global_pitch_flag(tmp_path):
     ap = S.build_parser()
     a = ap.parse_args(["a", "b", "--png-dir", "x", "--heights", "1", "--global-pitch"])
     assert a.global_pitch is True and ap.parse_args(["a", "b", "--png-dir", "x", "--heights", "1"]).global_pitch is False
+
+
+# ------------------------------------------------------------------ sheet_switch_finder: steps in LOCAL pitches
+def _spacing_phantom(ratio=3.0):
+    import phantom_scroll as ps
+    import ssc_io
+    p = ps.Params(shape=(64, 112, 112), turns=4, r0=9.0, pitch=15.0, thickness=3.0, grid_step=3.0, noise=0.02,
+                  spacing_ratio=ratio, seed=1)
+    sc = ps.Scroll(p)
+    vol, lab = sc.render()
+    return sc, ssc_io.ArrayVolume(vol)
+
+
+def _planted(sc, tmp_path, col, name):
+    import phantom_scroll as ps
+    import ssc_io
+    xyz, t = ps.switch_trace(sc, dict(turn=1, col=col, delta=1.0, width=0, row0=0))
+    ps.write_tifxyz(str(tmp_path / name), xyz, (1 / 3, 1 / 3))
+    return ssc_io.load_mesh(str(tmp_path / name))
+
+
+@pytest.fixture(scope="module")
+def spacing_world(tmp_path_factory):
+    sc, vol = _spacing_phantom()
+    tmp = tmp_path_factory.mktemp("sw")
+    phis = np.arange(sc.n_cols()) * 2 * np.pi / sc.n_cols()
+    f = sc.spacing_factor(phis, sc.zc)
+    cols = dict(compressed=int(np.argmin(f)), wide=int(np.argmax(f)))
+    return sc, vol, {k: (c, _planted(sc, tmp, c, k)) for k, c in cols.items()}, f
+
+
+@pytest.mark.parametrize("which", ["compressed", "wide"])
+def test_ssf_step_is_one_local_pitch_wherever_the_spacing_is(spacing_world, which):
+    """Spacing varies 3x round the turn. A planted +1 sheet switch is one LOCAL pitch whether the sheets are crushed or wide;
+    in units of one pitch per height it is 0.35 (missed) in the crushed sector and 1.6 (confidence 0) in the wide one."""
+    import sheet_switch_finder as F
+    sc, vol, planted, f = spacing_world
+    col, mesh = planted[which]
+    rec, sw, st = F.analyse_height(mesh, vol, 32.0, F.Params(vertical=0))
+    near = [s for s in sw if abs(s["col"] - col) <= 3]
+    assert len(near) == 1, [(s["col"], s["step"]) for s in sw]
+    assert near[0]["step"] == pytest.approx(1.0, abs=0.2) and near[0]["confidence"] >= 0.3
+    assert near[0]["direction"] == "outward" and near[0]["n_sheets"] == 1
+
+
+def test_ssf_global_pitch_is_the_old_behaviour(spacing_world):
+    """--global-pitch: one pitch per height; the same two planted switches are missed / mis-measured (recorded from 0.1.0)."""
+    import sheet_switch_finder as F
+    sc, vol, planted, f = spacing_world
+    col, mesh = planted["compressed"]
+    rec, sw, st = F.analyse_height(mesh, vol, 32.0, F.Params(vertical=0, global_pitch=True))
+    assert rec["pitch_mode"] == "global" and not [s for s in sw if abs(s["col"] - col) <= 3]       # missed
+    col, mesh = planted["wide"]
+    rec, sw, st = F.analyse_height(mesh, vol, 32.0, F.Params(vertical=0, global_pitch=True))
+    near = [s for s in sw if abs(s["col"] - col) <= 3]
+    assert len(near) == 1 and near[0]["step"] == pytest.approx(1.59, abs=0.05) and near[0]["confidence"] < 0.05
+
+
+def test_ssf_true_trace_has_no_switch_when_the_spacing_varies(spacing_world, tmp_path):
+    import phantom_scroll as ps
+    import sheet_switch_finder as F
+    import ssc_io
+    sc, vol, planted, f = spacing_world
+    ps.write_tifxyz(str(tmp_path / "t1"), sc.turn_surface(1), (1 / 3, 1 / 3))
+    rec, sw, st = F.analyse_height(ssc_io.load_mesh(str(tmp_path / "t1")), vol, 32.0, F.Params(vertical=0))
+    assert not [s for s in sw if s["confidence"] >= 0.3]
+
+
+@needs_data
+@pytest.mark.xfail(strict=False, reason="PR #17 finding 5 NOT fixed by local pitch: on the real broken copy the finder reports a "
+                                         "break-specific entry (z=2600 col 123, step 2.35) but at confidence 0.0, below the 0.3 that counts")
+def test_ssf_real_break_is_flagged_and_the_original_is_not(tmp_path):
+    import glob
+    import sheet_switch_finder as F
+    import ssc_io
+    from task6_break import make_broken
+    bro, _ = make_broken(str(tmp_path), 120, 9.5)
+    orig = ssc_io.load_mesh(glob.glob(str(DATA / "*w116-117.tifxyz"))[0])
+    vol = ssc_io.PngVolume(str(DATA / "slices"), 45.532, 45.532)
+    hit_b, hit_o = [], []
+    for z in (2073.0, 2600.0, 3128.0):
+        for mesh, hits in ((ssc_io.load_mesh(bro), hit_b), (orig, hit_o)):
+            rec, sw, st = F.analyse_height(mesh, vol, z, F.Params(vertical=0))
+            hits += [s for s in sw if abs(s["col"] - 120) <= 6 and s["confidence"] >= 0.3]
+    assert hit_b and not hit_o
