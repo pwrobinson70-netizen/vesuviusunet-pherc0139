@@ -16,8 +16,9 @@ this is not a full survey. Discord/forum tools, `volume-cartographer/` internals
 
 - **`ScrollPrize/villa`, `spiral-fitting/umbilicus.py`**: a *loader*, not an estimator. It reads
   - JSON `{"control_points": [{"z":.., "y":.., "x":..}, ...]}`, sorted by z; or
-  - a "thaumato" text file: one `x,y,z` integer triple per line, where the code does
-    `[:, [2, 0, 1]] - 500` (column order and the constant 500 inferred from the code, not documented),
+  - a "thaumato" text file: one integer triple per line that the code reads as `y, z, x` with 500
+    added to each (`[:, [2, 0, 1]] - 500`; corrected in review round 1, this line used to say `x,y,z`;
+    see docs/FORMATS.md),
   and builds a linear `z -> (y, x)` interpolator (`interp1d`, extrapolating) with an optional
   `coordinate_scale` / `downsample_factor`. Units/resolution are whatever the caller uses.
   `fit_spiral.py` / `flatten_spiral_checkpoint.py` consume `umbilicus.json` (`--umbilicus`) as a
