@@ -28,6 +28,7 @@ vun-switch = "vun_tools.cli:switch"
 vun-umbilicus = "vun_tools.cli:umbilicus"
 vun-audit = "vun_tools.cli:audit"
 vun-phantom = "vun_tools.cli:phantom"
+vun-crush = "vun_tools.cli:crush"
 vun-ink = "vun_tools.cli:ink"
 
 [tool.setuptools]
@@ -41,6 +42,7 @@ packages = [
     "vun_tools._tools.phantom_scroll",
     "vun_tools._tools.ink_infer",
     "vun_tools._tools.common",
+    "vun_tools._tools.crush_map",
 ]
 
 [tool.setuptools.package-dir]
@@ -53,3 +55,4 @@ vesuvius_unet = "vesuvius_unet"
 "vun_tools._tools.phantom_scroll" = "tools/phantom_scroll"
 "vun_tools._tools.ink_infer" = "tools/ink_infer"
 "vun_tools._tools.common" = "tools/common"
+"vun_tools._tools.crush_map" = "tools/crush_map"
