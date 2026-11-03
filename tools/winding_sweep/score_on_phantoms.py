@@ -43,10 +43,12 @@ def true_turn(patch_dir, trees, n_sample=300):
     return int(np.bincount(d.argmin(1), minlength=len(trees)).argmax())
 
 
-def score_one(name, size, seed, angle, n_angles, workers, work, log=print):
+def score_one(name, size, seed, angle, n_angles, workers, work, centre="estimated", log=print):
     p = bm.make_params(name, size, seed)
     out = os.path.join(work, name)
-    sc, vol, lab, truth = ps.build(p, out, zarr=False)
+    if not os.path.isdir(os.path.join(out, "surfaces")):
+        ps.build(p, out, zarr=False)
+    vol = ps.Scroll(p).render()[0]
     trees = []
     for k in range(p.turns):
         m = load_mesh(os.path.join(out, "surfaces", f"turn_{k:02d}"))
@@ -55,20 +57,24 @@ def score_one(name, size, seed, angle, n_angles, workers, work, log=print):
     z_lo, z_hi = nz // 4, nz - nz // 4
     src = ws.Source(vol.astype(np.float32), f"phantom {name} size {size} seed {seed}")
     t0 = time.time()
-    r = ws.sweep(src, z_lo, z_hi, os.path.join(out, "sweep"),
-                 ws.Params(angle=angle, n_angles=n_angles, workers=workers))
+    um = os.path.join(out, "centreline_villa.json") if centre == "truth" else None
+    sdir = os.path.join(out, "sweep_" + centre)
+    try:
+        r = ws.sweep(src, z_lo, z_hi, sdir, ws.Params(angle=angle, n_angles=n_angles, workers=workers), umbilicus=um)
+    except ws.InputError as e:
+        return dict(phantom=name, centre=centre, size=size, true_turns=p.turns, error=str(e), wall=time.time() - t0)
     wall = time.time() - t0
     s = r["summary"]
     correct, rows = set(), []
     for m in r["manifest"]:
-        tt = true_turn(os.path.join(out, "sweep", m["patch"]), trees) if m["patch"] else None
+        tt = true_turn(os.path.join(sdir, m["patch"]), trees) if m["patch"] else None
         ok = tt == m["winding"]
         if ok:
             correct.add(m["winding"])
         rows.append(dict(winding=m["winding"], true_turn=tt, correct=ok, verdict=m["verdict"], area=m["area_vx2"],
                          judged=m["judged_fraction"]))
     v = s["verdicts"]
-    return dict(phantom=name, size=size, true_turns=p.turns, found=s["n_crossings_per_angle"][0],
+    return dict(phantom=name, centre=centre, size=size, true_turns=p.turns, found=s["n_crossings_per_angle"][0],
                 recovered=len(correct), pass_=v["PASS"], fail=v["FAIL"], nj=v["NOT JUDGED"], nopatch=v["NO PATCH"],
                 at_every_angle=len(s["windings_found_at_every_angle"]), n_angles=n_angles,
                 area=s["total_area_vx2"], wall=wall, patches=rows)
@@ -88,11 +94,16 @@ def main(argv=None):
     with tempfile.TemporaryDirectory() as work:
         for n in a.phantoms:
             res.append(score_one(n, a.size, a.seed, a.angle, a.n_angles, a.workers, work))
+            if "error" in res[-1]:        # centre not found: also score with the exact centre line (the error row is kept)
+                res.append(score_one(n, a.size, a.seed, a.angle, a.n_angles, a.workers, work, centre="truth"))
     print(f"\nwinding_sweep on phantoms, size {a.size}, seed {a.seed}, angle {a.angle:g} (+{a.n_angles - 1} more), middle half of z\n")
-    print("| phantom | turns found / true | recovered (correct winding) | PASS | FAIL | NOT JUDGED | NO PATCH | at every angle | total area (vox^2) | wall (s) |")
-    print("|---|---|---|---|---|---|---|---|---|---|")
+    print("| phantom | centre | turns found / true | recovered (correct winding) | PASS | FAIL | NOT JUDGED | NO PATCH | at every angle | total area (vox^2) | wall (s) |")
+    print("|---|---|---|---|---|---|---|---|---|---|---|")
     for r in res:
-        print(f"| {r['phantom']} | {r['found']} / {r['true_turns']} | {r['recovered']} / {r['true_turns']} | {r['pass_']} | {r['fail']} | "
+        if "error" in r:
+            print(f"| {r['phantom']} | {r['centre']} | ERROR: {r['error']} | | | | | | | | {r['wall']:.1f} |")
+            continue
+        print(f"| {r['phantom']} | {r['centre']} | {r['found']} / {r['true_turns']} | {r['recovered']} / {r['true_turns']} | {r['pass_']} | {r['fail']} | "
               f"{r['nj']} | {r['nopatch']} | {r['at_every_angle']} of {r['found']} | {r['area']:.0f} | {r['wall']:.1f} |")
     if a.json:
         with open(a.json, "w") as f:
