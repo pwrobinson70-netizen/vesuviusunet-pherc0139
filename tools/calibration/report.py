@@ -25,6 +25,7 @@ from sweep_thresholds import SWEEPS, default_of  # noqa: E402
 TOOLS = ["sheet_spacing_check", "sheet_switch_finder", "umbilicus_finder", "trace_auditor"]
 SHORT = {"sheet_spacing_check": "ssc", "sheet_switch_finder": "ssf", "umbilicus_finder": "uf", "trace_auditor": "ta"}
 DEFORMS = ["round", "mild", "crushed", "merged"]
+MIN_GAIN = 0.005      # a default is only proposed for change if the chosen value gains at least this much
 C_TRUE, C_BAD, C_BAL, C_DEF, C_SEL = "#0072B2", "#D55E00", "#222222", "#888888", "#009E73"
 
 
@@ -232,8 +233,8 @@ def main(argv=None):
             f = f"sweep_{grp}.png"
             plot_sweeps(grp, curves, os.path.join(png, f))
             tr = []
-            for _, _, field, _ in SWEEPS:
-                if (grp, field) not in curves:
+            for _, g2, field, _ in SWEEPS:
+                if g2 != grp or (grp, field) not in curves:
                     continue
                 c = curves[(grp, field)]
                 d = default_of(grp, field)
@@ -241,13 +242,18 @@ def main(argv=None):
                 di = [x[0] for x in c].index(d)
                 tr.append([f"`{field}`", f"{d:g}", f"{c[di][1]:.3f}", f"{c[i][0]:g}", f"{c[i][1]:.3f}", f"{plo:g} to {phi:g}",
                            f"{c[i][2]:.2f} / {c[i][3]:.2f}"])
-                prop.append((name, field, d, c[di][1], c[i][0], c[i][1], plo, phi))
+                edge = c[i][0] in (c[0][0], c[-1][0])
+                prop.append((name, field, d, c[di][1], c[i][0], c[i][1], plo, phi, edge))
             out.append(f"### {name}\n\n![{name} sweeps](calibration/{f})\n\n" + md_table(
                 ["threshold", "default", "balanced at default", "chosen", "balanced at chosen", "plateau", "true / bad at chosen"], tr) + "\n")
         with open(os.path.join(os.path.dirname(a.sweeps), "proposed_defaults.md"), "w") as fh:
-            for name, field, d, bd, ch, bc, lo, hi in prop:
-                verb = "keep" if abs(ch - d) < 1e-9 else f"change to {ch:g}"
-                fh.write(f"- {name}.{field}: default {d:g} (balanced {bd:.3f}); {verb} (balanced {bc:.3f}, plateau {lo:g} to {hi:g})\n")
+            for name, field, d, bd, ch, bc, lo, hi, edge in prop:
+                if bc - bd < MIN_GAIN:
+                    verb = f"keep (best value {ch:g} gains only {bc - bd:+.3f}: flat)"
+                else:
+                    verb = f"change to {ch:g} ({bd:.3f} -> {bc:.3f}, plateau {lo:g} to {hi:g})" + (
+                        "; CHOSEN VALUE IS AT THE EDGE OF THE SWEPT RANGE, sweep wider before adopting" if edge else "")
+                fh.write(f"- {name}.{field}: {verb}\n")
     with open(os.path.join(a.docs, "OPERATING_RANGE.md"), "w") as fh:
         fh.write("\n".join(out))
     print(os.path.join(a.docs, "OPERATING_RANGE.md"))
