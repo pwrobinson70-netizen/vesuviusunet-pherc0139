@@ -1,0 +1,41 @@
+{
+  "val": {
+    "text": "SUN",
+    "auc": 0.9996860470401829,
+    "best_threshold": 0.87,
+    "f05": 0.9625407166123778,
+    "ink_fraction": 0.018289027977194474
+  },
+  "test_true_surface": {
+    "text": "OAK",
+    "auc": 0.985759914321118,
+    "threshold_from_val": 0.87,
+    "f05_at_val_threshold": 0.8315645845967252,
+    "f05_best_on_test_reference_only": 0.8783783783783784,
+    "ink_fraction": 0.01908142888839583,
+    "f05_predict_all_ink_baseline": 0.02373854477199956
+  },
+  "test_bad_trace": {
+    "text": "OAK",
+    "switch_col_px": 160,
+    "switch_direction": "outward",
+    "margin_px": 16,
+    "f05_at_val_threshold_whole_map": 0.14867485455720753,
+    "before_switch.true_trace.auc": 0.9988404460005047,
+    "before_switch.true_trace.mean_prob_on_ink": 0.9392935633659363,
+    "before_switch.true_trace.mean_prob_off_ink": 0.01505191158503294,
+    "before_switch.true_trace.f05_at_val_threshold": 0.784313725490196,
+    "before_switch.bad_trace.auc": 0.9966181317814786,
+    "before_switch.bad_trace.mean_prob_on_ink": 0.8508087992668152,
+    "before_switch.bad_trace.mean_prob_off_ink": 0.014522060751914978,
+    "before_switch.bad_trace.f05_at_val_threshold": 0.7613636363636364,
+    "after_switch.true_trace.auc": 0.9768398139372663,
+    "after_switch.true_trace.mean_prob_on_ink": 0.8562055826187134,
+    "after_switch.true_trace.mean_prob_off_ink": 0.034896813333034515,
+    "after_switch.true_trace.f05_at_val_threshold": 0.7946692991115498,
+    "after_switch.bad_trace.auc": 0.5468762822681209,
+    "after_switch.bad_trace.mean_prob_on_ink": 0.0038615090306848288,
+    "after_switch.bad_trace.mean_prob_off_ink": 0.04475555941462517,
+    "after_switch.bad_trace.f05_at_val_threshold": 0.0
+  }
+}
