@@ -59,6 +59,7 @@ class Params:
     wn_jump_pitch: float = 0.6              # a radius step of at least this many CT pitches is a jump
     wn_window_deg: float = 20.0             # the step is the mean radius of this many degrees after minus before
     wn_window_min_points: int = 3           # ... each window needs at least this many cut-line points
+    wn_slope_mismatch: float = 1.0          # if the two windows' own slopes differ by more than this x the jump threshold (over half a window), use the offset of two separately fitted lines
     wn_min_points: int = 12                 # a cut-line run needs at least this many points
     wn_min_span_deg: float = 60.0           # ... and to span at least this many degrees
     wn_monotonic: float = 0.95              # fraction of steps that must go the same way in angle (else not judged)
@@ -161,8 +162,14 @@ def detect_jumps(theta, r, pitch, p: Params):
     theta: unwrapped angle (rad) along the line (any monotone direction), r: radius (voxels).
     At each gap between points the step is mean(r) of the next wn_window_deg minus mean(r) of the previous
     wn_window_deg, minus the local spiral slope (median dr/dtheta in both windows, robust to the step itself)
-    times the angle between the window centres. Returns [dict(index, step, pitches)] one per cluster
-    (index = first point after the step, in line order). The first and last window of the line are not tested."""
+    times the angle between the window centres. A bend of the sheet (the long axis of a squashed scroll, 4-7 degrees
+    per point on a sheet_tracer patch) changes the slope between the two windows, which the common slope cannot
+    absorb: where the windows' own slopes differ by more than wn_slope_mismatch x the threshold over half a window (1.0: enough to explain a whole threshold; 0.3 also swallowed the benchmark ramp)
+    the step is instead the offset of two straight lines fitted separately to the two windows, evaluated at the
+    gap (REVIEW_ROUND2 A1: the common-slope estimate read such a bend as a step of 0.61 pitch where the adjacent
+    points differed by 0.4 voxel). Windows are cut at the ends of the line, not skipped (A2): a step needs
+    wn_window_min_points points on each side. Returns [dict(index, step, pitches)] one per cluster
+    (index = first point after the step, in line order)."""
     n = len(theta)
     pitch = np.broadcast_to(np.asarray(pitch, float), (n,))          # local CT pitch per point (scalar allowed)
     sgn = 1.0 if theta[-1] >= theta[0] else -1.0
@@ -171,8 +178,6 @@ def detect_jumps(theta, r, pitch, p: Params):
     cand = []
     for i in range(1, n):
         tc = 0.5 * (t[i - 1] + t[i])
-        if tc - win < t[0] - 1e-9 or tc + win > t[-1] + 1e-9:
-            continue
         lo, hi = int(np.searchsorted(t, tc - win)), int(np.searchsorted(t, tc + win, side="right"))
         if i - lo < p.wn_window_min_points or hi - i < p.wn_window_min_points:
             continue
@@ -183,7 +188,13 @@ def detect_jumps(theta, r, pitch, p: Params):
         keep &= dt > 1e-9
         slope = float(np.median(dr[keep] / dt[keep])) if keep.any() else 0.0
         step = (r[i:hi].mean() - r[lo:i].mean()) - slope * (t[i:hi].mean() - t[lo:i].mean())
-        if abs(step) >= p.wn_jump_pitch * pitch[i]:
+        thr = p.wn_jump_pitch * pitch[i]
+        if abs(step) >= thr:                                        # only a candidate pays for the two line fits
+            fa = np.polyfit(t[lo:i] - tc, r[lo:i], 1)
+            fb = np.polyfit(t[i:hi] - tc, r[i:hi], 1)
+            if abs(fb[0] - fa[0]) * win / 2 > p.wn_slope_mismatch * thr:
+                step = float(fb[1] - fa[1])                         # the windows bend: compare the lines at the gap
+        if abs(step) >= thr:
             cand.append((i, float(step)))
     out = []
     for i, s in cand:                                               # one event per run of neighbouring candidates
