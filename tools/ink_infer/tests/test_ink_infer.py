@@ -474,3 +474,31 @@ def test_cli_resume_refuses_other_checkpoint_or_flip(scene, capsys):
     assert cli(scene, "r", "--resume", "--min-valid-frac", "0.5") == 2
     assert cli(scene, "r", "--resume", "--norm-max", "100") == 2
     assert cli(scene, "r", "--resume") == 0
+
+
+# ============================================ R3 (docs/REVIEW_ROUND1.md): no valid patch
+def _sparse_mesh(tmp_path):
+    """64x64 mesh where only a small block is valid (25 px after interpolation; 25/1024 < the default
+    min_valid_frac 0.05 for a 32 patch)."""
+    return write_plane_mesh(tmp_path / "m", 64, 64, z0=Z0, x0=X0, y0=Y0,
+                            holes=[(0, 64, 0, 29), (0, 64, 35, 64), (0, 29, 29, 35), (35, 64, 29, 35)])
+
+
+def test_r3_no_patch_with_enough_valid_pixels_is_an_error_not_a_black_map(tmp_path):
+    mesh = _sparse_mesh(tmp_path)
+    ct = make_ct((40, 96, 96))
+    surf = surface_for(mesh, 1.0)
+    assert 0 < surf.valid.sum() < 0.05 * 32 * 32
+    with pytest.raises(sf.InputError, match="min-valid-frac"):
+        infer(sf.CTVolume(ct), surf)
+
+
+def test_r3_cli_exits_2_and_writes_no_map(tmp_path):
+    mesh = _sparse_mesh(tmp_path)
+    zarr_dir = write_zarr(tmp_path / "v.zarr", [make_ct((40, 96, 96))])
+    ck = tiny_checkpoint(tmp_path / "ck.pt")
+    out = tmp_path / "out"
+    rc = ii.main([mesh, "--zarr", zarr_dir, "--checkpoint", str(ck), "--out-dir", str(out),
+                  "--out-pitch-um", "3.24", "--scan-voxel-um", "3.24"])
+    assert rc == 2
+    assert not (out / "ink_prob.png").exists()
