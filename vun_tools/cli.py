@@ -51,3 +51,7 @@ def phantom():
 
 def ink():
     return _run("ink_infer", "ink_infer")
+
+
+def sweep():
+    return _run("winding_sweep", "winding_sweep")
