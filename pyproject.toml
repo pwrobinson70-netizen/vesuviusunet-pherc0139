@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vesuviusunet-pherc0139"
+version = "0.1.0"
+description = "Trace-checking and ink-inference tools, with a synthetic phantom scroll benchmark"
+readme = "docs/TOOLS.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Peter Robinson" }]
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "tifffile>=2023.7.10",
+    "pillow>=10.0",
+    "zarr>=2.16",
+]
+
+[project.optional-dependencies]
+ink = ["torch"]                       # vun-ink only; install the build that suits your machine
+test = ["pytest>=7", "scikit-learn>=1.3"]
+
+[project.scripts]
+vun-spacing = "vun_tools.cli:spacing"
+vun-switch = "vun_tools.cli:switch"
+vun-umbilicus = "vun_tools.cli:umbilicus"
+vun-audit = "vun_tools.cli:audit"
+vun-phantom = "vun_tools.cli:phantom"
+vun-ink = "vun_tools.cli:ink"
+
+[tool.setuptools]
+packages = [
+    "vun_tools",
+    "vesuvius_unet",
+    "vun_tools._tools.sheet_spacing_check",
+    "vun_tools._tools.sheet_switch_finder",
+    "vun_tools._tools.umbilicus_finder",
+    "vun_tools._tools.trace_auditor",
+    "vun_tools._tools.phantom_scroll",
+    "vun_tools._tools.ink_infer",
+]
+
+[tool.setuptools.package-dir]
+vun_tools = "vun_tools"
+vesuvius_unet = "vesuvius_unet"
+"vun_tools._tools.sheet_spacing_check" = "tools/sheet_spacing_check"
+"vun_tools._tools.sheet_switch_finder" = "tools/sheet_switch_finder"
+"vun_tools._tools.umbilicus_finder" = "tools/umbilicus_finder"
+"vun_tools._tools.trace_auditor" = "tools/trace_auditor"
+"vun_tools._tools.phantom_scroll" = "tools/phantom_scroll"
+"vun_tools._tools.ink_infer" = "tools/ink_infer"
