@@ -1,0 +1,23 @@
+sheet_switch_finder 0.1.0
+mesh: /tmp/claude-0/-home-user/ba372791-6d43-5b82-a7e7-8d8f18b96ac2/scratchpad/broken/20260623164704-w116-117-BROKEN.tifxyz   CT: testdata/pherc_paris4_45um/slices
+heights: 3   cut-line points: 1023
+SWITCHES: 10 (horizontal 10, vertical 0, double/multi-sheet 7)
+line tracked: 31.5%   off-sheet: 16.0%   lost track: 52.5%
+
+per height:
+  z=2073: points 347, pitch 9.50 vox, tracked 32.0%, off-sheet 4.3%, lost 63.7%, switches 3 horizontal + 0 vertical
+  z=2600: points 340, pitch 9.50 vox, tracked 31.8%, off-sheet 20.0%, lost 48.2%, switches 4 horizontal + 0 vertical
+  z=3128: points 336, pitch 9.50 vox, tracked 30.7%, off-sheet 24.1%, lost 45.2%, switches 3 horizontal + 0 vertical
+
+switches (human: check these spots):
+  horizontal z=2073  row 96.5 col 85  xyz (757.5, 956.0, 2073)  outward  step +2.38  DOUBLE (2 sheets)  confidence 0.00
+  horizontal z=2073  row 96.6 col 270  xyz (844.1, 1154.7, 2073)  inward  step -1.32  confidence 0.14
+  horizontal z=2073  row 93.8 col 324  xyz (1739.1, 1412.1, 2073)  inward  step -0.77  confidence 0.12
+  horizontal z=2600  row 58.3 col 112  xyz (923.1, 1438.0, 2600)  inward  step -1.56  DOUBLE (2 sheets)  confidence 0.00
+  horizontal z=2600  row 58.3 col 123  xyz (1102.1, 1565.6, 2600)  outward  step +2.76  DOUBLE (3 sheets)  confidence 0.00
+  horizontal z=2600  row 66.9 col 250  xyz (778.0, 869.8, 2600)  outward  step +3.29  DOUBLE (3 sheets)  confidence 0.00
+  horizontal z=2600  row 57.3 col 296  xyz (1155.3, 1584.4, 2600)  outward  step +1.78  DOUBLE (2 sheets)  confidence 0.00
+  horizontal z=3128  row 38.5 col 74  xyz (738.5, 919.6, 3128)  inward  step -1.21  confidence 0.03
+  horizontal z=3128  row 34.6 col 84  xyz (713.8, 1127.0, 3128)  inward  step -1.80  DOUBLE (2 sheets)  confidence 0.00
+  horizontal z=3128  row 45.6 col 221  xyz (1048.7, 724.7, 3128)  outward  step +1.99  DOUBLE (2 sheets)  confidence 0.00
+warning: 6451 grid cells have no data

@@ -1,0 +1,9 @@
+2073 turn radii about (1180,1100): A1 195..670 A2 192..667 B1 202..679 B2 198..673
+  from A1 | A2: dist med 5.6, signed med -3.3 | B1: dist med 9.1, signed med +7.1 | B2: dist med 6.0, signed med +3.6
+  from A2 | A1: dist med 5.6, signed med +3.3 | B1: dist med 13.1, signed med +10.7 | B2: dist med 9.1, signed med +6.8
+2600 turn radii about (1180,1100): A1 354..677 A2 351..677 B1 361..679 B2 357..678
+  from A1 | A2: dist med 6.7, signed med -3.7 | B1: dist med 8.1, signed med +6.7 | B2: dist med 7.0, signed med +3.2
+  from A2 | A1: dist med 6.8, signed med +3.6 | B1: dist med 12.8, signed med +10.0 | B2: dist med 7.9, signed med +6.4
+3128 turn radii about (1180,1100): A1 293..632 A2 289..629 B1 301..640 B2 297..635
+  from A1 | A2: dist med 8.1, signed med -4.0 | B1: dist med 10.0, signed med +7.7 | B2: dist med 7.0, signed med +3.7
+  from A2 | A1: dist med 8.2, signed med +4.1 | B1: dist med 13.7, signed med +11.7 | B2: dist med 10.4, signed med +7.8
