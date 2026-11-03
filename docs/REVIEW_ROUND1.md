@@ -21,7 +21,7 @@ commit before the fixes is red). "Fixed" means the failing test now passes.
 | B5 | RISK | umbilicus_finder | fixed (now a warning) |
 | R1 | RISK | sheet_switch_finder | not fixed, documented limit; strict xfail test |
 | R2 | RISK | sheet_switch_finder | not fixed; strict xfail test |
-| R3 | RISK | ink_infer | not fixed (cannot be tested here: no torch) |
+| R3 | RISK | ink_infer | FIXED in tool/ink-e2e: InputError (exit 2) when no patch is valid; tests first |
 | R4 | RISK | ssc_io / surface | not fixed: decision needed (z > 0 rule) |
 | R5 | RISK | sheet_switch_finder | not fixed: documentation |
 | N1-N6 | NIT | various | not fixed |
