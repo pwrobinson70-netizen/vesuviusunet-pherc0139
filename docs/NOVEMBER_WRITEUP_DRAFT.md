@@ -92,3 +92,29 @@ sha256sum -c SHA256SUMS.txt
 python tools/phantom_scroll/benchmark.py --size 256 --json bench.json      # about 4 minutes
 python tools/trace_auditor/score_on_phantoms.py --size 256 --centre estimated
 ```
+
+## 6. Many-seed benchmark with confidence intervals (added 3 Nov 2026)
+
+Section 4 says "one seed ... no confidence intervals". `tools/benchmark_ci` reruns the same tools at their current defaults on 20 phantom seeds (0-19) at 192^3 for each deformation and reports the mean with a 95% percentile-bootstrap CI over seeds (1000 resamples). Phantom seeds only vary texture, warp and wobble of a synthetic scroll; the CI says how far a single-seed number moves with that, not how a real scroll behaves. Full tables, per-metric plots and the per-run CSV: `docs/BENCHMARK_CI.md`, `docs/benchmark_ci/`, `tools/benchmark_ci/results/runs.csv`.
+
+Mean [95% CI]:
+
+| metric (192^3, 20 seeds) | round | mild | crushed | merged |
+|---|---|---|---|---|
+| switch recall | 1.000 [1.000, 1.000] | 0.983 [0.957, 1.000] | 0.843 [0.793, 0.890] | 0.900 [0.867, 0.927] |
+| false switches / 4 true turns | 0.000 [0.000, 0.000] | 0.000 [0.000, 0.000] | 1.200 [0.100, 2.600] | 0.000 [0.000, 0.000] |
+| centre err mean (vox) | 0.344 [0.339, 0.349] | 2.020 [1.825, 2.248] | 5.923 [5.096, 6.836] | 2.219 [2.035, 2.418] |
+| clean frac, true pairs | 0.973 [0.973, 0.973] | 0.973 [0.972, 0.973] | 0.940 [0.912, 0.960] | 0.961 [0.958, 0.964] |
+| clean frac, skipped | 0.051 [0.051, 0.052] | 0.041 [0.039, 0.042] | 0.207 [0.168, 0.252] | 0.082 [0.073, 0.091] |
+| clean frac, off-sheet | 0.000 [0.000, 0.000] | 0.000 [0.000, 0.000] | 0.396 [0.350, 0.439] | 0.010 [0.005, 0.015] |
+| auditor PASS on true | 1.000 [1.000, 1.000] | 0.936 [0.907, 0.964] | 0.279 [0.150, 0.421] | 0.679 [0.636, 0.714] |
+| auditor FAIL on bad | 1.000 [1.000, 1.000] | 1.000 [1.000, 1.000] | 0.992 [0.975, 1.000] | 1.000 [1.000, 1.000] |
+| tracer on-turn | 1.000 [1.000, 1.000] | 1.000 [1.000, 1.000] | 0.972 [0.932, 0.999] | 0.978 [0.973, 0.981] |
+| tracer auditor PASS | 1.000 [1.000, 1.000] | 1.000 [1.000, 1.000] | 0.900 [0.817, 0.967] | 0.933 [0.867, 0.983] |
+
+- Round and mild: the quoted numbers are stable across seeds (CI widths of a few thousandths for the spacing fractions and recall).
+- Crushed is where single-seed numbers mislead: centre error 5.9 voxels [5.1, 6.8] (range 2.9 to 10.5 over seeds), false switches on true turns 1.2 [0.1, 2.6] with a worst seed of 11, true-pair clean fraction down to 0.748 in one run (below the auditor's 0.8), and the auditor passes only 28% of true traces [15%, 42%].
+- The auditor's false-FAIL on true traces (crushed, merged) is therefore not a one-seed accident; its FAIL rate on the planted bad traces is 99% to 100% in every deformation.
+- No CI of a mean contains the auditor's 0.8 clean-fraction threshold, but one crushed run does fall below it.
+- Size matters (seeds 0-4 at 128^3 / 192^3 / 256^3, wide CIs): the off-sheet clean fraction on the merged phantom falls from 0.18 to 0.01 to 0.00 and on crushed from 0.62 to 0.34 to 0.19; the auditor's PASS rate on true crushed traces rises from 0.00 to 0.26 to 0.37. Numbers quoted at one size do not transfer.
+- Not covered: the threshold sweeps (tools/calibration), real scans, anything but these four deformations.
