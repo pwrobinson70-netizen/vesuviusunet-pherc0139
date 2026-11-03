@@ -39,8 +39,22 @@ def _first_number(meta, keys):
     return None
 
 
-def build_mesh(name, x, y, z, meta=None, invalid_value=-1.0, transpose=False):
-    """Make a Mesh from three (H, W) arrays (used by load_mesh and tests)."""
+def mask_validity(mask, shape):
+    """VC3D mask.tif -> (H, W) bool. A cell is valid only if every mask pixel it covers is >= 255
+    (QuadSurface.cpp:2776-2840, SurfaceGrid.hpp:25-28); the mask may be a whole multiple of the grid."""
+    m = np.asarray(mask)
+    if m.ndim == 3:                                    # channel 0 carries validity
+        m = m[..., 0] if m.shape[-1] <= 4 else m[0]
+    H, W = shape
+    if m.ndim != 2 or m.shape[0] % H or m.shape[1] % W or not m.shape[0] or not m.shape[1]:
+        raise InputError(f"mask.tif shape {tuple(np.shape(mask))} is not the grid {H}x{W} or a whole multiple of it")
+    fy, fx = m.shape[0] // H, m.shape[1] // W
+    return (m >= 255).reshape(H, fy, W, fx).all(axis=(1, 3))
+
+
+def build_mesh(name, x, y, z, meta=None, invalid_value=-1.0, transpose=False, mask=None):
+    """Make a Mesh from three (H, W) arrays (used by load_mesh and tests). `mask`: optional mask.tif array
+    (pre-transpose grid); masked-out cells are invalid even though x/y/z hold real values there."""
     x, y, z = (np.array(a, dtype=np.float64) for a in (x, y, z))   # copies: never mutate the caller's arrays
     if x.ndim != 2 or not (x.shape == y.shape == z.shape):
         raise InputError(f"{name}: x/y/z grids must be 2-D and the same shape, got "
@@ -48,6 +62,8 @@ def build_mesh(name, x, y, z, meta=None, invalid_value=-1.0, transpose=False):
     valid = np.isfinite(x) & np.isfinite(y) & np.isfinite(z)
     # a cell is invalid if ANY coordinate carries the no-data marker (partial sentinels exist)
     valid &= ~((x == invalid_value) | (y == invalid_value) | (z == invalid_value))
+    if mask is not None:
+        valid &= mask_validity(mask, x.shape)
     for a in (x, y, z):
         a[~valid] = np.nan
     n_invalid = int((~valid).sum())
@@ -90,8 +106,15 @@ def load_mesh(path, invalid_value=-1.0, transpose=False):
         raise InputError(f"cannot parse {mf}: {e}") from e
     if not isinstance(meta, dict):
         raise InputError(f"{mf} must hold a JSON object")
+    mask = None
+    mp = os.path.join(path, "mask.tif")
+    if os.path.isfile(mp):
+        try:
+            mask = np.asarray(tifffile.imread(mp))
+        except Exception as e:  # noqa: BLE001
+            raise InputError(f"cannot read {mp}: {e}") from e
     return build_mesh(os.path.basename(os.path.normpath(path)), grids["x"], grids["y"],
-                      grids["z"], meta, invalid_value, transpose)
+                      grids["z"], meta, invalid_value, transpose, mask)
 
 
 # ---------------------------------------------------------------- volumes
@@ -132,6 +155,28 @@ class ArrayVolume:
         return np.asarray(self.data[self.slice_index(z), y0:y1, x0:x1], dtype=np.float32)
 
 
+def check_ome_scale(node, level, path):
+    """This tool treats level L as 2**L smaller on every axis. If the OME-Zarr scale transforms say
+    otherwise (e.g. z not downsampled) the slice/pixel maths would be silently wrong: refuse."""
+    attrs = dict(node.attrs)
+    ms = attrs.get("multiscales") or (attrs.get("ome") or {}).get("multiscales")
+    datasets = ms[0].get("datasets", []) if ms else []
+    if not datasets or level >= len(datasets):
+        return
+
+    def sc(ds):
+        for t in ds.get("coordinateTransformations", []) or []:
+            if t.get("type") == "scale" and "scale" in t:
+                return [float(v) for v in t["scale"]][-3:]
+        return None
+    s0, s1 = sc(datasets[0]), sc(datasets[level])
+    if s0 and s1 and len(s0) == len(s1) == 3:
+        rel = [b / a for a, b in zip(s0, s1)]
+        if any(abs(r - 2.0 ** level) > 1e-6 * 2.0 ** level for r in rel):
+            raise InputError(f"{path}: OME scale transforms put level {level} at {rel} x level 0 (z, y, x) but this "
+                             f"tool assumes {2.0 ** level:g} on every axis; use level 0 or resample the pyramid")
+
+
 class ZarrVolume(ArrayVolume):
     """OME-Zarr level `level` (default 0). Coordinates are level-0 voxels."""
 
@@ -144,6 +189,8 @@ class ZarrVolume(ArrayVolume):
             arr = node[str(level)] if hasattr(node, "keys") else node
         except Exception as e:  # noqa: BLE001
             raise InputError(f"cannot open zarr level {level} in {path}: {e}") from e
+        if hasattr(node, "keys"):
+            check_ome_scale(node, level, path)
         if len(arr.shape) != 3:
             raise InputError(f"zarr array must be 3-D (z, y, x), got {arr.shape}")
         self.data, self.ct_scale = arr, float(2 ** level)

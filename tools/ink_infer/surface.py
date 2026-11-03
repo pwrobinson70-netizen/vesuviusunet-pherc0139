@@ -16,13 +16,27 @@ class InputError(ValueError):
 
 
 # ------------------------------------------------------------------ mesh
+def mask_validity(mask, shape):
+    """VC3D mask.tif -> (H, W) bool: valid only if every covered mask pixel is >= 255 (QuadSurface.cpp:2776-2840)."""
+    m = np.asarray(mask)
+    if m.ndim == 3:                                    # channel 0 carries validity
+        m = m[..., 0] if m.shape[-1] <= 4 else m[0]
+    H, W = shape
+    if m.ndim != 2 or m.shape[0] % H or m.shape[1] % W or not m.shape[0] or not m.shape[1]:
+        raise InputError(f"mask.tif shape {tuple(np.shape(mask))} is not the grid {H}x{W} or a whole multiple of it")
+    fy, fx = m.shape[0] // H, m.shape[1] // W
+    return (m >= 255).reshape(H, fy, W, fx).all(axis=(1, 3))
+
+
 class Mesh:
-    def __init__(self, x, y, z, meta, name="mesh", invalid_value=-1.0):
+    def __init__(self, x, y, z, meta, name="mesh", invalid_value=-1.0, mask=None):
         x, y, z = (np.array(a, dtype=np.float64) for a in (x, y, z))   # copies
         if x.ndim != 2 or not (x.shape == y.shape == z.shape):
             raise InputError(f"{name}: x/y/z must be 2-D and the same shape, got {x.shape}, {y.shape}, {z.shape}")
         bad = ~(np.isfinite(x) & np.isfinite(y) & np.isfinite(z))
         bad |= (x == invalid_value) | (y == invalid_value) | (z == invalid_value)
+        if mask is not None:                             # masked-out cells keep real x/y/z in VC3D files
+            bad |= ~mask_validity(mask, x.shape)
         for a in (x, y, z):
             a[bad] = np.nan
         self.P = np.stack([x, y, z], axis=-1)           # (rows, cols, 3) xyz, NaN = no data
@@ -55,7 +69,11 @@ def load_mesh(path, invalid_value=-1.0):
         meta = json.load(open(mf)) if os.path.isfile(mf) else {}
     except Exception as e:  # noqa: BLE001
         raise InputError(f"cannot parse {mf}: {e}") from e
-    return Mesh(g["x"], g["y"], g["z"], meta, os.path.basename(os.path.normpath(path)), invalid_value)
+    mask = None
+    mp = os.path.join(path, "mask.tif")
+    if os.path.isfile(mp):
+        mask = tifffile.imread(mp)
+    return Mesh(g["x"], g["y"], g["z"], meta, os.path.basename(os.path.normpath(path)), invalid_value, mask)
 
 
 # --------------------------------------------------------------- resampling
@@ -109,6 +127,27 @@ def pad_surface(s: Surface, minimum: int) -> Surface:
 
 
 # -------------------------------------------------------------------- CT
+def _check_ome_scale(node, level, path):
+    """This module treats level L as 2**L smaller on every axis; refuse an OME pyramid that says otherwise."""
+    attrs = dict(node.attrs)
+    ms = attrs.get("multiscales") or (attrs.get("ome") or {}).get("multiscales")
+    datasets = ms[0].get("datasets", []) if ms else []
+    if not datasets or level >= len(datasets):
+        return
+
+    def sc(ds):
+        for t in ds.get("coordinateTransformations", []) or []:
+            if t.get("type") == "scale" and "scale" in t:
+                return [float(v) for v in t["scale"]][-3:]
+        return None
+    s0, s1 = sc(datasets[0]), sc(datasets[level])
+    if s0 and s1 and len(s0) == len(s1) == 3:
+        rel = [b / a for a, b in zip(s0, s1)]
+        if any(abs(r - 2.0 ** level) > 1e-6 * 2.0 ** level for r in rel):
+            raise InputError(f"{path}: OME scale transforms put level {level} at {rel} x level 0 (z, y, x) but this "
+                             f"tool assumes {2.0 ** level:g} on every axis; use level 0 or resample the pyramid")
+
+
 class CTVolume:
     """[z, y, x] array-like (numpy or zarr) at OME level `level`; coordinates are level-0 voxels.
 
@@ -134,6 +173,8 @@ class CTVolume:
             arr = node[str(level)] if hasattr(node, "keys") else node
         except Exception as e:  # noqa: BLE001
             raise InputError(f"cannot open zarr level {level} in {path}: {e}") from e
+        if hasattr(node, "keys"):
+            _check_ome_scale(node, level, path)
         return cls(arr, level, norm_max)
 
     def to_px(self, v):
