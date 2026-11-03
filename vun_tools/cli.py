@@ -67,3 +67,11 @@ def sweep():
 
 def drift():
     return _run("label_drift", "label_drift")
+
+
+def texture():
+    return _run("texture_judge", "texture_judge")
+
+
+def panel():
+    return _run("judge_panel", "judge_panel")

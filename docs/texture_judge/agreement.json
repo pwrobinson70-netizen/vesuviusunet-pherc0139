@@ -1,0 +1,366 @@
+{
+ "rows": [
+  {
+   "source": "phantom",
+   "preset": "round",
+   "trace": "true",
+   "truth": "good",
+   "texture": "PASS",
+   "auditor": "PASS"
+  },
+  {
+   "source": "phantom",
+   "preset": "round",
+   "trace": "switch",
+   "truth": "bad",
+   "texture": "FAIL",
+   "auditor": "FAIL"
+  },
+  {
+   "source": "phantom",
+   "preset": "round",
+   "trace": "gap",
+   "truth": "bad",
+   "texture": "FAIL",
+   "auditor": "FAIL"
+  },
+  {
+   "source": "phantom",
+   "preset": "round",
+   "trace": "wrong_sheet",
+   "truth": "bad-undetectable",
+   "texture": "PASS",
+   "auditor": "PASS"
+  },
+  {
+   "source": "phantom",
+   "preset": "mild",
+   "trace": "true",
+   "truth": "good",
+   "texture": "PASS",
+   "auditor": "PASS"
+  },
+  {
+   "source": "phantom",
+   "preset": "mild",
+   "trace": "switch",
+   "truth": "bad",
+   "texture": "FAIL",
+   "auditor": "FAIL"
+  },
+  {
+   "source": "phantom",
+   "preset": "mild",
+   "trace": "gap",
+   "truth": "bad",
+   "texture": "FAIL",
+   "auditor": "FAIL"
+  },
+  {
+   "source": "phantom",
+   "preset": "mild",
+   "trace": "wrong_sheet",
+   "truth": "bad-undetectable",
+   "texture": "PASS",
+   "auditor": "PASS"
+  },
+  {
+   "source": "phantom",
+   "preset": "crushed",
+   "trace": "true",
+   "truth": "good",
+   "texture": "FAIL",
+   "auditor": "NOT JUDGED"
+  },
+  {
+   "source": "phantom",
+   "preset": "crushed",
+   "trace": "switch",
+   "truth": "bad",
+   "texture": "FAIL",
+   "auditor": "FAIL"
+  },
+  {
+   "source": "phantom",
+   "preset": "crushed",
+   "trace": "gap",
+   "truth": "bad",
+   "texture": "FAIL",
+   "auditor": "FAIL"
+  },
+  {
+   "source": "phantom",
+   "preset": "crushed",
+   "trace": "wrong_sheet",
+   "truth": "bad-undetectable",
+   "texture": "FAIL",
+   "auditor": "NOT JUDGED"
+  },
+  {
+   "source": "phantom",
+   "preset": "merged",
+   "trace": "true",
+   "truth": "good",
+   "texture": "FAIL",
+   "auditor": "PASS"
+  },
+  {
+   "source": "phantom",
+   "preset": "merged",
+   "trace": "switch",
+   "truth": "bad",
+   "texture": "FAIL",
+   "auditor": "FAIL"
+  },
+  {
+   "source": "phantom",
+   "preset": "merged",
+   "trace": "gap",
+   "truth": "bad",
+   "texture": "FAIL",
+   "auditor": "FAIL"
+  },
+  {
+   "source": "phantom",
+   "preset": "merged",
+   "trace": "wrong_sheet",
+   "truth": "bad-undetectable",
+   "texture": "FAIL",
+   "auditor": "FAIL"
+  },
+  {
+   "source": "phantom",
+   "preset": "folded",
+   "trace": "true",
+   "truth": "good",
+   "texture": "PASS",
+   "auditor": "PASS"
+  },
+  {
+   "source": "phantom",
+   "preset": "folded",
+   "trace": "switch",
+   "truth": "bad",
+   "texture": "FAIL",
+   "auditor": "FAIL"
+  },
+  {
+   "source": "phantom",
+   "preset": "folded",
+   "trace": "gap",
+   "truth": "bad",
+   "texture": "FAIL",
+   "auditor": "FAIL"
+  },
+  {
+   "source": "phantom",
+   "preset": "folded",
+   "trace": "wrong_sheet",
+   "truth": "bad-undetectable",
+   "texture": "PASS",
+   "auditor": "PASS"
+  },
+  {
+   "source": "phantom",
+   "preset": "delaminated",
+   "trace": "true",
+   "truth": "good",
+   "texture": "PASS",
+   "auditor": "PASS"
+  },
+  {
+   "source": "phantom",
+   "preset": "delaminated",
+   "trace": "switch",
+   "truth": "bad",
+   "texture": "FAIL",
+   "auditor": "FAIL"
+  },
+  {
+   "source": "phantom",
+   "preset": "delaminated",
+   "trace": "gap",
+   "truth": "bad",
+   "texture": "FAIL",
+   "auditor": "FAIL"
+  },
+  {
+   "source": "phantom",
+   "preset": "delaminated",
+   "trace": "wrong_sheet",
+   "truth": "bad-undetectable",
+   "texture": "PASS",
+   "auditor": "PASS"
+  },
+  {
+   "source": "phantom",
+   "preset": "torn",
+   "trace": "true",
+   "truth": "good",
+   "texture": "PASS",
+   "auditor": "PASS"
+  },
+  {
+   "source": "phantom",
+   "preset": "torn",
+   "trace": "switch",
+   "truth": "bad",
+   "texture": "FAIL",
+   "auditor": "FAIL"
+  },
+  {
+   "source": "phantom",
+   "preset": "torn",
+   "trace": "gap",
+   "truth": "bad",
+   "texture": "FAIL",
+   "auditor": "FAIL"
+  },
+  {
+   "source": "phantom",
+   "preset": "torn",
+   "trace": "wrong_sheet",
+   "truth": "bad-undetectable",
+   "texture": "PASS",
+   "auditor": "PASS"
+  },
+  {
+   "source": "phantom",
+   "preset": "gappy",
+   "trace": "true",
+   "truth": "good",
+   "texture": "PASS",
+   "auditor": "PASS"
+  },
+  {
+   "source": "phantom",
+   "preset": "gappy",
+   "trace": "switch",
+   "truth": "bad",
+   "texture": "FAIL",
+   "auditor": "FAIL"
+  },
+  {
+   "source": "phantom",
+   "preset": "gappy",
+   "trace": "gap",
+   "truth": "bad",
+   "texture": "FAIL",
+   "auditor": "FAIL"
+  },
+  {
+   "source": "phantom",
+   "preset": "gappy",
+   "trace": "wrong_sheet",
+   "truth": "bad-undetectable",
+   "texture": "FAIL",
+   "auditor": "PASS"
+  },
+  {
+   "source": "phantom",
+   "preset": "crushed-hard",
+   "trace": "true",
+   "truth": "good",
+   "texture": "FAIL",
+   "auditor": "NOT JUDGED"
+  },
+  {
+   "source": "phantom",
+   "preset": "crushed-hard",
+   "trace": "switch",
+   "truth": "bad",
+   "texture": "FAIL",
+   "auditor": "NOT JUDGED"
+  },
+  {
+   "source": "phantom",
+   "preset": "crushed-hard",
+   "trace": "gap",
+   "truth": "bad",
+   "texture": "FAIL",
+   "auditor": "FAIL"
+  },
+  {
+   "source": "phantom",
+   "preset": "crushed-hard",
+   "trace": "wrong_sheet",
+   "truth": "bad-undetectable",
+   "texture": "FAIL",
+   "auditor": "NOT JUDGED"
+  },
+  {
+   "source": "pherc_paris4_45um",
+   "preset": "w116-117",
+   "trace": "original",
+   "truth": "unknown",
+   "texture": "FAIL",
+   "auditor": "NOT JUDGED"
+  },
+  {
+   "source": "pherc_paris4_45um",
+   "preset": "w118-119",
+   "trace": "original",
+   "truth": "unknown",
+   "texture": "FAIL",
+   "auditor": "NOT JUDGED"
+  },
+  {
+   "source": "pherc_paris4_7p91um",
+   "preset": "w116-117",
+   "trace": "original",
+   "truth": "unknown",
+   "texture": "FAIL",
+   "auditor": "FAIL"
+  },
+  {
+   "source": "pherc_paris4_7p91um",
+   "preset": "w118-119",
+   "trace": "original",
+   "truth": "unknown",
+   "texture": "FAIL",
+   "auditor": "FAIL"
+  },
+  {
+   "source": "pherc_paris4_45um",
+   "preset": "20260623164704-w116-117-BROKEN.tifxyz",
+   "trace": "deliberately broken (col > 120 shifted 9.5 vox)",
+   "truth": "bad",
+   "texture": "FAIL",
+   "auditor": "NOT JUDGED"
+  }
+ ],
+ "phantom_table": {
+  "PASS": {
+   "PASS": 11,
+   "FAIL": 0,
+   "NOT JUDGED": 0
+  },
+  "FAIL": {
+   "PASS": 2,
+   "FAIL": 18,
+   "NOT JUDGED": 5
+  },
+  "NOT JUDGED": {
+   "PASS": 0,
+   "FAIL": 0,
+   "NOT JUDGED": 0
+  }
+ },
+ "real_table": {
+  "PASS": {
+   "PASS": 0,
+   "FAIL": 0,
+   "NOT JUDGED": 0
+  },
+  "FAIL": {
+   "PASS": 0,
+   "FAIL": 2,
+   "NOT JUDGED": 3
+  },
+  "NOT JUDGED": {
+   "PASS": 0,
+   "FAIL": 0,
+   "NOT JUDGED": 0
+  }
+ }
+}

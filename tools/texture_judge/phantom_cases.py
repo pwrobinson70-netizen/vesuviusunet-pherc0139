@@ -56,3 +56,27 @@ def wrong_sheet_mesh(sc, start_turn=2):
 def gap_mesh(sc, turn=1):
     """A trace shifted into the dark gap half a pitch from sheet `turn`."""
     return mesh_of(sc, turn + 0.5, "in_gap")
+
+
+def build_on_disk(out, preset="round", size=160, seed=0, switch_col=None, **over):
+    """Write a phantom (zarr volume, true surfaces, centreline) plus the test traces as tifxyz folders under `out`:
+    traces/true (turn 1), traces/neighbour (turn 2), traces/switch, traces/gap, traces/wrong_sheet. Returns (Scroll, dict of paths, Params)."""
+    sc, vol, p = make_phantom(preset, size, seed, **over)
+    out = str(out)
+    os.makedirs(out, exist_ok=True)
+    ps.write_zarr(os.path.join(out, "volume.zarr"), vol)
+    cl = sc.centre_line()
+    with open(os.path.join(out, "centreline.csv"), "w") as f:
+        f.write("z,y,x\n" + "\n".join(f"{a:.4f},{b:.4f},{c:.4f}" for a, b, c in cl) + "\n")
+    import json
+    with open(os.path.join(out, "centreline_villa.json"), "w") as f:
+        json.dump({"control_points": [{"z": float(a), "y": float(b), "x": float(c)} for a, b, c in cl]}, f)
+    g = p.grid_step
+    scale = (1 / g, 1 / g)
+    paths = {"volume": os.path.join(out, "volume.zarr"), "umbilicus": os.path.join(out, "centreline_villa.json")}
+    sw, _ = ps.switch_trace(sc, dict(turn=1, col=sc.n_cols() // 2 if switch_col is None else switch_col, delta=1, width=0, row0=0))
+    for name, xyz in (("true", sc.trace(1.0)), ("neighbour", sc.trace(2.0)), ("switch", sw), ("gap", sc.trace(1.5)), ("wrong_sheet", sc.trace(2.0))):
+        d = os.path.join(out, "traces", name)
+        ps.write_tifxyz(d, xyz, scale)
+        paths[name] = d
+    return sc, paths, p

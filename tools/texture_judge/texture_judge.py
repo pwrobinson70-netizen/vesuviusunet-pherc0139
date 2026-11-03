@@ -401,7 +401,8 @@ def _seq_breaks(theta, ok, p: Params):
 
 
 def find_breaks(st, v, p: Params):
-    """Mark BREAK windows (both sides of a held orientation jump and any window in between) and return the break list."""
+    """Mark the BREAK windows and return the break list. A held jump between two textured windows that are neighbours marks both of them;
+    when non-textured windows lie between the two sides (the window that straddles the jump) only those in-between windows are marked."""
     ok = (v == CODE[ON])
     th = st["orientation"]
     nr, nc = v.shape
@@ -415,9 +416,11 @@ def find_breaks(st, v, p: Params):
     v = v.copy()
     for e in brk:
         if e["axis"] == "cols":
-            v[e["ti"], e["tj"]:e["tj2"] + 1] = CODE[BRK]
+            lo, hi = (e["tj"] + 1, e["tj2"]) if e["tj2"] - e["tj"] > 1 else (e["tj"], e["tj2"] + 1)
+            v[e["ti"], lo:hi] = CODE[BRK]
         else:
-            v[e["ti"]:e["ti2"] + 1, e["tj"]] = CODE[BRK]
+            lo, hi = (e["ti"] + 1, e["ti2"]) if e["ti2"] - e["ti"] > 1 else (e["ti"], e["ti2"] + 1)
+            v[lo:hi, e["tj"]] = CODE[BRK]
     return v, brk
 
 
@@ -454,8 +457,16 @@ def judge_surface(mesh, vol, p: Params, heights=(), log=None):
         ti = np.minimum((rowf / sr / wr).astype(int), v.shape[0] - 1)
         tj = np.minimum((c / sc_ / wc).astype(int), v.shape[1] - 1)
         codes = v[ti, tj] if len(c) else np.zeros(0, int)
+        here = []                                           # breaks whose window the cut line passes through (centre column of each)
+        for e, b in zip(brk, breaks):
+            if e["axis"] == "cols":
+                hit = (ti == e["ti"]) & (tj >= (e["tj"] + 1 if e["tj2"] - e["tj"] > 1 else e["tj"])) & (tj <= (e["tj2"] - 1 if e["tj2"] - e["tj"] > 1 else e["tj2"]))
+            else:
+                hit = (tj == e["tj"]) & (ti >= (e["ti"] + 1 if e["ti2"] - e["ti"] > 1 else e["ti"])) & (ti <= (e["ti2"] - 1 if e["ti2"] - e["ti"] > 1 else e["ti2"]))
+            if len(c) and hit.any():
+                here.append(dict(grid_col=b["grid_col"], jump_deg=b["jump_deg"]))
         cuts.append(dict(z=float(z0), n_points=int(len(c)), col=[int(t) for t in c], row=[float(t) for t in rowf],
-                         verdict=[NAMES[int(t)] for t in codes],
+                         verdict=[NAMES[int(t)] for t in codes], breaks=here,
                          counts={NAMES[k]: int((codes == k).sum()) for k in NAMES}))
     rep = dict(mode="surface", grid=dict(shape=list(mesh.shape), pixel_vox=p.pixel_vox, voxel_step_row_col=list(R["voxel_step"]),
                                          render_shape=list(R["layers"][0.0].shape), window_px=[wr, wc],
@@ -470,7 +481,7 @@ def judge_sections(mesh, vol, heights, p: Params, log=None):
     allv, outs, breaks, cuts = [], [], [], []
     for s in secs:
         if s["layers"] is None:
-            cuts.append(dict(z=s["z"], n_points=0, col=[], verdict=[], counts={k: 0 for k in CODE}, note=s["note"]))
+            cuts.append(dict(z=s["z"], n_points=0, col=[], verdict=[], breaks=[], counts={k: 0 for k in CODE}, note=s["note"]))
             outs.append(None)
             continue
         st = window_stats(s["layers"], p)
@@ -492,6 +503,7 @@ def judge_sections(mesh, vol, heights, p: Params, log=None):
         cols = sorted(col_verdict)
         codes = np.array([CODE[col_verdict[c]] for c in cols], int)
         cuts.append(dict(z=s["z"], n_points=len(cols), col=cols, verdict=[col_verdict[c] for c in cols],
+                         breaks=[dict(grid_col=b["grid_col"], jump_deg=b["jump_deg"]) for b in breaks if b["z"] == s["z"]],
                          counts={NAMES[k]: int((codes == k).sum()) for k in NAMES}, runs=s["runs"]))
         outs.append(dict(sec=s, st=st, v=v, why=why))
     V = np.concatenate([a.ravel() for a in allv]) if allv else np.zeros(0, int)
