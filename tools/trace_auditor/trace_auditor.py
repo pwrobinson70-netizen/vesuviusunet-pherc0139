@@ -39,7 +39,7 @@ import umbilicus_finder as uf  # noqa: E402
 import crush_map as cmap  # noqa: E402  (tools/crush_map: CrushMap reader for --crush-map)
 from ssc_io import ArrayVolume, InputError, PngVolume, ZarrVolume, load_mesh  # noqa: E402
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 PASS, FAIL, NJ = "PASS", "FAIL", "NOT JUDGED"
 
 
@@ -77,6 +77,7 @@ class Params:
     region_points: int = 15                 # a region = this many consecutive cut-line points (tumbling windows along each run)
     min_judged_fraction: float = 0.5        # PASS needs at least this fraction of the cut line judged; below it the verdict is NOT JUDGED
     crush_map: str | None = None            # crush_map.npz from tools/crush_map: regions whose crush severity is at or above --max-crush-severity are NOT JUDGED
+    windcheck: bool = False                 # add one more verdict, 'windcheck': self-intersection (windcheck engine) + CT off-sheet check (tools/upstream/windcheck); flags --wc-*
     max_crush_severity: float = 0.5         # judgement call (see the PR); severity 0..1, 1 = local spacing reduced 4x or more
 
 
@@ -99,6 +100,15 @@ def _sub_params(a, prefix, cls, **fixed):
           if getattr(a, f"{prefix}__{f.name}", None) is not None}
     kw.update(fixed)
     return cls(**kw)
+
+
+def _wc_flags(ap):
+    """--wc-* : ct_aware_check.Params (only used with --windcheck)."""
+    d = os.path.join(_TOOLS, "upstream", "windcheck")
+    if d not in sys.path:
+        sys.path.insert(0, d)
+    import ct_aware_check as wc
+    _sub_flags(ap, "wc", wc.Params)
 
 
 # ------------------------------------------------------------------------------ centre line
@@ -366,7 +376,35 @@ def _check(name, status, reason, **extra):
     return dict(check=name, status=status, reason=reason, **extra)
 
 
-def audit(meshes, vol, heights, centre, p: Params, ssf_p, ssc_p, log=None):
+def _windcheck_checks(meshes, vol, pitches, p: Params, wc_p, log=None):
+    """One 'windcheck' check per mesh: tools/upstream/windcheck/ct_aware_check (self-intersection + off-sheet), merged into one status."""
+    d = os.path.join(_TOOLS, "upstream", "windcheck")
+    if d not in sys.path:
+        sys.path.insert(0, d)
+    import ct_aware_check as wc
+    wp = wc_p or wc.Params()
+    meas = [v for v in pitches.values() if v and np.isfinite(v)]
+    if not wp.pitch_vox and (p.pitch_vox or meas):
+        wp = dataclasses.replace(wp, pitch_vox=float(p.pitch_vox or np.median(meas)))
+    data = getattr(vol, "data", None)
+    out = []
+    for m in meshes:
+        if log:
+            log(f"windcheck (self-intersection + off-sheet) on {m.name}")
+        P, valid = wc.mesh_arrays(m)
+        res = wc.check_trace(P, valid, data, wp, getattr(vol, "ct_scale", 1.0))
+        sub = res["checks"]
+        if data is None:
+            sub = sub + [dict(check="off_sheet", status=NJ, reason="this CT input has no 3-D array access (PNG directory): off-sheet not run")]
+        st = [c["status"] for c in sub]
+        status = FAIL if FAIL in st else (NJ if NJ in st else PASS)
+        bad = [c for c in sub if c["status"] != PASS] or sub
+        out.append(dict(check="windcheck", status=status, reason="; ".join(f"{c['check']}: {c['reason']}" for c in bad),
+                        parts=[{k: v for k, v in c.items() if k not in ("events", "off_sample")} for c in sub]))
+    return out
+
+
+def audit(meshes, vol, heights, centre, p: Params, ssf_p, ssc_p, log=None, wc_p=None):
     """Returns the report dict. meshes = [A] or [A, B]."""
     log = log or (lambda m: None)
     if p.global_pitch:                                         # one flag switches the whole auditor back to the old pitch handling
@@ -517,6 +555,10 @@ def audit(meshes, vol, heights, centre, p: Params, ssf_p, ssc_p, log=None):
                         f"(median offset {np.median([r['median_offset_pitches'] for r in offs]):+.2f} pitch)", heights=rows)
         traces[1]["checks"] += [sc, wo]
         pair = dict(a=A.name, b=B.name, spacing=sc, winding_offset=wo)
+    if p.windcheck:
+        traces_wc = _windcheck_checks(meshes, vol, pitches, p, wc_p, log)
+        for t, c in zip(traces, traces_wc):
+            t["checks"].append(c)
     for t in traces:
         if not any(c["status"] == FAIL for c in t["checks"]) and t["judged_fraction"] < p.min_judged_fraction:
             t["checks"].append(_check("pitch_confidence", NJ, f"only {100 * t['judged_fraction']:.0f}% of the cut line has a trusted local "
@@ -597,6 +639,7 @@ def build_parser():
     _sub_flags(ap, "ssf", ssf.Params)
     _sub_flags(ap, "ssc", ssc.Params)
     _sub_flags(ap, "uf", uf.Params)
+    _wc_flags(ap)
     return ap
 
 
@@ -614,6 +657,10 @@ def main(argv=None):
         if p.global_pitch:
             ssf_p, ssc_p = dataclasses.replace(ssf_p, global_pitch=True), dataclasses.replace(ssc_p, global_pitch=True)
         uf_p = _sub_params(a, "uf", uf.Params)
+        wc_p = None
+        if p.windcheck:
+            import ct_aware_check as wc
+            wc_p = _sub_params(a, "wc", wc.Params)
         meshes = [load_mesh(t, ssf_p.invalid_value, a.transpose) for t in (a.trace_a, a.trace_b) if t]
         vox = a.voxel_size_um or next((m.voxel_um for m in meshes if m.voxel_um), None)
         if a.zarr:
@@ -643,7 +690,7 @@ def main(argv=None):
             else:
                 centre = Centre(*cen, "umbilicus_finder", p.centre_max_gap * p.centre_z_step)
                 csrc = f"umbilicus_finder ({info['n_ok']} OK of {info['n_slices']} slices)"
-        rep = audit(meshes, vol, heights, centre, p, ssf_p, ssc_p, log=lambda m: print(m, file=sys.stderr))
+        rep = audit(meshes, vol, heights, centre, p, ssf_p, ssc_p, log=lambda m: print(m, file=sys.stderr), wc_p=wc_p)
     except (InputError, uf_io.InputError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
