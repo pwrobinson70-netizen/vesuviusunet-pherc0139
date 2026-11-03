@@ -183,3 +183,31 @@ def test_B5_empty_villa_export_is_reported(tmp_path, capsys):
     err = capsys.readouterr().err
     assert json.loads((out / "umbilicus_villa.json").read_text())["control_points"] == []
     assert "no OK slice" in err and rc == 0
+
+
+# ---------------------------------------------------------------------------------------------
+# Findings that are NOT fixed in this round (see docs/REVIEW_ROUND1.md). strict xfail = the behaviour
+# we would want; when someone fixes it the test turns into an XPASS failure and the marker is removed.
+from test_sheet_switch_finder import (CX, CY, NZ, PITCH as SW_PITCH, R0 as SW_R0, NC,  # noqa: E402
+                                      ct, find, hs, mesh_from_radius, ramp)
+import sheet_switch_finder as ssf  # noqa: E402
+
+
+@pytest.mark.xfail(strict=True, reason="R1: a switch within K=5 tracked points of the start of a run is "
+                                       "never tested (detect_steps needs K points on both sides); documented limit")
+def test_R1_switch_at_the_start_of_the_line_is_found(ct):
+    res = find(mesh_from_radius(SW_R0 + SW_PITCH + ramp(3, None, SW_PITCH, 0)), ct, heights=(20.0,))
+    assert len(hs(res)) == 1
+
+
+@pytest.mark.xfail(strict=True, reason="R2: with a grid step (30 vox) larger than 2.5 pitches the 0.5-pitch tracking "
+                                       "gate loses the sheet at every point; the hop is missed and nothing is warned")
+def test_R2_hop_on_a_coarse_grid_is_found_or_warned(ct):
+    nc = 23                                                   # 2*pi*112/23 = 30.6 vox per column
+    th = np.linspace(0, 2 * np.pi, nc, endpoint=False)
+    r = SW_R0 + SW_PITCH + (np.arange(nc) >= nc // 2) * SW_PITCH
+    rr = np.broadcast_to(r, (NZ, nc))
+    m = build_mesh("c", CX + rr * np.cos(th), CY + rr * np.sin(th),
+                   np.tile(np.arange(NZ, dtype=float)[:, None], (1, nc)), {})
+    res = ssf.run_finder(m, ct, [20.0], ssf.Params(vertical=0))
+    assert len(hs(res)) == 1 or res["warnings"], "no switch and no warning although only half the line was tracked"
