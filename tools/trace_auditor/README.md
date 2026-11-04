@@ -109,3 +109,73 @@ tools' READMEs. Volume input as in `sheet_spacing_check`: `--zarr`/`--zarr-level
   `--pitch-vox` is given.
 - Synthetic evidence only (concentric rings in the tests, phantoms in the pull request); nothing here has seen a
   real scroll.
+
+## v0.2: local-pitch confidence, NOT JUDGED regions, judged fraction
+
+Evidence: `tools/realdata_run/RESULTS.md` (PR #17), findings 3, 5 and 6 / proposal P5: on real data the pitch came out 14-17 vox
+against 9-10.5 measured, and the auditor FAILed everything, the unbroken originals included (112-142 radius "jumps" per trace), so a
+FAIL carried no information. The real periodicity is weak (autocorrelation second lobe < 0.1) and the local-pitch confidence
+(`tools/common/local_pitch.py`: peaks x regularity x autocorrelation at the pitch) is accordingly low there.
+
+- A *region* is `--region-points` consecutive cut-line points of one run. Its confidence is the median of the per-point local-pitch
+  confidence. Below `--min-pitch-confidence` the region is **NOT JUDGED**: switches (switch_finder) and radius jumps
+  (winding_jumps) that lie in it are not counted (the reason text says how many were left out), B points in it are left out of
+  winding_offset, and a pair height whose mean confidence is below it is left out of the spacing check.
+- PASS / FAIL therefore refer to judged regions only. Every trace reports `judged_fraction` (also in `audit.json`, per height and in
+  the text report). A trace with no FAIL whose judged fraction is below `--min-judged-fraction` is **NOT JUDGED** (check
+  `pitch_confidence`): a PASS would mean nothing. A FAIL in a judged region stands whatever the fraction.
+- `--min-pitch-confidence` 0.3, `--region-points` 15 and `--min-judged-fraction` 0.5 are **judgement calls** (docs/OPERATING_RANGE.md
+  gives no confidence threshold). Evidence for 0.3: share of 15-point regions with confidence >= 0.3 on the cut lines of turns 1-2
+  of 192^3 phantoms (5 heights): round 1.00, mild 1.00, folded / delaminated / torn / gappy 1.00, merged 0.94, crushed 0.50,
+  crushed-hard 0.07; real PHerc. Paris 4 meshes 0.00. 0.2 to 0.5 gives the same picture; no held-out set.
+- `--global-pitch` is the old behaviour (no confidence, every region judged, the old pitch estimator); it is also forwarded to
+  `--ssf-global-pitch` and `--ssc-global-pitch`.
+
+| flag | default | meaning |
+|---|---|---|
+| `--global-pitch` | off | old pitch handling, no NOT JUDGED regions |
+| `--min-pitch-confidence` | 0.3 | a region below this median local-pitch confidence is NOT JUDGED |
+| `--region-points` | 15 | region length in cut-line points |
+| `--min-judged-fraction` | 0.5 | PASS needs this fraction of the cut line judged, else NOT JUDGED |
+
+### `--crush-map` (tools/crush_map)
+
+`--crush-map CRUSH_MAP.npz` (written by `tools/crush_map/crush_map.py`) adds a second reason for a region to be NOT JUDGED: a
+region whose median crush severity (0..1, looked up at every cut-line point from the map of the nearest height) is at or above
+`--max-crush-severity` is not judged, exactly as for a low local-pitch confidence. Points the map has no value for (outside the
+scroll region, or further than the largest height spacing of the map from the map's heights) do not veto.
+
+| flag | default | meaning |
+|---|---|---|
+| `--crush-map` | none | crush_map.npz whose severity marks NOT JUDGED regions |
+| `--max-crush-severity` | 0.5 | judgement call: severity at or above this is NOT JUDGED (1 = spacing reduced 4x or more) |
+
+## `--windcheck`: one more verdict (self-intersection + off-sheet)
+
+`--windcheck` adds a check named `windcheck` to every trace (off by default; nothing else changes without it). It runs `tools/upstream/windcheck/ct_aware_check.py`:
+windcheck's exact self-intersection engine (MIT, Josep Carreras, vendored; needs g++ or clang++) on the trace, and a CT-aware off-sheet test (the CT sampled along the surface
+normal: is a bright sheet within 0.2 pitch of the trace?). The sheet pitch is `--pitch-vox` if given, else the median pitch the auditor measured. Every threshold is a flag
+with prefix `--wc-` (`--wc-min-crossings`, `--wc-max-off-fraction`, `--wc-off-tol-pitches`, ...; `--help`). It needs a zarr (3-D array access): with a PNG folder the off-sheet part is
+NOT JUDGED. It cannot tell the right sheet from a wrong one. Before / after on a folded phantom with planted defects: `tools/upstream/windcheck/BENCHMARK.md`.
+
+## `--vc3d-folder`: hand-off to a VC3D project
+
+    vun-audit --vc3d-folder PROJECT [--volume VOL] [--umbilicus FILE] [--heights ...] [any other flag above]
+
+Walks `PROJECT` (layout: `docs/FORMATS.md`): every folder holding `meta.json` and `x.tif`/`y.tif`/`z.tif` is a
+tifxyz patch. Each is audited by the ordinary single-trace auditor (same defaults, same automatic grid heights,
+`--heights` and every threshold flag are passed through) and gets, inside its own folder,
+
+- `verdict.json` (verdict, per-check status and reason, heights, judged fraction, auditor version) and
+- `verdict.txt` (the same in words).
+
+One table for the whole project is written to `PROJECT/verdict_summary.txt` and `verdict_summary.csv`.
+`x/y/z.tif`, `mask.tif` and `meta.json` are never opened for writing; the output holds no timestamp, so a re-run
+overwrites the verdict files with the same bytes.
+
+Volume, first match wins: `--volume PATH` (or `--zarr` / `--png-dir`; a folder with `.png` files is read as PNG slices
+and then needs `--png-pixel-um`), the patch's `meta.json` key `volume` / `volume_path` / `volume_name` (a path, or a name
+under `PROJECT/volumes/`), the single entry of `PROJECT/volumes/`. With none of these every patch is NOT JUDGED.
+A patch the auditor cannot read is NOT JUDGED with the error as the reason; the others still run.
+Exit code: 0 all PASS, 1 any FAIL, 4 no FAIL but something NOT JUDGED, 2 bad input. `tools/judge_panel` does not
+exist in this repository, so only the auditor is wired in.

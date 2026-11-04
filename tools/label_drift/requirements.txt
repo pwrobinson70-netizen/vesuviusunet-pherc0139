@@ -1,0 +1,9 @@
+# label_drift: numpy scipy pillow (PNG) tifffile (via the shared readers) zarr (OME-Zarr input)
+# plus the sibling tools it reuses: tools/sheet_spacing_check and tools/common (no extra packages)
+numpy>=1.24
+scipy>=1.10
+pillow>=10.0
+tifffile>=2023.7.10
+zarr>=2.16
+# tests only
+pytest>=7
