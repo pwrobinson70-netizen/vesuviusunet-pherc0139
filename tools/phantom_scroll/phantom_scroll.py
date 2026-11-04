@@ -577,7 +577,7 @@ def write_tifxyz(path, xyz, scale):
         bbox = [[-1.0] * 3, [-1.0] * 3]
     meta = {"bbox": bbox, "format": "tifxyz", "scale": [float(scale[0]), float(scale[1])], "type": "seg",
             "uuid": str(_uuid.uuid5(_uuid.NAMESPACE_URL, os.path.basename(os.path.normpath(path))))}
-    with open(os.path.join(path, "meta.json"), "w") as f:
+    with open(os.path.join(path, "meta.json"), "w", newline="\n") as f:
         json.dump(meta, f, indent=4)
 
 
@@ -659,9 +659,9 @@ def build(p: Params, out, *, zarr=True, png=False, bad_switches=(), bad_pairs=Fa
     for k in range(p.turns):
         write_tifxyz(os.path.join(out, "surfaces", f"turn_{k:02d}"), sc.turn_surface(k), scale)
     cl = sc.centre_line()
-    with open(os.path.join(out, "centreline.csv"), "w") as f:
+    with open(os.path.join(out, "centreline.csv"), "w", newline="\n") as f:
         f.write("z,y,x\n" + "\n".join(f"{a:.4f},{b:.4f},{c:.4f}" for a, b, c in cl) + "\n")
-    with open(os.path.join(out, "centreline_villa.json"), "w") as f:
+    with open(os.path.join(out, "centreline_villa.json"), "w", newline="\n") as f:
         json.dump({"control_points": [{"z": float(a), "y": float(b), "x": float(c)} for a, b, c in cl]}, f, indent=2)
     params_d = dataclasses.asdict(p)
     if p.fibre == 0:                                         # the v0.3 fibre fields only appear in truth.json when the texture is on
@@ -685,7 +685,7 @@ def build(p: Params, out, *, zarr=True, png=False, bad_switches=(), bad_pairs=Fa
         for name, (xyz, expect) in pair_traces(sc, 1).items():
             write_tifxyz(os.path.join(out, "bad", f"pair_{name}"), xyz, scale)
             truth["pairs"].append(dict(a=a, b=f"bad/pair_{name}", name=name, expect=expect))
-    with open(os.path.join(out, "truth.json"), "w") as f:
+    with open(os.path.join(out, "truth.json"), "w", newline="\n") as f:
         json.dump(truth, f, indent=2)
     return sc, vol, lab, truth
 
