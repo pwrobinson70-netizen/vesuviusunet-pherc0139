@@ -16,7 +16,7 @@ Our own centre-line estimates (mean error about 100 voxels at 38.4 um) and windi
 
 ## 1. What was built
 
-Six command-line tools (installable with `pip install -e .`, see `docs/TOOLS.md`), CPU only:
+Six command-line tools (installable with `pip install -e .`, see `docs/TOOLS.md`), CPU only, were the state of the first draft:
 
 | Tool | Purpose |
 |---|---|
@@ -27,9 +27,27 @@ Six command-line tools (installable with `pip install -e .`, see `docs/TOOLS.md`
 | `phantom_scroll` | synthetic rolled scroll with exact ground truth and planted bad traces |
 | `ink_infer` | tiled 3-D U-Net inference along a traced surface, producing an ink-probability picture |
 
+Merged on 3 and 4 Nov 2026 (PRs 27 to 34; sources: `CHANGELOG.md`, `docs/TOOLS.md`, `pyproject.toml`):
+
+| Tool | `vun-*` command | One line |
+|---|---|---|
+| crush map (`tools/crush_map`) | `vun-crush` | where the scroll is crushed, and so where the trace tools cannot be trusted |
+| Windows / VC3D hand-off | `vun-audit --vc3d-folder PROJECT` (and `scripts/judge_patch.ps1`) | audits every tifxyz patch of a VC3D project folder, writes `verdict.json` / `verdict.txt` per patch plus a summary; a Windows CI job exists (`docs/WINDOWS.md`) |
+| surface agreement (`tools/surface_agreement`) | `vun-surface` | does a trace lie on a sheet of the organisers' surface prediction, and does that agree with our CT-peak judge |
+| ground-truth scorer (`tools/groundtruth_score`) | `vun-groundtruth` | scores the auditor, switch finder, pitch estimate, centre finder and winding sweep against verified patches, the published centre line and annotated windings |
+| negatives maker (`tools/groundtruth_score`) | `vun-negatives` | four deliberately broken copies (`shift-half`, `shift-full`, `switch-mid`, `scramble`) of each verified patch |
+| densify (`vun_tools/densify.py`) | `vun-densify` | bilinear densification of a tifxyz grid, never across invalid cells |
+| panel_v2 (`tools/judge_panel`) | `vun-panel2` | prediction-first verdict: surface-prediction on-sheet fraction >= T, plus advisory CT votes that can fail a trace only if 2 of 3 agree |
+| umbilicus from prediction (`tools/umbilicus_finder/umbilicus_from_pred.py`) | `vun-umbilicus-pred` | centre estimate from the m7 prediction fetched from the public zarr |
+| texture judge (`tools/texture_judge`) | `vun-texture` | fibre-texture continuity judge, independent of the bright-peak tools |
+| all-judges panel (`tools/judge_panel/judge_panel.py`) | `vun-panel` | every judge on one trace, region by region, with disagreements listed |
+
+Also merged (no new command): the confidence-gated local pitch and NOT JUDGED regions in the auditor (PR 28, `docs/REALDATA_2X2.md`), `vun-drift` and
+`vun-merge` and `vun-sweep` (`CHANGELOG.md`).
+
 Supporting work: a tifxyz / umbilicus format check against the VC3D and villa conventions (`docs/FORMATS.md`),
 a review round with five fixed bugs (`docs/REVIEW_ROUND1.md`), checksums for the frozen earlier scripts, and
-tests (several hundred, synthetic data only).
+tests (several hundred; synthetic data for the phantom tools, plus tests pinned to the recorded real-data verdicts).
 
 ## 2. Method, per tool
 
