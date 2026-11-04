@@ -1,0 +1,91 @@
+{
+  "area_cm2": 0.04165632,
+  "area_vx2": 45200.0,
+  "bbox": [
+    [
+      32.376220703125,
+      32.75390625,
+      12236.6494140625
+    ],
+    [
+      67.4970703125,
+      428.808837890625,
+      12454.37109375
+    ]
+  ],
+  "fitted_poses": [
+    {
+      "inliers": 0,
+      "matrix": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "member_id": "band-seed1610817-20260730-003341-010.tifxyz",
+      "reflected": false,
+      "rms": 0.0
+    }
+  ],
+  "format": "tifxyz",
+  "member_ids": [
+    "band-seed1610817-20260730-003341-010.tifxyz"
+  ],
+  "merge_settings": {
+    "allow_reflection": true,
+    "atlas_agreement_ratio": 0.9,
+    "containment_threshold": 0.9,
+    "dense_spacing": 1.0,
+    "erode_cells": 0,
+    "max_correspondences": 4096,
+    "max_output_area_cm2": 20.0,
+    "max_output_area_vx2": 0.0,
+    "max_refit_rms": 2.0,
+    "min_inliers": 32,
+    "min_major_spread": 20.0,
+    "min_minor_spread": 5.0,
+    "min_overlap_fraction": 0.2,
+    "output_step": 20.0,
+    "ransac_confidence": 0.999,
+    "ransac_max_hypotheses": 512,
+    "thinning_spacing": 2.0,
+    "tolerance": 2.0,
+    "uv_inlier_tolerance": 3.0
+  },
+  "scale": [
+    0.05,
+    0.05
+  ],
+  "seed_id": "band-seed1610817-20260730-003341-010.tifxyz",
+  "seed_metric_origin": [
+    0.0,
+    0.0
+  ],
+  "source": "merge_overlapping_patches",
+  "type": "seg",
+  "uuid": "band-seed1610817-20260730-003341-010.tifxyz",
+  "source_folder": "https://vesuvius-challenge-open-data.s3.amazonaws.com/PHercParis4/representations/spiral/20260411134726-spiral-dataset-20261019084150/verified_patches/band-seed1610817-20260730-003341-010.tifxyz/",
+  "crop_note": "verified patch, 9.6 um grid (level 2 of the 2.4 um scan); x,y shifted by -(2992,2994); z unchanged; invalid cells set to -1 and mask.tif written (255 = valid; source mask applied where it existed); window x 2992:3092 y 2994:3455; heights [12291, 12346, 12400]",
+  "window": {
+    "x0": 2992,
+    "x1": 3092,
+    "y0": 2994,
+    "y1": 3455,
+    "heights": [
+      12291,
+      12346,
+      12400
+    ]
+  }
+}
