@@ -27,6 +27,8 @@ level-0 voxel coordinates, `-1` = no data; `docs/FORMATS.md`); a CT volume is an
 | `vun-merge` | `tools/patch_merger` | Merge overlapping tifxyz patches, but only where the overlap is provably one sheet |
 | `vun-sweep` | `tools/winding_sweep` | Every layer of a z band: centre, ray crossings, one patch + audit verdict per winding |
 | `vun-groundtruth` | `tools/groundtruth_score` | How often do the checkers raise a false alarm on human-verified real traces, and how far off is the centre line? |
+| `vun-sweep` | `tools/winding_sweep` | Every layer of a z band: centre, ray crossings, one patch + audit verdict per winding |
+| `vun-merge` | `tools/patch_merger` | Merge overlapping tifxyz patches, but only where the overlap is provably one sheet |
 
 ## vun-umbilicus
 - **Input:** OME-Zarr / 3-D zarr / PNG folder; z range in level-0 voxels (`--z-start --z-stop --z-step`).
@@ -110,3 +112,16 @@ tools can fail, not how often, and say nothing about any real scan.
 - **Output** (`--out`, default `results/`): `groundtruth_patches.csv/.md` (per patch and mode: verdict, reasons, pitch, jumps, switches; PASS / FAIL / NOT JUDGED counts and the false-alarm rate with a Wilson 95% interval), `centre_error_l4.csv/.md`, `winding_agreement_l4.csv/.md`; `--sweep` adds a one-flag-at-a-time threshold table.
 - **Runs:** `vun-audit` (default and one-pitch mode), `vun-switch`, the CT pitch estimate of `vun-spacing`, optionally `surface_agreement`; `vun-umbilicus` on full slices; the ray-crossing step of `vun-sweep`.
 - **Limits:** every patch is a correct trace, so the FAIL rate is a false-alarm rate, but 40 narrow patches of one scroll say nothing about missed errors. The published centre line is used for Part A. NOT JUDGED is not a pass: the winding checks need about 60 degrees of arc round the centre and these patches span about 8. Numbers: `docs/REALDATA_GROUNDTRUTH.md`.
+## surface_agreement (`vun-surface`)
+Does a tifxyz trace lie on a sheet of the organisers' machine-made surface prediction, and does that agree with our CT-peak judge?
+Per point: prediction value, offset to the nearest prediction ridge, ON-PREDICTED-SHEET / OFF / NOT JUDGED; per height a 2x2 table
+(ours x prediction) with the disagreeing points; overlays. See `tools/surface_agreement/README.md`.
+
+## negatives (`vun-negatives`)
+Four deliberately broken copies of each verified PHerc. Paris 4 (Scroll 1) patch, to measure the DETECTION rate of the checkers on real data (the
+false-alarm rate is measured on the originals): `shift-half` (every valid point moved half a local sheet pitch along the in-plane normal),
+`shift-full` (one pitch), `switch-mid` (right half of the columns moved one pitch) and `scramble` (the z values shuffled among the valid cells).
+The pitch is measured on the CT slice at the patch's middle height. Fixed seed; refuses to run unless the ground-truth folder's README says
+"PHerc. Paris 4". `vun-negatives testdata/pherc_paris4_groundtruth results/negatives` writes `OUT/<patch>/<kind>/` tifxyz folders and `manifest.csv`.
+Scoring, the 2x2 and the threshold study: `tools/groundtruth_score/README.md`, `docs/REALDATA_2X2.md`.
+

@@ -49,6 +49,10 @@ def phantom():
     return _run("phantom_scroll", "phantom_scroll")
 
 
+def crush():
+    return _run("crush_map", "crush_map")
+
+
 def ink():
     return _run("ink_infer", "ink_infer")
 
@@ -63,3 +67,15 @@ def sweep():
 
 def groundtruth():
     return _run("groundtruth_score", "groundtruth_score")
+
+
+def drift():
+    return _run("label_drift", "label_drift")
+
+
+def surface():
+    return _run("surface_agreement", "surface_agreement")
+
+
+def negatives():
+    return _run("groundtruth_score", "make_negatives")
