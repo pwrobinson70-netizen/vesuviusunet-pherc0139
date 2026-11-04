@@ -1,0 +1,7 @@
+numpy>=1.24
+scipy>=1.10
+tifffile>=2023.7.10
+# tests only
+pytest>=7
+# the self-intersection engine is C++ (engines/selfcross.cpp): needs g++ or clang++ (-std=c++17 -pthread). ct_aware_check builds it on first use.
+# windcheck's own Python (zarr, s3fs, imagecodecs, ...) is NOT used: only its engine and its engine test are vendored.

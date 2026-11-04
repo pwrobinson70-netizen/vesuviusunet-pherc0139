@@ -18,10 +18,14 @@ from scipy.signal import find_peaks
 from scipy.spatial import cKDTree
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+_COMMON = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "common"))
+if _COMMON not in sys.path:
+    sys.path.insert(0, _COMMON)
+import local_pitch as lpm  # noqa: E402  (tools/common/local_pitch.py: shared local sheet spacing + confidence)
 from ssc_io import (ArrayVolume, InputError, PngVolume, ZarrVolume, load_mesh,  # noqa: E402
                     mesh_voxel_um, to_px)
 
-__version__ = "0.1.1"
+__version__ = "0.2.0"
 
 
 @dataclass
@@ -48,6 +52,14 @@ class Params:
     min_clean_heights: int | None = None  # area rule N (default ceil(M/2))
     band_height_vox: float | None = None  # area band thickness (default: height spacing)
     area_min_cos: float = 0.1           # clamp on sqrt(1 - nz^2) in the area band factor
+    # --- v0.2 local pitch (tools/common/local_pitch.py)
+    global_pitch: bool = False          # OLD behaviour: peak gaps at --peak-prominence-frac over the whole profile, height median as fallback
+    pitch_prominence_frac: float = 0.05 # local pitch: min peak prominence / profile range (PR #17: 0.25 gave 14-17 vox on real data, independent 9-10.5)
+    pitch_window_pitches: float = 3.0   # local pitch: use the peaks within this many pitches of the point
+    pitch_cv_max: float = 0.5           # local pitch: confidence 0 at this robust scatter of the local gaps
+    pitch_ac_full: float = 0.5          # local pitch: confidence 1 at this autocorrelation at the pitch
+    pitch_smooth_points: int = 1        # local pitch: running median over this many points along each run (odd; 1 = off)
+    min_pitch_confidence: float = 0.0   # points whose local-pitch confidence is below this have no pitch (counted 'no pitch', not clean)
 
 
 # ----------------------------------------------------------- step 1: cut line
@@ -159,8 +171,31 @@ def normals(line: Line, p: Params):
     return nrm
 
 
+def pitch_params(p: Params) -> "lpm.PitchParams":
+    return lpm.PitchParams(half_len_vox=p.profile_halflen_vox, step_px=p.profile_step_px, sigma_px=p.profile_sigma_px,
+                           prominence_frac=p.pitch_prominence_frac, min_distance_px=p.peak_min_distance_px,
+                           min_peaks=p.min_peaks, window_pitches=p.pitch_window_pitches, cv_max=p.pitch_cv_max,
+                           ac_full=p.pitch_ac_full, smooth_points=p.pitch_smooth_points).validate()
+
+
+def ct_local_pitch(tile, origin, line: Line, ct_scale, p: Params, nrm=None) -> "lpm.LocalPitch":
+    """Local pitch (mesh voxels) and confidence at every cut-line point (tools/common/local_pitch.py). `nrm` = unit in-plane
+    normals (default: the tangent-based ones; callers that filter out tilted normals pass theirs, NaN = no pitch there)."""
+    if line.n == 0:
+        z = np.zeros(0)
+        return lpm.LocalPitch(z, z, z.astype(int), z)
+    lp = lpm.local_pitch(tile, origin, to_px(line.xy, ct_scale), normals(line, p) if nrm is None else nrm, ct_scale,
+                         line.run, pitch_params(p))
+    if p.min_pitch_confidence > 0:
+        lp.pitch[lp.confidence < p.min_pitch_confidence] = np.nan
+    return lp
+
+
 def ct_pitches(tile, origin, line: Line, ct_scale, p: Params):
-    """Per-point median bright-sheet peak spacing (mesh voxels) along the local normal."""
+    """Per-point bright-sheet spacing (mesh voxels) along the local normal: the LOCAL estimator, or with p.global_pitch the
+    old per-point median peak gap over the whole profile."""
+    if not p.global_pitch:
+        return ct_local_pitch(tile, origin, line, ct_scale, p).pitch
     out = np.full(line.n, np.nan)
     if line.n == 0:
         return out
@@ -201,6 +236,23 @@ def densify(line: Line, step):
     return np.concatenate(pts) if pts else np.zeros((0, 2))
 
 
+def _fill_along_run(pitch, run, fallback):
+    """NaN pitches take the value of the nearest finite one on the same run (by point index); `fallback` if the run has none."""
+    out = np.asarray(pitch, float).copy()
+    for s, e in _run_bounds(run):
+        seg = out[s:e]
+        fin = np.isfinite(seg)
+        if fin.all():
+            continue
+        if not fin.any():
+            out[s:e] = fallback
+            continue
+        idx = np.arange(e - s)
+        near = np.abs(idx[:, None] - idx[fin][None, :]).argmin(axis=1)
+        out[s:e] = np.where(fin, seg, seg[fin][near])
+    return out
+
+
 def _no_nearby_col(cols, ref_cols, w):
     """True where no entry of the sorted `ref_cols` lies within +/- w of `cols`."""
     lo = np.searchsorted(ref_cols, cols - w, side="left")
@@ -227,7 +279,8 @@ def _empty_result(z, na, nb, reason):
                 shared_fraction=0.0, skipped_fraction=0.0, no_pitch_fraction=0.0,
                 median_ratio=None, ct_pitch_vox=None, mesh_pitch_vox=None,
                 pitch_mismatch_flag=True, onsheet_fraction_a=0.0, onsheet_fraction_b=0.0,
-                otsu_threshold=None, pitch_fallback_fraction=0.0, note=reason)
+                otsu_threshold=None, pitch_fallback_fraction=0.0, note=reason,
+                pitch_mode=None, pitch_confidence_mean=0.0, pitch_local_p10=None, pitch_local_p90=None)
 
 
 def _num(v):
@@ -259,10 +312,17 @@ def analyse_height(A, B, vol, z0, p: Params, want_overlay=False):
     thr = otsu_threshold(tile, p.otsu_bins)
     onmask = maximum_filter(tile, footprint=_disk(p.onsheet_radius_px), mode="nearest") > thr
 
-    pa, pb = ct_pitches(tile, origin, la, sc, p), ct_pitches(tile, origin, lb, sc, p)
+    if p.global_pitch:
+        pa, pb = ct_pitches(tile, origin, la, sc, p), ct_pitches(tile, origin, lb, sc, p)
+        conf_a = np.where(np.isfinite(pa), 1.0, 0.0)
+    else:
+        lpa, lpb = ct_local_pitch(tile, origin, la, sc, p), ct_local_pitch(tile, origin, lb, sc, p)
+        pa, pb, conf_a = lpa.pitch, lpb.pitch, lpa.confidence
     both = np.concatenate([pa, pb])
     ct_pitch = float(np.nanmedian(both)) if np.isfinite(both).any() else float("nan")
-    pa_used = np.where(np.isfinite(pa), pa, ct_pitch)          # fall back to the height median
+    pa_used = np.where(np.isfinite(pa), pa, ct_pitch)          # old / last resort: fall back to the height median
+    if not p.global_pitch:
+        pa_used = _fill_along_run(pa, la.run, ct_pitch)        # v0.2: the nearest local pitch on the same run first
     fallback = float(np.mean(~np.isfinite(pa) & np.isfinite(ct_pitch)))
 
     dense = densify(lb, p.densify_step_vox)
@@ -294,7 +354,11 @@ def analyse_height(A, B, vol, z0, p: Params, want_overlay=False):
                ct_pitch_vox=_num(ct_pitch), mesh_pitch_vox=_num(mesh_pitch),
                pitch_mismatch_flag=bool(mism), onsheet_fraction_a=float(on_a.mean()),
                onsheet_fraction_b=float(on_b.mean()), otsu_threshold=_num(thr),
-               pitch_fallback_fraction=fallback, note="")
+               pitch_fallback_fraction=fallback, note="",
+               pitch_mode="global" if p.global_pitch else "local",
+               pitch_confidence_mean=float(np.mean(conf_a)) if len(conf_a) else 0.0,
+               pitch_local_p10=_num(np.nanpercentile(pa, 10)) if np.isfinite(pa).any() else None,
+               pitch_local_p90=_num(np.nanpercentile(pa, 90)) if np.isfinite(pa).any() else None)
     pts = dict(col=la.col, clean=clean, area=_arc_weights(la), nz2=la.nz2)
     ov = (tile, origin, la, lb, clean) if want_overlay else None
     return res, pts, ov
@@ -460,6 +524,8 @@ def build_parser():
         flag = "--" + f.replace("_", "-")
         if v is None:
             ap.add_argument(flag, type=float if f == "band_height_vox" else int, default=None)
+        elif isinstance(v, bool):
+            ap.add_argument(flag, action="store_true", help="(off by default)")
         else:
             ap.add_argument(flag, type=type(v), default=v)
     return ap

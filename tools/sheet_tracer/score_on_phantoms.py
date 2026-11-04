@@ -64,17 +64,18 @@ def make_centre(mode, sc, vol, p):
     return ta.Centre(*cen, "umbilicus_finder", 1.5 * 32.0) if cen is not None else None
 
 
-def audit(mesh, avol, centre):
+def audit(mesh, avol, centre, global_pitch=False):
     z = mesh.z[mesh.valid]
     lo, hi = float(z.min()), float(z.max())
     H = [float(round(lo + f * (hi - lo))) for f in (0.15, 0.3, 0.5, 0.7, 0.85)]
-    rep = ta.audit([mesh], avol, H, centre, ta.Params(), ta.ssf.Params(vertical=1), ta.ssc.Params(band_height_vox=H[1] - H[0]))
+    rep = ta.audit([mesh], avol, H, centre, ta.Params(global_pitch=global_pitch), ta.ssf.Params(vertical=1),
+                   ta.ssc.Params(band_height_vox=H[1] - H[0]))
     rep.pop("polar")
     t = rep["traces"][0]
     return rep, t["verdict"], [c["check"] for c in t["checks"] if c["status"] == ta.FAIL]
 
 
-def run_phantom(name, size, seed, mode, work, log):
+def run_phantom(name, size, seed, mode, work, log, global_pitch=False):
     p = bm.make_params(name, size, seed)
     sc = ps.Scroll(p)
     vol, lab = sc.render()
@@ -85,7 +86,7 @@ def run_phantom(name, size, seed, mode, work, log):
     for sd in SEEDS:
         tru = sc.turn_surface(sd["turn"])
         seed_xyz = tru[int(sd["row"] * (tru.shape[0] - 1)), int(sd["col"] * (tru.shape[1] - 1))]
-        prm = st.Params(step_vox=p.grid_step, max_rows=61, max_cols=41)
+        prm = st.Params(step_vox=p.grid_step, max_rows=61, max_cols=41, global_pitch=global_pitch)
         d = os.path.join(work, f"{name}_{sd['name']}")
         rec = dict(phantom=name, seed=sd["name"], turn=sd["turn"], seed_xyz=seed_xyz.tolist())
         try:
@@ -98,7 +99,7 @@ def run_phantom(name, size, seed, mode, work, log):
         m = load_mesh(d)
         rec.update(points=int(m.valid.sum()), area_vx2=json.load(open(os.path.join(d, "meta.json")))["area_vx2"],
                    stop=res["stop_reason"], on_turn_before=turn_fraction(sc, m, sd["turn"], seed_xyz))
-        rep, rec["verdict_before"], rec["fails_before"] = audit(m, avol, centre)
+        rep, rec["verdict_before"], rec["fails_before"] = audit(m, avol, centre, global_pitch)
         rec.update(on_turn_after=rec["on_turn_before"], verdict_after=rec["verdict_before"], repaired=False)
         if rec["verdict_before"] == ta.FAIL:
             aj = os.path.join(work, f"{name}_{sd['name']}_audit.json")
@@ -110,7 +111,7 @@ def run_phantom(name, size, seed, mode, work, log):
                 m2 = load_mesh(out)
                 rec["repaired"] = json.load(open(os.path.join(out, "repair_summary.json")))["repaired"]
                 rec["on_turn_after"] = turn_fraction(sc, m2, sd["turn"], seed_xyz)
-                _, rec["verdict_after"], rec["fails_after"] = audit(m2, avol, centre)
+                _, rec["verdict_after"], rec["fails_after"] = audit(m2, avol, centre, global_pitch)
             else:
                 rec["repair_error"] = f"trace_repair exit {rc}"
         log(f"{name} {sd['name']}: {rec['points']} pts, on-turn {rec['on_turn_before']:.3f} -> {rec['on_turn_after']:.3f}, "
@@ -139,6 +140,7 @@ def main(argv=None):
     ap.add_argument("--seed", type=int, default=0, help="phantom seed")
     ap.add_argument("--phantoms", default="round,mild,bad,merged")
     ap.add_argument("--centre", choices=["truth", "estimated"], default="truth")
+    ap.add_argument("--global-pitch", action="store_true", help="OLD pitch handling in the tracer and the auditor (before / after comparison)")
     ap.add_argument("--out")
     ap.add_argument("--json")
     a = ap.parse_args(argv)
@@ -146,7 +148,7 @@ def main(argv=None):
     os.makedirs(work, exist_ok=True)
     rows = []
     for n in a.phantoms.split(","):
-        rows += run_phantom(n, a.size, a.seed, a.centre, work, lambda m: print(m, file=sys.stderr, flush=True))
+        rows += run_phantom(n, a.size, a.seed, a.centre, work, lambda m: print(m, file=sys.stderr, flush=True), a.global_pitch)
     if a.json:
         json.dump(rows, open(a.json, "w"), indent=2, default=float)
     print(table(rows))

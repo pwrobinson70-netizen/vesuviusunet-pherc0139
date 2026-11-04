@@ -50,18 +50,23 @@ def switch_specs(n_cols):
             dict(turn=0, col=int(n_cols * 0.70), delta=1.0, width=0, row0=0)]
 
 
-def run_one(name, size, seed, workdir, col_tol=3, log=print):
+def run_one(name, size, seed, workdir, col_tol=3, log=print, global_pitch=False, reuse=False):
     p = make_params(name, size, seed)
     out = os.path.join(workdir, name)
     nc = ps.Scroll(p).n_cols()
-    sc, vol, lab, truth = ps.build(p, out, zarr=False, bad_switches=switch_specs(nc), bad_pairs=True)
+    vpath = os.path.join(out, "vol.npy")
+    if reuse and os.path.exists(vpath) and os.path.exists(os.path.join(out, "truth.json")):      # --reuse: phantoms kept with --out
+        sc, vol, truth = ps.Scroll(p), np.load(vpath), json.load(open(os.path.join(out, "truth.json")))
+    else:
+        sc, vol, lab, truth = ps.build(p, out, zarr=False, bad_switches=switch_specs(nc), bad_pairs=True)
+        np.save(vpath, vol)
     nz = p.nz
     heights = [float(round(f * (nz - 1))) for f in (0.25, 0.4, 0.5, 0.6, 0.75)]
     avol = ArrayVolume(vol)
     res = dict(phantom=name, size=size, seed=seed, n_cols=nc, pitch=p.pitch, params=truth["params"])
 
     # ---- sheet_switch_finder
-    sp = ssf.Params(vertical=0)
+    sp = ssf.Params(vertical=0, global_pitch=global_pitch)
     clean_sw = 0
     for k in range(p.turns):
         r = ssf.run_finder(load_mesh(os.path.join(out, "surfaces", f"turn_{k:02d}")), avol, heights, sp)
@@ -110,7 +115,7 @@ def run_one(name, size, seed, workdir, col_tol=3, log=print):
                          pitch_estimated=summ["pitch_vox"], pitch_true=p.pitch)
 
     # ---- sheet_spacing_check
-    spp = ssc.Params(band_height_vox=float(heights[1] - heights[0]))
+    spp = ssc.Params(band_height_vox=float(heights[1] - heights[0]), global_pitch=global_pitch)
     A0 = os.path.join(out, "surfaces")
 
     def clean(a, b):
@@ -149,10 +154,12 @@ def main(argv=None):
     ap.add_argument("--out", help="keep the phantoms here (default: a temp dir)")
     ap.add_argument("--json")
     ap.add_argument("--col-tol", type=int, default=3, help="columns: a switch within this of the truth counts as found")
+    ap.add_argument("--global-pitch", action="store_true", help="run sheet_switch_finder / sheet_spacing_check in their OLD one-pitch mode")
+    ap.add_argument("--reuse", action="store_true", help="with --out: reuse phantoms (vol.npy + truth.json) already there")
     a = ap.parse_args(argv)
     work = a.out or tempfile.mkdtemp(prefix="phantoms_")
-    results = [run_one(n, a.size, a.seed, work, a.col_tol, log=lambda m: print(m, file=sys.stderr))
-               for n in a.phantoms.split(",")]
+    results = [run_one(n, a.size, a.seed, work, a.col_tol, log=lambda m: print(m, file=sys.stderr),
+                       global_pitch=a.global_pitch, reuse=a.reuse) for n in a.phantoms.split(",")]
     txt = table(results)
     if a.json:
         with open(a.json, "w") as fh:

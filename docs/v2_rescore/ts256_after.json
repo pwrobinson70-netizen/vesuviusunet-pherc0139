@@ -1,0 +1,240 @@
+[
+  {
+    "phantom": "round",
+    "seed": "t1-mid",
+    "turn": 1,
+    "seed_xyz": [
+      76.64009094238281,
+      129.14781188964844,
+      124.0
+    ],
+    "points": 2501,
+    "area_vx2": 38419.3046875,
+    "stop": "max_rows_cols",
+    "on_turn_before": 1.0,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "PASS",
+    "repaired": false
+  },
+  {
+    "phantom": "round",
+    "seed": "t2-mid",
+    "turn": 2,
+    "seed_xyz": [
+      54.65162658691406,
+      129.86019897460938,
+      124.0
+    ],
+    "points": 2501,
+    "area_vx2": 38436.87109375,
+    "stop": "max_rows_cols",
+    "on_turn_before": 1.0,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "PASS",
+    "repaired": false
+  },
+  {
+    "phantom": "round",
+    "seed": "t2-low",
+    "turn": 2,
+    "seed_xyz": [
+      90.19235229492188,
+      186.11944580078125,
+      72.0
+    ],
+    "points": 1968,
+    "area_vx2": 30101.97265625,
+    "stop": "ring_no_accepted",
+    "on_turn_before": 1.0,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "PASS",
+    "repaired": false
+  },
+  {
+    "phantom": "mild",
+    "seed": "t1-mid",
+    "turn": 1,
+    "seed_xyz": [
+      80.14641571044922,
+      127.22036743164062,
+      123.32453155517578
+    ],
+    "points": 2501,
+    "area_vx2": 38745.3125,
+    "stop": "max_rows_cols",
+    "on_turn_before": 1.0,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "PASS",
+    "repaired": false
+  },
+  {
+    "phantom": "mild",
+    "seed": "t2-mid",
+    "turn": 2,
+    "seed_xyz": [
+      60.18828582763672,
+      126.57658386230469,
+      123.38843536376953
+    ],
+    "points": 2501,
+    "area_vx2": 38678.62890625,
+    "stop": "max_rows_cols",
+    "on_turn_before": 1.0,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "PASS",
+    "repaired": false
+  },
+  {
+    "phantom": "mild",
+    "seed": "t2-low",
+    "turn": 2,
+    "seed_xyz": [
+      95.8287582397461,
+      176.7447967529297,
+      72.12175750732422
+    ],
+    "points": 1968,
+    "area_vx2": 29890.96484375,
+    "stop": "ring_no_accepted",
+    "on_turn_before": 1.0,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "PASS",
+    "repaired": false
+  },
+  {
+    "phantom": "bad",
+    "seed": "t1-mid",
+    "turn": 1,
+    "seed_xyz": [
+      86.29461669921875,
+      122.28352355957031,
+      122.4243392944336
+    ],
+    "points": 2501,
+    "area_vx2": 38851.375,
+    "stop": "max_rows_cols",
+    "on_turn_before": 1.0,
+    "verdict_before": "NOT JUDGED",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "NOT JUDGED",
+    "repaired": false
+  },
+  {
+    "phantom": "bad",
+    "seed": "t2-mid",
+    "turn": 2,
+    "seed_xyz": [
+      69.51596069335938,
+      119.07901000976562,
+      122.56066131591797
+    ],
+    "points": 2501,
+    "area_vx2": 38700.10546875,
+    "stop": "max_rows_cols",
+    "on_turn_before": 1.0,
+    "verdict_before": "NOT JUDGED",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "NOT JUDGED",
+    "repaired": false
+  },
+  {
+    "phantom": "bad",
+    "seed": "t2-low",
+    "turn": 2,
+    "seed_xyz": [
+      107.7861328125,
+      159.3206787109375,
+      72.20355224609375
+    ],
+    "points": 1998,
+    "area_vx2": 30196.525390625,
+    "stop": "ring_no_accepted",
+    "on_turn_before": 1.0,
+    "verdict_before": "NOT JUDGED",
+    "fails_before": [],
+    "on_turn_after": 1.0,
+    "verdict_after": "NOT JUDGED",
+    "repaired": false
+  },
+  {
+    "phantom": "merged",
+    "seed": "t1-mid",
+    "turn": 1,
+    "seed_xyz": [
+      80.71731567382812,
+      126.22749328613281,
+      123.32139587402344
+    ],
+    "points": 2499,
+    "area_vx2": 38601.94140625,
+    "stop": "ring_no_accepted",
+    "on_turn_before": 0.9911964785914366,
+    "verdict_before": "FAIL",
+    "fails_before": [
+      "switch_finder"
+    ],
+    "on_turn_after": 0.9911964785914366,
+    "verdict_after": "FAIL",
+    "repaired": false,
+    "fails_after": [
+      "switch_finder"
+    ]
+  },
+  {
+    "phantom": "merged",
+    "seed": "t2-mid",
+    "turn": 2,
+    "seed_xyz": [
+      61.03601837158203,
+      125.09737396240234,
+      123.38704681396484
+    ],
+    "points": 2501,
+    "area_vx2": 38732.3984375,
+    "stop": "max_rows_cols",
+    "on_turn_before": 0.9996001599360256,
+    "verdict_before": "FAIL",
+    "fails_before": [
+      "switch_finder"
+    ],
+    "on_turn_after": 0.9996001599360256,
+    "verdict_after": "FAIL",
+    "repaired": false,
+    "fails_after": [
+      "switch_finder"
+    ]
+  },
+  {
+    "phantom": "merged",
+    "seed": "t2-low",
+    "turn": 2,
+    "seed_xyz": [
+      95.88463592529297,
+      176.3868408203125,
+      72.14331817626953
+    ],
+    "points": 1947,
+    "area_vx2": 28906.51953125,
+    "stop": "ring_no_accepted",
+    "on_turn_before": 0.9296353364149974,
+    "verdict_before": "PASS",
+    "fails_before": [],
+    "on_turn_after": 0.9296353364149974,
+    "verdict_after": "PASS",
+    "repaired": false
+  }
+]
