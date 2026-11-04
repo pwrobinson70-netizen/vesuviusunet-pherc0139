@@ -9,7 +9,10 @@ recorded by brief 25 (results/groundtruth_patches.csv, mode "default", published
 * every recorded NOT JUDGED is pinned as NOT JUDGED (the winding-jump check needs 60 degrees of angle round the centre;
   a 700 px wide patch spans about 8): a change that makes one judgeable shows up here too. Not a claim that NOT JUDGED is right.
 
-No patch is PASS today. Data: Vesuvius Challenge open data, CC BY-NC 4.0. See docs/REALDATA_GROUNDTRUTH.md.
+Re-scored after v2 (PRs 28-30): the local-pitch defaults make all 40 patches NOT JUDGED (no pitch is trusted on any cut line), so
+the seven former false alarms are pinned as NOT JUDGED below and no FAIL remains; FAILS is empty and its strict-xfail test is kept for
+any future FAIL. No patch is PASS today: the false-alarm count fell to zero because the auditor abstains, not because it passes.
+Data: Vesuvius Challenge open data, CC BY-NC 4.0. See docs/REALDATA_GROUNDTRUTH.md.
 """
 import csv
 import os
@@ -45,11 +48,11 @@ PINNED = {
     "band-seed12303143-20260729-210804-059": "NOT JUDGED",
     "band-seed12704141-20260729-224947-867": "NOT JUDGED",
     "band-seed13037713-20260729-203705-670": "NOT JUDGED",
-    "band-seed13218168-20260729-171531-582": "FAIL",
+    "band-seed13218168-20260729-171531-582": "NOT JUDGED",
     "band-seed13364832-20260730-003410-414": "NOT JUDGED",
     "band-seed13533491-20260729-192123-040": "NOT JUDGED",
     "band-seed137103-20260730-002044-926": "NOT JUDGED",
-    "band-seed1465356-20260729-160318-515": "FAIL",
+    "band-seed1465356-20260729-160318-515": "NOT JUDGED",
     "band-seed14835206-20260730-004421-495": "NOT JUDGED",
     "band-seed15003009-20260729-170439-478": "NOT JUDGED",
     "band-seed15125391-20260729-232214-248": "NOT JUDGED",
@@ -57,21 +60,21 @@ PINNED = {
     "band-seed15606684-20260729-231335-303": "NOT JUDGED",
     "band-seed15735188-20260729-184532-462": "NOT JUDGED",
     "band-seed15994369-20260729-225834-292": "NOT JUDGED",
-    "band-seed1610817-20260730-003341-010": "FAIL",
+    "band-seed1610817-20260730-003341-010": "NOT JUDGED",
     "band-seed16244965-20260729-170817-903": "NOT JUDGED",
     "band-seed16658040-20260729-213207-684": "NOT JUDGED",
-    "band-seed17109446-20260729-173351-228": "FAIL",
+    "band-seed17109446-20260729-173351-228": "NOT JUDGED",
     "band-seed17221198-20260729-221919-905": "NOT JUDGED",
     "band-seed17356252-20260729-210651-427": "NOT JUDGED",
     "band-seed17485725-20260729-182356-729": "NOT JUDGED",
     "band-seed17615994-20260729-232636-238": "NOT JUDGED",
     "band-seed17901491-20260729-174732-720": "NOT JUDGED",
-    "band-seed18235570-20260729-173250-735": "FAIL",
+    "band-seed18235570-20260729-173250-735": "NOT JUDGED",
     "band-seed18384563-20260729-185435-336": "NOT JUDGED",
-    "band-seed18550190-20260729-194900-743": "FAIL",
+    "band-seed18550190-20260729-194900-743": "NOT JUDGED",
     "band-seed18725348-20260729-204113-740": "NOT JUDGED",
     "band-seed18913366-20260729-212627-871": "NOT JUDGED",
-    "band-seed1910856-20260729-194126-099": "FAIL",
+    "band-seed1910856-20260729-194126-099": "NOT JUDGED",
 }
 FAILS = sorted(k for k, v in PINNED.items() if v == "FAIL")
 OTHERS = sorted(k for k, v in PINNED.items() if v != "FAIL")
