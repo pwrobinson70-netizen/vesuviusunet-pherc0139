@@ -1,0 +1,29 @@
+unit,kind,failed,n
+audit_default,shift-half,7,40
+audit_default,shift-full,6,40
+audit_default,switch-mid,12,40
+audit_default,scramble,5,40
+audit_global,shift-half,39,40
+audit_global,shift-full,37,40
+audit_global,switch-mid,36,40
+audit_global,scramble,25,40
+switch,shift-half,37,40
+switch,shift-full,35,40
+switch,switch-mid,38,40
+switch,scramble,25,40
+spacing,shift-half,40,40
+spacing,shift-full,40,40
+spacing,switch-mid,40,40
+spacing,scramble,40,40
+surface,shift-half,40,40
+surface,shift-full,40,40
+surface,switch-mid,38,40
+surface,scramble,40,40
+"PANEL (any of trace_auditor default, trace_auditor --global-pitch, sheet_switch_finder)",shift-half,40,40
+"PANEL (any of trace_auditor default, trace_auditor --global-pitch, sheet_switch_finder)",shift-full,39,40
+"PANEL (any of trace_auditor default, trace_auditor --global-pitch, sheet_switch_finder)",switch-mid,40,40
+"PANEL (any of trace_auditor default, trace_auditor --global-pitch, sheet_switch_finder)",scramble,33,40
+PANEL + surface_agreement,shift-half,40,40
+PANEL + surface_agreement,shift-full,40,40
+PANEL + surface_agreement,switch-mid,40,40
+PANEL + surface_agreement,scramble,40,40

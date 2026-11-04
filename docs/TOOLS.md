@@ -125,3 +125,20 @@ The pitch is measured on the CT slice at the patch's middle height. Fixed seed; 
 "PHerc. Paris 4". `vun-negatives testdata/pherc_paris4_groundtruth results/negatives` writes `OUT/<patch>/<kind>/` tifxyz folders and `manifest.csv`.
 Scoring, the 2x2 and the threshold study: `tools/groundtruth_score/README.md`, `docs/REALDATA_2X2.md`.
 
+## vun-densify
+- **Input:** one tifxyz folder; `--spacing` target cell spacing in voxels (default 1; the grid spacing is `1/scale`, e.g. scale 0.05 = 20 voxels).
+- **Output:** a new tifxyz folder: x/y/z bilinearly interpolated by an integer factor per axis, `mask.tif`, `meta.json` with `scale` multiplied by the factor and a `densify_note`.
+- **Rules:** never interpolates across invalid cells (a new node is valid only if every coarse corner with weight is valid); never coarsens; the input is never touched.
+- **Limits:** adds no information (a chord of a circle of radius R over a span s is off by s^2/(8R) voxels). It does not lengthen the arc a patch spans, so the winding-jump check stays NOT JUDGED on patches (`docs/PANEL_V2.md`).
+
+## vun-panel2 (`tools/judge_panel`)
+- **Input:** a (densified) tifxyz trace, `--pred-png-dir` (surface prediction PNGs), `--ct-png-dir`, `--heights`, optional `--umbilicus`, `--threshold T`.
+- **Output:** PASS / FAIL / NOT JUDGED with the required vote and the three advisory votes; `--batch` writes raw votes for a ground-truth sample and its broken copies.
+- **Rule:** FAIL if the surface-prediction ON-PREDICTED-SHEET fraction is below T (default 0.415, chosen on the first 40 patches + 160 copies only), or if 2 of the 3 advisory CT checks FAIL; CT checks alone cannot fail a trace.
+- **Limits:** the prediction may have been used to build the verified patches (circular); half-broken traces (`switch-mid`) are caught about half the time; the CT votes added nothing on 400 cases. See `docs/PANEL_V2.md`.
+
+## vun-umbilicus-pred (`tools/umbilicus_finder/umbilicus_from_pred.py`)
+- **Input:** `--z` heights (or `--z-csv`) on the 38.4 um grid; reads the public m7 prediction zarr over HTTP, choosing the level from its multiscale metadata (level 2 of that zarr).
+- **Output:** per height the estimated centre (y, x) and, with `--compare umbilicus_9p6um.json`, the error against the published line. Two estimators: `hole` (enclosed background component of the closed prediction) and `ring` (most circular innermost ring).
+- **Limits:** needs network; 20 heights of one scroll; mean error 100 voxels (3.9 mm), no better than `vun-umbilicus` on average (`docs/PANEL_V2.md`).
+

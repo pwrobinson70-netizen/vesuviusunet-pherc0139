@@ -1,0 +1,26 @@
+patch,kind,verdict,surface_on_fraction,advisory_fail,why
+band-seed10004054-20260729-210616-794.tifxyz,switch-mid,PASS,0.51861,0,surface on-sheet fraction 0.519 >= T 0.415
+band-seed10004054-20260729-210616-794.tifxyz,scramble,PASS,0.60421,0,surface on-sheet fraction 0.604 >= T 0.415
+band-seed10132885-20260729-205703-027.tifxyz,shift-full,PASS,0.6161,0,surface on-sheet fraction 0.616 >= T 0.415
+band-seed10598929-20260729-162434-174.tifxyz,switch-mid,PASS,0.77109,0,surface on-sheet fraction 0.771 >= T 0.415
+band-seed11236609-20260729-181730-366.tifxyz,switch-mid,PASS,0.43662,0,surface on-sheet fraction 0.437 >= T 0.415
+band-seed11406954-20260729-202245-214.tifxyz,switch-mid,PASS,0.4476,0,surface on-sheet fraction 0.448 >= T 0.415
+band-seed11499960-20260729-162647-601.tifxyz,switch-mid,PASS,0.54561,0,surface on-sheet fraction 0.546 >= T 0.415
+band-seed11598212-20260729-205604-249.tifxyz,switch-mid,PASS,0.58615,0,surface on-sheet fraction 0.586 >= T 0.415
+band-seed11781949-20260729-164347-328.tifxyz,switch-mid,PASS,0.5695,1,surface on-sheet fraction 0.570 >= T 0.415
+band-seed11990706-20260729-234703-224.tifxyz,switch-mid,PASS,0.65678,1,surface on-sheet fraction 0.657 >= T 0.415
+band-seed12392896-20260729-182545-261.tifxyz,switch-mid,PASS,0.45789,0,surface on-sheet fraction 0.458 >= T 0.415
+band-seed12687050-20260729-233449-773.tifxyz,switch-mid,PASS,0.47972,0,surface on-sheet fraction 0.480 >= T 0.415
+band-seed13188878-20260729-191735-330.tifxyz,switch-mid,PASS,0.59656,0,surface on-sheet fraction 0.597 >= T 0.415
+band-seed13688178-20260730-002030-578.tifxyz,switch-mid,PASS,0.44867,0,surface on-sheet fraction 0.449 >= T 0.415
+band-seed1418191-20260729-232557-865.tifxyz,switch-mid,PASS,0.46655,0,surface on-sheet fraction 0.467 >= T 0.415
+band-seed1442086-20260729-185625-130.tifxyz,switch-mid,PASS,0.80135,0,surface on-sheet fraction 0.801 >= T 0.415
+band-seed1442086-20260729-185625-130.tifxyz,scramble,PASS,0.49424,0,surface on-sheet fraction 0.494 >= T 0.415
+band-seed15225311-20260729-233909-507.tifxyz,switch-mid,PASS,0.75,0,surface on-sheet fraction 0.750 >= T 0.415
+band-seed16096504-20260729-212423-684.tifxyz,shift-full,PASS,0.5079,0,surface on-sheet fraction 0.508 >= T 0.415
+band-seed16096504-20260729-212423-684.tifxyz,switch-mid,PASS,0.61482,0,surface on-sheet fraction 0.615 >= T 0.415
+band-seed16633124-20260729-230306-063.tifxyz,switch-mid,PASS,0.67968,0,surface on-sheet fraction 0.680 >= T 0.415
+band-seed16938448-20260729-162205-275.tifxyz,switch-mid,PASS,0.65625,0,surface on-sheet fraction 0.656 >= T 0.415
+band-seed17206739-20260729-231109-027.tifxyz,switch-mid,PASS,0.50066,0,surface on-sheet fraction 0.501 >= T 0.415
+band-seed17882600-20260729-183405-114.tifxyz,shift-full,PASS,0.49191,0,surface on-sheet fraction 0.492 >= T 0.415
+band-seed17882600-20260729-183405-114.tifxyz,switch-mid,PASS,0.7335,0,surface on-sheet fraction 0.734 >= T 0.415
