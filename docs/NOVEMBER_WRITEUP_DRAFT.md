@@ -1,7 +1,18 @@
 # November write-up (DRAFT)
 
-Status: draft for the author to edit. It describes software and a synthetic benchmark. It makes **no claim
-about real scan data**, and none of the numbers below were measured on any real scroll.
+**AI-assisted (Claude Code and Claude), human-directed.** Status: draft for the author to edit. Updated 4 Nov 2026 (Brief 29) to include the
+real-data results now on main. Public data only: PHerc. Paris 4 (Scroll 1) and PHerc. 0139, CC BY-NC 4.0. Sections 2, 3 and 6 are still
+synthetic-phantom results; section 7 is the first real-data ground truth. Every number is quoted from a file on main, and the file is named beside it.
+
+## Summary
+
+On 40 verified Scroll 1 patches that panel_v2 never saw, it flagged 135 of 160 deliberately broken copies (84.4 percent, Wilson 95 percent interval 78.0 to 89.2) and raised 2 false alarms on the 40 correct originals (5.0 percent, 1.4 to 16.5), with its one threshold fixed beforehand on a separate set of 40 (`docs/PANEL_V2.md`).
+That verdict comes from the organisers' surface prediction; the CT-only checks add nothing to it (`docs/PANEL_V2.md`).
+Used alone on these short real patches, the CT-only checks abstain: the trace auditor says NOT JUDGED on 40 of 40 verified patches under v2 defaults, because a verified patch spans about 8 degrees of arc and the winding checks need about 60 (`docs/REALDATA_GROUNDTRUTH.md`), and densifying the traces does not change that (`docs/PANEL_V2.md`).
+Before v2 they did not abstain: the old pitch handling raised 7 false alarms in 40 (auditor, `docs/REALDATA_GROUNDTRUTH.md`) and the three-tool CT panel raised 9 in 40 while catching 18.1 percent of broken copies, which is no better than chance because it is below that panel's own 22.5 percent false-alarm rate (`docs/REALDATA_2X2.md`).
+The panel still misses half of the copies where only half the trace is broken (20 of 40 `switch-mid`), plus 3 of 40 `shift-full` and 2 of 40 `scramble` (`docs/PANEL_V2.md`).
+The breakages are synthetic edits of real traces, not real tracing errors, and everything is one scroll with 40 patches per set, so the intervals are wide.
+Our own centre-line estimates (mean error about 100 voxels at 38.4 um) and winding numbers (no agreement at level 4) are not good enough to replace the published ones (section 7e, 7f).
 
 ## 1. What was built
 
@@ -40,7 +51,7 @@ tests (several hundred, synthetic data only).
   runs the checkpoint's own architecture and depth aggregation in overlapping tiles, stitches with a window.
   It computes no accuracy by itself: it is a picture, not a score.
 
-## 3. Benchmarks (phantoms, 256^3, seed 0)
+## 3. Benchmarks on synthetic phantoms (256^3, seed 0)
 
 Tool benchmark (`tools/phantom_scroll/BENCHMARK.md`):
 
@@ -118,3 +129,4 @@ Mean [95% CI]:
 - No CI of a mean contains the auditor's 0.8 clean-fraction threshold, but one crushed run does fall below it.
 - Size matters (seeds 0-4 at 128^3 / 192^3 / 256^3, wide CIs): the off-sheet clean fraction on the merged phantom falls from 0.18 to 0.01 to 0.00 and on crushed from 0.62 to 0.34 to 0.19; the auditor's PASS rate on true crushed traces rises from 0.00 to 0.26 to 0.37. Numbers quoted at one size do not transfer.
 - Not covered: the threshold sweeps (tools/calibration), real scans, anything but these four deformations.
+
