@@ -1,0 +1,13 @@
+variant,tool,not_judged_of_200,not_judged_originals,fail_originals,fail_broken
+coarse,audit_default,200,40,0,0
+coarse,audit_global,171,33,7,22
+coarse,switch,0,0,4,9
+coarse,CT panel (any of 3),,,9,29
+"densified 1 voxel, unscaled CT parameters",audit_default,160,30,10,30
+"densified 1 voxel, unscaled CT parameters",audit_global,26,4,36,137
+"densified 1 voxel, unscaled CT parameters",switch,0,0,38,135
+"densified 1 voxel, unscaled CT parameters",CT panel (any of 3),,,39,152
+"densified 1 voxel, CT point-count parameters x20",audit_default,198,39,1,1
+"densified 1 voxel, CT point-count parameters x20",audit_global,184,36,4,12
+"densified 1 voxel, CT point-count parameters x20",switch,0,0,8,7
+"densified 1 voxel, CT point-count parameters x20",CT panel (any of 3),,,11,16

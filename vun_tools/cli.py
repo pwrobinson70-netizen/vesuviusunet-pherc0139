@@ -79,3 +79,16 @@ def surface():
 
 def negatives():
     return _run("groundtruth_score", "make_negatives")
+
+
+def densify():
+    from vun_tools import densify as _d
+    return _d.main()
+
+
+def panel2():
+    return _run("judge_panel", "panel_v2")
+
+
+def umbilicus_pred():
+    return _run("umbilicus_finder", "umbilicus_from_pred")

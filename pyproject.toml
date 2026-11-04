@@ -36,6 +36,9 @@ vun-groundtruth = "vun_tools.cli:groundtruth"
 vun-drift = "vun_tools.cli:drift"
 vun-surface = "vun_tools.cli:surface"
 vun-negatives = "vun_tools.cli:negatives"
+vun-densify = "vun_tools.cli:densify"
+vun-panel2 = "vun_tools.cli:panel2"
+vun-umbilicus-pred = "vun_tools.cli:umbilicus_pred"
 
 [tool.setuptools]
 packages = [
@@ -55,6 +58,7 @@ packages = [
     "vun_tools._tools.label_drift",
     "vun_tools._tools.crush_map",
     "vun_tools._tools.surface_agreement",
+    "vun_tools._tools.judge_panel",
 ]
 
 [tool.setuptools.package-dir]
@@ -74,3 +78,4 @@ vesuvius_unet = "vesuvius_unet"
 "vun_tools._tools.label_drift" = "tools/label_drift"
 "vun_tools._tools.crush_map" = "tools/crush_map"
 "vun_tools._tools.surface_agreement" = "tools/surface_agreement"
+"vun_tools._tools.judge_panel" = "tools/judge_panel"
