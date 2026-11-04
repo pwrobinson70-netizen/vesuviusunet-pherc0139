@@ -53,11 +53,11 @@ packages = [
     "vun_tools._tools.patch_merger",
     "vun_tools._tools.sheet_tracer",
     "vun_tools._tools.winding_sweep",
+    "vun_tools._tools.groundtruth_score",
     "vun_tools._tools.common",
     "vun_tools._tools.label_drift",
     "vun_tools._tools.crush_map",
     "vun_tools._tools.surface_agreement",
-    "vun_tools._tools.groundtruth_score",
     "vun_tools._tools.judge_panel",
 ]
 
@@ -73,9 +73,9 @@ vesuvius_unet = "vesuvius_unet"
 "vun_tools._tools.patch_merger" = "tools/patch_merger"
 "vun_tools._tools.sheet_tracer" = "tools/sheet_tracer"
 "vun_tools._tools.winding_sweep" = "tools/winding_sweep"
+"vun_tools._tools.groundtruth_score" = "tools/groundtruth_score"
 "vun_tools._tools.common" = "tools/common"
 "vun_tools._tools.label_drift" = "tools/label_drift"
 "vun_tools._tools.crush_map" = "tools/crush_map"
 "vun_tools._tools.surface_agreement" = "tools/surface_agreement"
-"vun_tools._tools.groundtruth_score" = "tools/groundtruth_score"
 "vun_tools._tools.judge_panel" = "tools/judge_panel"

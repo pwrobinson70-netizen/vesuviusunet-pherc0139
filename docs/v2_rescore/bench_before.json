@@ -1,0 +1,961 @@
+[
+  {
+    "phantom": "round",
+    "size": 192,
+    "seed": 0,
+    "n_cols": 97,
+    "pitch": 16.5,
+    "params": {
+      "shape": [
+        192,
+        192,
+        192
+      ],
+      "seed": 0,
+      "turns": 4,
+      "r0": 13.5,
+      "pitch": 16.5,
+      "thickness": 4.5,
+      "irregular": 0.0,
+      "texture": 0.25,
+      "noise": 0.04,
+      "tilt": [
+        0.0,
+        0.0
+      ],
+      "squash": 1.0,
+      "squash_angle": 30.0,
+      "warp_amp": 0.0,
+      "warp_wavelength": 90.0,
+      "merge_strength": 0.0,
+      "merge_turn": 1.5,
+      "merge_phi": 90.0,
+      "merge_z": -1.0,
+      "merge_sigma": 22.0,
+      "ink": false,
+      "ink_turn": 1,
+      "ink_text": "INK",
+      "ink_delta": 0.1,
+      "grid_step": 3.0,
+      "air": 0.06,
+      "papyrus": 0.8,
+      "spacing_ratio": 1.0,
+      "features": []
+    },
+    "switch": {
+      "true": 3,
+      "found": 3,
+      "recall_trace_height": 1.0,
+      "median_col_error": 0.0,
+      "false_on_bad_traces": 0,
+      "false_on_true_turns": 0,
+      "per_trace": [
+        {
+          "trace": "bad/switch_00",
+          "turn": 1,
+          "col": 29,
+          "delta": 1.0,
+          "heights_hit": 5
+        },
+        {
+          "trace": "bad/switch_01",
+          "turn": 2,
+          "col": 53,
+          "delta": -1.0,
+          "heights_hit": 5
+        },
+        {
+          "trace": "bad/switch_02",
+          "turn": 0,
+          "col": 67,
+          "delta": 1.0,
+          "heights_hit": 5
+        }
+      ]
+    },
+    "centre": {
+      "n": 22,
+      "n_ok": 22,
+      "mean_err": 0.3354382564756356,
+      "max_err": 0.4086717010177692,
+      "mean_err_raw_ok": 0.3238126807880061,
+      "pitch_estimated": 16.5,
+      "pitch_true": 16.5
+    },
+    "spacing": {
+      "true_pairs": [
+        0.9587628865979381,
+        0.9793814432989689,
+        0.9793814432989689
+      ],
+      "true_mean": 0.9725085910652919,
+      "bad": {
+        "skipped": 0.05154639175257732,
+        "shared": 0.0,
+        "off_sheet": 0.0
+      }
+    }
+  },
+  {
+    "phantom": "mild",
+    "size": 192,
+    "seed": 0,
+    "n_cols": 97,
+    "pitch": 16.5,
+    "params": {
+      "shape": [
+        192,
+        192,
+        192
+      ],
+      "seed": 0,
+      "turns": 4,
+      "r0": 13.5,
+      "pitch": 16.5,
+      "thickness": 4.5,
+      "irregular": 0.05,
+      "texture": 0.25,
+      "noise": 0.04,
+      "tilt": [
+        0.05,
+        -0.03
+      ],
+      "squash": 0.85,
+      "squash_angle": 30.0,
+      "warp_amp": 3.0,
+      "warp_wavelength": 90.0,
+      "merge_strength": 0.0,
+      "merge_turn": 1.5,
+      "merge_phi": 90.0,
+      "merge_z": -1.0,
+      "merge_sigma": 22.0,
+      "ink": false,
+      "ink_turn": 1,
+      "ink_text": "INK",
+      "ink_delta": 0.1,
+      "grid_step": 3.0,
+      "air": 0.06,
+      "papyrus": 0.8,
+      "spacing_ratio": 1.0,
+      "features": []
+    },
+    "switch": {
+      "true": 3,
+      "found": 3,
+      "recall_trace_height": 1.0,
+      "median_col_error": 0.0,
+      "false_on_bad_traces": 0,
+      "false_on_true_turns": 0,
+      "per_trace": [
+        {
+          "trace": "bad/switch_00",
+          "turn": 1,
+          "col": 29,
+          "delta": 1.0,
+          "heights_hit": 5
+        },
+        {
+          "trace": "bad/switch_01",
+          "turn": 2,
+          "col": 53,
+          "delta": -1.0,
+          "heights_hit": 5
+        },
+        {
+          "trace": "bad/switch_02",
+          "turn": 0,
+          "col": 67,
+          "delta": 1.0,
+          "heights_hit": 5
+        }
+      ]
+    },
+    "centre": {
+      "n": 22,
+      "n_ok": 22,
+      "mean_err": 1.9703652434066912,
+      "max_err": 3.1614460270830826,
+      "mean_err_raw_ok": 1.9978444459109517,
+      "pitch_estimated": 15.0,
+      "pitch_true": 16.5
+    },
+    "spacing": {
+      "true_pairs": [
+        0.9587628865979381,
+        0.9731958762886597,
+        0.9835051546391753
+      ],
+      "true_mean": 0.9718213058419244,
+      "bad": {
+        "skipped": 0.04329896907216494,
+        "shared": 0.0,
+        "off_sheet": 0.0
+      }
+    }
+  },
+  {
+    "phantom": "crushed",
+    "size": 192,
+    "seed": 0,
+    "n_cols": 97,
+    "pitch": 16.5,
+    "params": {
+      "shape": [
+        192,
+        192,
+        192
+      ],
+      "seed": 0,
+      "turns": 4,
+      "r0": 13.5,
+      "pitch": 16.5,
+      "thickness": 4.5,
+      "irregular": 0.12,
+      "texture": 0.25,
+      "noise": 0.04,
+      "tilt": [
+        0.1,
+        -0.08
+      ],
+      "squash": 0.55,
+      "squash_angle": 30.0,
+      "warp_amp": 7.0,
+      "warp_wavelength": 90.0,
+      "merge_strength": 0.0,
+      "merge_turn": 1.5,
+      "merge_phi": 90.0,
+      "merge_z": -1.0,
+      "merge_sigma": 22.0,
+      "ink": false,
+      "ink_turn": 1,
+      "ink_text": "INK",
+      "ink_delta": 0.1,
+      "grid_step": 3.0,
+      "air": 0.06,
+      "papyrus": 0.8,
+      "spacing_ratio": 1.0,
+      "features": []
+    },
+    "switch": {
+      "true": 3,
+      "found": 3,
+      "recall_trace_height": 0.9333333333333333,
+      "median_col_error": 0.0,
+      "false_on_bad_traces": 1,
+      "false_on_true_turns": 0,
+      "per_trace": [
+        {
+          "trace": "bad/switch_00",
+          "turn": 1,
+          "col": 29,
+          "delta": 1.0,
+          "heights_hit": 5
+        },
+        {
+          "trace": "bad/switch_01",
+          "turn": 2,
+          "col": 53,
+          "delta": -1.0,
+          "heights_hit": 4
+        },
+        {
+          "trace": "bad/switch_02",
+          "turn": 0,
+          "col": 67,
+          "delta": 1.0,
+          "heights_hit": 5
+        }
+      ]
+    },
+    "centre": {
+      "n": 22,
+      "n_ok": 0,
+      "mean_err": 5.5542613441948845,
+      "max_err": 10.2709981418014,
+      "mean_err_raw_ok": null,
+      "pitch_estimated": 11.5,
+      "pitch_true": 16.5
+    },
+    "spacing": {
+      "true_pairs": [
+        0.9670103092783504,
+        0.9711340206185568,
+        0.9773195876288661
+      ],
+      "true_mean": 0.9718213058419245,
+      "bad": {
+        "skipped": 0.21443298969072164,
+        "shared": 0.0,
+        "off_sheet": 0.4268041237113402
+      }
+    }
+  },
+  {
+    "phantom": "merged",
+    "size": 192,
+    "seed": 0,
+    "n_cols": 97,
+    "pitch": 16.5,
+    "params": {
+      "shape": [
+        192,
+        192,
+        192
+      ],
+      "seed": 0,
+      "turns": 4,
+      "r0": 13.5,
+      "pitch": 16.5,
+      "thickness": 4.5,
+      "irregular": 0.05,
+      "texture": 0.25,
+      "noise": 0.04,
+      "tilt": [
+        0.0,
+        0.0
+      ],
+      "squash": 0.8,
+      "squash_angle": 30.0,
+      "warp_amp": 3.0,
+      "warp_wavelength": 90.0,
+      "merge_strength": 0.85,
+      "merge_turn": 1.5,
+      "merge_phi": 90.0,
+      "merge_z": -1.0,
+      "merge_sigma": 17.28,
+      "ink": false,
+      "ink_turn": 1,
+      "ink_text": "INK",
+      "ink_delta": 0.1,
+      "grid_step": 3.0,
+      "air": 0.06,
+      "papyrus": 0.8,
+      "spacing_ratio": 1.0,
+      "features": []
+    },
+    "switch": {
+      "true": 3,
+      "found": 3,
+      "recall_trace_height": 0.9333333333333333,
+      "median_col_error": 0.0,
+      "false_on_bad_traces": 0,
+      "false_on_true_turns": 0,
+      "per_trace": [
+        {
+          "trace": "bad/switch_00",
+          "turn": 1,
+          "col": 29,
+          "delta": 1.0,
+          "heights_hit": 4
+        },
+        {
+          "trace": "bad/switch_01",
+          "turn": 2,
+          "col": 53,
+          "delta": -1.0,
+          "heights_hit": 5
+        },
+        {
+          "trace": "bad/switch_02",
+          "turn": 0,
+          "col": 67,
+          "delta": 1.0,
+          "heights_hit": 5
+        }
+      ]
+    },
+    "centre": {
+      "n": 22,
+      "n_ok": 22,
+      "mean_err": 2.1068561755830535,
+      "max_err": 3.5466859055556488,
+      "mean_err_raw_ok": 2.241605832843155,
+      "pitch_estimated": 14.5,
+      "pitch_true": 16.5
+    },
+    "spacing": {
+      "true_pairs": [
+        0.9587628865979381,
+        0.9484536082474226,
+        0.9814432989690722
+      ],
+      "true_mean": 0.9628865979381444,
+      "bad": {
+        "skipped": 0.07422680412371133,
+        "shared": 0.0,
+        "off_sheet": 0.0
+      }
+    }
+  },
+  {
+    "phantom": "crushed-hard",
+    "size": 192,
+    "seed": 0,
+    "n_cols": 97,
+    "pitch": 16.5,
+    "params": {
+      "shape": [
+        192,
+        192,
+        192
+      ],
+      "seed": 0,
+      "turns": 4,
+      "r0": 13.5,
+      "pitch": 16.5,
+      "thickness": 4.5,
+      "irregular": 0.15,
+      "texture": 0.25,
+      "noise": 0.04,
+      "tilt": [
+        0.1,
+        -0.08
+      ],
+      "squash": 0.5,
+      "squash_angle": 30.0,
+      "warp_amp": 8.0,
+      "warp_wavelength": 90.0,
+      "merge_strength": 0.0,
+      "merge_turn": 1.5,
+      "merge_phi": 90.0,
+      "merge_z": -1.0,
+      "merge_sigma": 22.0,
+      "ink": false,
+      "ink_turn": 1,
+      "ink_text": "INK",
+      "ink_delta": 0.1,
+      "grid_step": 3.0,
+      "air": 0.06,
+      "papyrus": 0.8,
+      "spacing_ratio": 2.5,
+      "features": []
+    },
+    "switch": {
+      "true": 3,
+      "found": 3,
+      "recall_trace_height": 0.4,
+      "median_col_error": 1.0,
+      "false_on_bad_traces": 24,
+      "false_on_true_turns": 26,
+      "per_trace": [
+        {
+          "trace": "bad/switch_00",
+          "turn": 1,
+          "col": 29,
+          "delta": 1.0,
+          "heights_hit": 1
+        },
+        {
+          "trace": "bad/switch_01",
+          "turn": 2,
+          "col": 53,
+          "delta": -1.0,
+          "heights_hit": 1
+        },
+        {
+          "trace": "bad/switch_02",
+          "turn": 0,
+          "col": 67,
+          "delta": 1.0,
+          "heights_hit": 4
+        }
+      ]
+    },
+    "centre": {
+      "n": 22,
+      "n_ok": 0,
+      "mean_err": 17.18362819261381,
+      "max_err": 25.01861118085742,
+      "mean_err_raw_ok": null,
+      "pitch_estimated": NaN,
+      "pitch_true": 16.5
+    },
+    "spacing": {
+      "true_pairs": [
+        0.5443298969072166,
+        0.554639175257732,
+        0.6144329896907216
+      ],
+      "true_mean": 0.5711340206185568,
+      "bad": {
+        "skipped": 0.6618556701030928,
+        "shared": 0.0,
+        "off_sheet": 0.6680412371134021
+      }
+    }
+  },
+  {
+    "phantom": "folded",
+    "size": 192,
+    "seed": 0,
+    "n_cols": 97,
+    "pitch": 16.5,
+    "params": {
+      "shape": [
+        192,
+        192,
+        192
+      ],
+      "seed": 0,
+      "turns": 4,
+      "r0": 13.5,
+      "pitch": 16.5,
+      "thickness": 4.5,
+      "irregular": 0.05,
+      "texture": 0.25,
+      "noise": 0.04,
+      "tilt": [
+        0.05,
+        -0.03
+      ],
+      "squash": 0.85,
+      "squash_angle": 30.0,
+      "warp_amp": 3.0,
+      "warp_wavelength": 90.0,
+      "merge_strength": 0.0,
+      "merge_turn": 1.5,
+      "merge_phi": 90.0,
+      "merge_z": -1.0,
+      "merge_sigma": 22.0,
+      "ink": false,
+      "ink_turn": 1,
+      "ink_text": "INK",
+      "ink_delta": 0.1,
+      "grid_step": 3.0,
+      "air": 0.06,
+      "papyrus": 0.8,
+      "spacing_ratio": 1.0,
+      "features": [
+        {
+          "kind": "fold",
+          "turn": 2,
+          "phi": 200.0,
+          "z": -1.0,
+          "len": 33.0,
+          "zlen": 67.5,
+          "amount": 2.8,
+          "h": 6.75
+        },
+        {
+          "kind": "fold",
+          "turn": 1,
+          "phi": 285.0,
+          "z": 45.0,
+          "len": 27.0,
+          "zlen": 52.5,
+          "amount": 2.5,
+          "h": 6.0
+        }
+      ]
+    },
+    "switch": {
+      "true": 3,
+      "found": 3,
+      "recall_trace_height": 1.0,
+      "median_col_error": 0.0,
+      "false_on_bad_traces": 0,
+      "false_on_true_turns": 0,
+      "per_trace": [
+        {
+          "trace": "bad/switch_00",
+          "turn": 1,
+          "col": 29,
+          "delta": 1.0,
+          "heights_hit": 5
+        },
+        {
+          "trace": "bad/switch_01",
+          "turn": 2,
+          "col": 53,
+          "delta": -1.0,
+          "heights_hit": 5
+        },
+        {
+          "trace": "bad/switch_02",
+          "turn": 0,
+          "col": 67,
+          "delta": 1.0,
+          "heights_hit": 5
+        }
+      ]
+    },
+    "centre": {
+      "n": 22,
+      "n_ok": 22,
+      "mean_err": 1.8502838625287437,
+      "max_err": 2.8600402474606157,
+      "mean_err_raw_ok": 1.8835922131980944,
+      "pitch_estimated": 15.0,
+      "pitch_true": 16.5
+    },
+    "spacing": {
+      "true_pairs": [
+        0.9587628865979381,
+        0.9670103092783504,
+        0.9835051546391753
+      ],
+      "true_mean": 0.9697594501718213,
+      "bad": {
+        "skipped": 0.055670103092783495,
+        "shared": 0.0,
+        "off_sheet": 0.016494845360824743
+      }
+    }
+  },
+  {
+    "phantom": "delaminated",
+    "size": 192,
+    "seed": 0,
+    "n_cols": 97,
+    "pitch": 16.5,
+    "params": {
+      "shape": [
+        192,
+        192,
+        192
+      ],
+      "seed": 0,
+      "turns": 4,
+      "r0": 13.5,
+      "pitch": 16.5,
+      "thickness": 4.5,
+      "irregular": 0.05,
+      "texture": 0.25,
+      "noise": 0.04,
+      "tilt": [
+        0.05,
+        -0.03
+      ],
+      "squash": 0.85,
+      "squash_angle": 30.0,
+      "warp_amp": 3.0,
+      "warp_wavelength": 90.0,
+      "merge_strength": 0.0,
+      "merge_turn": 1.5,
+      "merge_phi": 90.0,
+      "merge_z": -1.0,
+      "merge_sigma": 22.0,
+      "ink": false,
+      "ink_turn": 1,
+      "ink_text": "INK",
+      "ink_delta": 0.1,
+      "grid_step": 3.0,
+      "air": 0.06,
+      "papyrus": 0.8,
+      "spacing_ratio": 1.0,
+      "features": [
+        {
+          "kind": "delam",
+          "turn": 2,
+          "phi": 120.0,
+          "z": -1.0,
+          "len": 60.0,
+          "zlen": 82.5,
+          "h": 6.0
+        },
+        {
+          "kind": "delam",
+          "turn": 1,
+          "phi": 290.0,
+          "z": 127.5,
+          "len": 45.0,
+          "zlen": 60.0,
+          "h": 5.25
+        }
+      ]
+    },
+    "switch": {
+      "true": 3,
+      "found": 3,
+      "recall_trace_height": 1.0,
+      "median_col_error": 0.0,
+      "false_on_bad_traces": 0,
+      "false_on_true_turns": 0,
+      "per_trace": [
+        {
+          "trace": "bad/switch_00",
+          "turn": 1,
+          "col": 29,
+          "delta": 1.0,
+          "heights_hit": 5
+        },
+        {
+          "trace": "bad/switch_01",
+          "turn": 2,
+          "col": 53,
+          "delta": -1.0,
+          "heights_hit": 5
+        },
+        {
+          "trace": "bad/switch_02",
+          "turn": 0,
+          "col": 67,
+          "delta": 1.0,
+          "heights_hit": 5
+        }
+      ]
+    },
+    "centre": {
+      "n": 22,
+      "n_ok": 22,
+      "mean_err": 2.0077420606601177,
+      "max_err": 3.2617482259225703,
+      "mean_err_raw_ok": 2.041842070007407,
+      "pitch_estimated": 15.0,
+      "pitch_true": 16.5
+    },
+    "spacing": {
+      "true_pairs": [
+        0.9587628865979381,
+        0.9731958762886597,
+        0.9835051546391753
+      ],
+      "true_mean": 0.9718213058419244,
+      "bad": {
+        "skipped": 0.04329896907216494,
+        "shared": 0.0,
+        "off_sheet": 0.012371134020618558
+      }
+    }
+  },
+  {
+    "phantom": "torn",
+    "size": 192,
+    "seed": 0,
+    "n_cols": 97,
+    "pitch": 16.5,
+    "params": {
+      "shape": [
+        192,
+        192,
+        192
+      ],
+      "seed": 0,
+      "turns": 4,
+      "r0": 13.5,
+      "pitch": 16.5,
+      "thickness": 4.5,
+      "irregular": 0.05,
+      "texture": 0.25,
+      "noise": 0.04,
+      "tilt": [
+        0.05,
+        -0.03
+      ],
+      "squash": 0.85,
+      "squash_angle": 30.0,
+      "warp_amp": 3.0,
+      "warp_wavelength": 90.0,
+      "merge_strength": 0.0,
+      "merge_turn": 1.5,
+      "merge_phi": 90.0,
+      "merge_z": -1.0,
+      "merge_sigma": 22.0,
+      "ink": false,
+      "ink_turn": 1,
+      "ink_text": "INK",
+      "ink_delta": 0.1,
+      "grid_step": 3.0,
+      "air": 0.06,
+      "papyrus": 0.8,
+      "spacing_ratio": 1.0,
+      "features": [
+        {
+          "kind": "tear",
+          "turn": 2,
+          "phi": 250.0,
+          "z": -1.0,
+          "len": 45.0,
+          "zlen": 67.5,
+          "gap": 7.5,
+          "off": 4.5
+        },
+        {
+          "kind": "tear",
+          "turn": 1,
+          "phi": 80.0,
+          "z": 52.5,
+          "len": 37.5,
+          "zlen": 52.5,
+          "gap": 6.0,
+          "off": -3.75
+        }
+      ]
+    },
+    "switch": {
+      "true": 3,
+      "found": 3,
+      "recall_trace_height": 1.0,
+      "median_col_error": 0.0,
+      "false_on_bad_traces": 0,
+      "false_on_true_turns": 0,
+      "per_trace": [
+        {
+          "trace": "bad/switch_00",
+          "turn": 1,
+          "col": 29,
+          "delta": 1.0,
+          "heights_hit": 5
+        },
+        {
+          "trace": "bad/switch_01",
+          "turn": 2,
+          "col": 53,
+          "delta": -1.0,
+          "heights_hit": 5
+        },
+        {
+          "trace": "bad/switch_02",
+          "turn": 0,
+          "col": 67,
+          "delta": 1.0,
+          "heights_hit": 5
+        }
+      ]
+    },
+    "centre": {
+      "n": 22,
+      "n_ok": 22,
+      "mean_err": 1.9913615386921115,
+      "max_err": 3.2045581077721503,
+      "mean_err_raw_ok": 2.022269744436872,
+      "pitch_estimated": 15.0,
+      "pitch_true": 16.5
+    },
+    "spacing": {
+      "true_pairs": [
+        0.9587628865979381,
+        0.9731958762886597,
+        0.9835051546391753
+      ],
+      "true_mean": 0.9718213058419244,
+      "bad": {
+        "skipped": 0.04329896907216494,
+        "shared": 0.0,
+        "off_sheet": 0.0
+      }
+    }
+  },
+  {
+    "phantom": "gappy",
+    "size": 192,
+    "seed": 0,
+    "n_cols": 97,
+    "pitch": 16.5,
+    "params": {
+      "shape": [
+        192,
+        192,
+        192
+      ],
+      "seed": 0,
+      "turns": 4,
+      "r0": 13.5,
+      "pitch": 16.5,
+      "thickness": 4.5,
+      "irregular": 0.05,
+      "texture": 0.25,
+      "noise": 0.04,
+      "tilt": [
+        0.05,
+        -0.03
+      ],
+      "squash": 0.85,
+      "squash_angle": 30.0,
+      "warp_amp": 3.0,
+      "warp_wavelength": 90.0,
+      "merge_strength": 0.0,
+      "merge_turn": 1.5,
+      "merge_phi": 90.0,
+      "merge_z": -1.0,
+      "merge_sigma": 22.0,
+      "ink": false,
+      "ink_turn": 1,
+      "ink_text": "INK",
+      "ink_delta": 0.1,
+      "grid_step": 3.0,
+      "air": 0.06,
+      "papyrus": 0.8,
+      "spacing_ratio": 1.0,
+      "features": [
+        {
+          "kind": "gap",
+          "turn": 2,
+          "phi": 150.0,
+          "z": -1.0,
+          "len": 42.0,
+          "zlen": 52.5
+        },
+        {
+          "kind": "gap",
+          "turn": 1,
+          "phi": 295.0,
+          "z": 127.5,
+          "len": 33.0,
+          "zlen": 45.0
+        },
+        {
+          "kind": "gap",
+          "turn": 3,
+          "phi": 60.0,
+          "z": 67.5,
+          "len": 37.5,
+          "zlen": 45.0
+        }
+      ]
+    },
+    "switch": {
+      "true": 3,
+      "found": 3,
+      "recall_trace_height": 1.0,
+      "median_col_error": 0.0,
+      "false_on_bad_traces": 0,
+      "false_on_true_turns": 0,
+      "per_trace": [
+        {
+          "trace": "bad/switch_00",
+          "turn": 1,
+          "col": 29,
+          "delta": 1.0,
+          "heights_hit": 5
+        },
+        {
+          "trace": "bad/switch_01",
+          "turn": 2,
+          "col": 53,
+          "delta": -1.0,
+          "heights_hit": 5
+        },
+        {
+          "trace": "bad/switch_02",
+          "turn": 0,
+          "col": 67,
+          "delta": 1.0,
+          "heights_hit": 5
+        }
+      ]
+    },
+    "centre": {
+      "n": 22,
+      "n_ok": 22,
+      "mean_err": 2.1734103466663965,
+      "max_err": 3.5156518036542472,
+      "mean_err_raw_ok": 2.204133341109857,
+      "pitch_estimated": 15.0,
+      "pitch_true": 16.5
+    },
+    "spacing": {
+      "true_pairs": [
+        0.9587628865979381,
+        0.9608247422680412,
+        0.9649484536082473
+      ],
+      "true_mean": 0.9615120274914087,
+      "bad": {
+        "skipped": 0.055670103092783495,
+        "shared": 0.0,
+        "off_sheet": 0.0
+      }
+    }
+  }
+]

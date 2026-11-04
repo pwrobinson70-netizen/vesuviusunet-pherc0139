@@ -162,3 +162,29 @@ python tools/groundtruth_score/phantom_threshold_check.py --set min_switch_confi
 python tools/groundtruth_score/winding_l4.py testdata/pherc_paris4_groundtruth --slices-dir SLICES --out results --set pitch_vox=6 --set ray_sigma=0.5 --set ray_prominence=0.1 --stem winding_agreement_l4_diag_pitch6
 ```
 `tests/test_groundtruth.py` pins the 40 recorded Part A verdicts; each of the 7 FAILs is a strict xfail asserting "not FAIL", so a change that fixes one fails the suite until the marker is removed.
+
+
+## Re-scored after v2 (PRs 28-30)
+
+**AI-assisted (Claude Code and Claude), human-directed.** Brief 28. Same scorer (`vun-groundtruth`, unchanged), same 40 patches, same
+published centre line, re-run on this branch merged with `origin/main` (7593b7c: confidence-gated local pitch, NOT JUDGED regions, crush map).
+No threshold or tool behaviour was changed. Source: `results/groundtruth_patches.csv` / `.md` (regenerated; the earlier CSV is in git history).
+The original numbers above are kept as the "before" column.
+
+| `vun-audit`, 40 verified patches | FAIL | NOT JUDGED | PASS | FAIL / 40 (Wilson 95 %) |
+|---|---|---|---|---|
+| **Before** (old main, one pitch per height) | 7 | 33 | 0 | 17.5 % (8.7 - 31.9) |
+| **After** (v2 default, local pitch with confidence) | **0** | **40** | **0** | **0 % (0 - 8.8)** |
+| After, `--global-pitch` (the pre-v2 pitch handling, now a flag) | 7 | 33 | 0 | 17.5 % (8.7 - 31.9) |
+| After, `--pitch-vox` (one pitch per patch) | 7 | 33 | 0 | 17.5 % (8.7 - 31.9); was 9 FAIL / 31 NOT JUDGED (22.5 %) before |
+
+What changed, in plain words: **the false alarms went to zero only because the auditor now abstains, not because it now passes.** All 40
+patches are NOT JUDGED and none is PASS; every one carries the reason "only #% of the cut line has a trusted local pitch" (the 7 patches
+that used to FAIL included). On these narrow windows the CT gives no local pitch the tool trusts, so it declines to judge instead of
+guessing, which is the intended v2 behaviour but means that on this data the auditor currently says nothing useful about a correct trace.
+The same 7 patches still FAIL for the same reasons when the old pitch handling is forced with `--global-pitch`, so nothing about those
+traces or checks was fixed. The upper end of the interval (8.8 %) is the width of "no FAIL in 40", not evidence of a good checker; a
+PASS rate of 0 / 40 is still the number to read next to it. The `surface_agreement` side result is unchanged (ON rate 1314 / 1949 = 67.4 %).
+
+Tests pinned to the new CSV: the 7 former strict xfails are now pinned as NOT JUDGED and no FAIL remains (`FAILS` is empty; its
+strict-xfail test stays in place for any future FAIL).
