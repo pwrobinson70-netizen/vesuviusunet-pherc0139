@@ -22,8 +22,32 @@ for d in ("trace_auditor", "sheet_spacing_check", "sheet_switch_finder", "umbili
     sys.path.insert(0, os.path.join(TOOLS, d))
 
 
+def summarise_json(pairs, csv_path):
+    """pairs: ['label=path.json', ...] -> CSV with one row per (label, phantom): PHANTOM numbers."""
+    import csv
+    rows = []
+    for pr in pairs:
+        label, _, path = pr.partition("=")
+        for r in json.load(open(path)):
+            t = [x for x in r["rows"] if x[0] == "true"]
+            b = [x for x in r["rows"] if x[0] == "bad"]
+            cnt = lambda g, v: sum(1 for x in g if x[2] == v)  # noqa: E731
+            sw = sum(1 for x in b if x[2] == "FAIL" and "switch_finder" in x[3])
+            rows.append(dict(data="PHANTOM", setting=label, phantom=r["phantom"], centre=r["centre"],
+                             true_pass=cnt(t, "PASS"), true_fail=cnt(t, "FAIL"), true_not_judged=cnt(t, "NOT JUDGED"), n_true=len(t),
+                             bad_fail=cnt(b, "FAIL"), bad_pass=cnt(b, "PASS"), bad_not_judged=cnt(b, "NOT JUDGED"), n_bad=len(b),
+                             bad_caught_by_switch_finder=sw))
+    with open(csv_path, "w", newline="") as fh:
+        w = csv.DictWriter(fh, list(rows[0]))
+        w.writeheader()
+        w.writerows(rows)
+    return rows
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    ap.add_argument("--summarise", nargs="+", metavar="LABEL=JSON", help="summarise saved --json outputs into --csv and exit")
+    ap.add_argument("--csv")
     ap.add_argument("--set", action="append", default=[], metavar="NAME=VALUE")
     ap.add_argument("--size", type=int, default=256)
     ap.add_argument("--seed", type=int, default=0)
@@ -32,6 +56,11 @@ def main(argv=None):
     ap.add_argument("--json")
     ap.add_argument("--out", help="folder for the generated phantoms (default: temp)")
     a = ap.parse_args(argv)
+    if a.summarise:
+        if not a.csv:
+            raise SystemExit("--summarise needs --csv")
+        summarise_json(a.summarise, a.csv)
+        return 0
     import score_on_phantoms as sop
     ta = sop.ta
     orig = ta.Params
