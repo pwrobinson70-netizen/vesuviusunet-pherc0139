@@ -105,3 +105,8 @@ tools can fail, not how often, and say nothing about any real scan.
   `seam_report.txt` (every overlap and cut, accepted or refused, with the reason), `overlay.png`.
 - **Limits:** a check that cannot be run (no volume, no centre) refuses the overlap unless `--allow-unjudged`; overlaps
   are judged on the surface, so a leak that stays within half a pitch of a good patch is not seen. Synthetic evidence only.
+
+## surface_agreement (`vun-surface`)
+Does a tifxyz trace lie on a sheet of the organisers' machine-made surface prediction, and does that agree with our CT-peak judge?
+Per point: prediction value, offset to the nearest prediction ridge, ON-PREDICTED-SHEET / OFF / NOT JUDGED; per height a 2x2 table
+(ours x prediction) with the disagreeing points; overlays. See `tools/surface_agreement/README.md`.
