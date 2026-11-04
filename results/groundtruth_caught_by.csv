@@ -1,0 +1,17 @@
+kind,tool,failed,only_this_tool
+shift-half,audit_default,0,0
+shift-half,audit_global,6,0
+shift-half,switch,3,0
+shift-half,surface,40,31
+shift-full,audit_default,0,0
+shift-full,audit_global,6,0
+shift-full,switch,1,0
+shift-full,surface,40,33
+switch-mid,audit_default,0,0
+switch-mid,audit_global,10,0
+switch-mid,switch,5,1
+switch-mid,surface,38,27
+scramble,audit_default,0,0
+scramble,audit_global,0,0
+scramble,switch,0,0
+scramble,surface,40,40

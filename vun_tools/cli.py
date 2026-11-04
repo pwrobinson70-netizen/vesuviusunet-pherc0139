@@ -71,3 +71,7 @@ def drift():
 
 def surface():
     return _run("surface_agreement", "surface_agreement")
+
+
+def negatives():
+    return _run("groundtruth_score", "make_negatives")

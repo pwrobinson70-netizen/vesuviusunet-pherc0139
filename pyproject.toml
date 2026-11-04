@@ -34,6 +34,7 @@ vun-merge = "vun_tools.cli:merge"
 vun-sweep = "vun_tools.cli:sweep"
 vun-drift = "vun_tools.cli:drift"
 vun-surface = "vun_tools.cli:surface"
+vun-negatives = "vun_tools.cli:negatives"
 
 [tool.setuptools]
 packages = [
@@ -52,6 +53,7 @@ packages = [
     "vun_tools._tools.label_drift",
     "vun_tools._tools.crush_map",
     "vun_tools._tools.surface_agreement",
+    "vun_tools._tools.groundtruth_score",
 ]
 
 [tool.setuptools.package-dir]
@@ -70,3 +72,4 @@ vesuvius_unet = "vesuvius_unet"
 "vun_tools._tools.label_drift" = "tools/label_drift"
 "vun_tools._tools.crush_map" = "tools/crush_map"
 "vun_tools._tools.surface_agreement" = "tools/surface_agreement"
+"vun_tools._tools.groundtruth_score" = "tools/groundtruth_score"

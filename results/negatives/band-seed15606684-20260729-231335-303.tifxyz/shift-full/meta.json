@@ -1,0 +1,96 @@
+{
+  "area_cm2": 0.09658368,
+  "area_vx2": 104800.0,
+  "bbox": [
+    [
+      32.297607421875,
+      32.541259765625,
+      8907.2275390625
+    ],
+    [
+      209.58740234375,
+      592.432373046875,
+      9171.703125
+    ]
+  ],
+  "fitted_poses": [
+    {
+      "inliers": 0,
+      "matrix": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "member_id": "band-seed15606684-20260729-231335-303.tifxyz",
+      "reflected": false,
+      "rms": 0.0
+    }
+  ],
+  "format": "tifxyz",
+  "member_ids": [
+    "band-seed15606684-20260729-231335-303.tifxyz"
+  ],
+  "merge_settings": {
+    "allow_reflection": true,
+    "atlas_agreement_ratio": 0.9,
+    "containment_threshold": 0.9,
+    "dense_spacing": 1.0,
+    "erode_cells": 0,
+    "max_correspondences": 4096,
+    "max_output_area_cm2": 20.0,
+    "max_output_area_vx2": 0.0,
+    "max_refit_rms": 2.0,
+    "min_inliers": 32,
+    "min_major_spread": 20.0,
+    "min_minor_spread": 5.0,
+    "min_overlap_fraction": 0.2,
+    "output_step": 20.0,
+    "ransac_confidence": 0.999,
+    "ransac_max_hypotheses": 512,
+    "thinning_spacing": 2.0,
+    "tolerance": 2.0,
+    "uv_inlier_tolerance": 3.0
+  },
+  "scale": [
+    0.05,
+    0.05
+  ],
+  "seed_id": "band-seed15606684-20260729-231335-303.tifxyz",
+  "seed_metric_origin": [
+    0.0,
+    0.0
+  ],
+  "source": "merge_overlapping_patches",
+  "type": "seg",
+  "uuid": "band-seed15606684-20260729-231335-303.tifxyz",
+  "source_folder": "https://vesuvius-challenge-open-data.s3.amazonaws.com/PHercParis4/representations/spiral/20260411134726-spiral-dataset-20261019084150/verified_patches/band-seed15606684-20260729-231335-303.tifxyz/",
+  "crop_note": "verified patch, 9.6 um grid (level 2 of the 2.4 um scan); x,y shifted by -(2684,2657); z unchanged; invalid cells set to -1 and mask.tif written (255 = valid; source mask applied where it existed); window x 2684:2926 y 2657:3282; heights [8973, 9039, 9106]",
+  "window": {
+    "x0": 2684,
+    "x1": 2926,
+    "y0": 2657,
+    "y1": 3282,
+    "heights": [
+      8973,
+      9039,
+      9106
+    ]
+  },
+  "negative": {
+    "kind": "shift-full",
+    "signed_full_pitch_shift_vox": -9.5,
+    "seed": 20261126
+  }
+}

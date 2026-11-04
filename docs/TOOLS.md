@@ -110,3 +110,12 @@ tools can fail, not how often, and say nothing about any real scan.
 Does a tifxyz trace lie on a sheet of the organisers' machine-made surface prediction, and does that agree with our CT-peak judge?
 Per point: prediction value, offset to the nearest prediction ridge, ON-PREDICTED-SHEET / OFF / NOT JUDGED; per height a 2x2 table
 (ours x prediction) with the disagreeing points; overlays. See `tools/surface_agreement/README.md`.
+
+## negatives (`vun-negatives`)
+Four deliberately broken copies of each verified PHerc. Paris 4 (Scroll 1) patch, to measure the DETECTION rate of the checkers on real data (the
+false-alarm rate is measured on the originals): `shift-half` (every valid point moved half a local sheet pitch along the in-plane normal),
+`shift-full` (one pitch), `switch-mid` (right half of the columns moved one pitch) and `scramble` (the z values shuffled among the valid cells).
+The pitch is measured on the CT slice at the patch's middle height. Fixed seed; refuses to run unless the ground-truth folder's README says
+"PHerc. Paris 4". `vun-negatives testdata/pherc_paris4_groundtruth results/negatives` writes `OUT/<patch>/<kind>/` tifxyz folders and `manifest.csv`.
+Scoring, the 2x2 and the threshold study: `tools/groundtruth_score/README.md`, `docs/REALDATA_2X2.md`.
+
