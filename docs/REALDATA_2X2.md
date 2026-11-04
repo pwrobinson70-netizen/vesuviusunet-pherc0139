@@ -164,7 +164,6 @@ Only about half of the points of a verified patch sit on a CT peak by this stric
 - 40 patches, each small (100 to 1087 valid points, median 200; 3 heights). Intervals are wide; the CT-panel false-alarm interval is [12.3, 37.5]%.
 - The surface prediction may have been used when the spiral dataset's patches were built (not checked), so agreement of the originals with it could be partly circular. Its AUC is not independent evidence.
 - Threshold choices are in-sample.
-- `tests/test_surface_agreement.py::test_real_sample_smoke` already fails on this branch before any change (point counts 156... vs 628...); it is the only failure in the suite and is not touched here.
 - Shifted points can leave the patch's slice window; those points are then not judged by the CT tools.
 
 ## Gaps for the next tool
@@ -176,3 +175,32 @@ Only about half of the points of a verified patch sit on a CT peak by this stric
 
 ## Test suite
 Before: 451 passed, 1 failed (`test_real_sample_smoke`, pre-existing), 3 skipped, 15 xfailed, 2 xpassed. After: 458 passed, 1 failed (same), 3 skipped, 16 xfailed, 2 xpassed (`tests/test_groundtruth_negatives.py`: 7 pass, 1 strict xfail for the uncaught scramble).
+
+
+## Re-scored after v2 (PRs 28-30)
+
+**AI-assisted (Claude Code and Claude), human-directed.** Brief 28. Re-measured on this branch merged with `origin/main` (7593b7c). No threshold or
+tool behaviour was changed. Commands: `make_negatives.py` (same default seed 20261104), `score.py`, `analyse.py`, plus the 16 threshold-study runs
+(`switchconf_*`, `wnjump_*`), all as in `tools/groundtruth_score/README.md`.
+
+**Nothing moved.** Every number in this document is identical after the merge.
+- *Pitch estimate / negatives:* unchanged. Regenerating the 160 broken copies with the same seed gives byte-identical `results/negatives/` (all `x/y/z/mask` tiffs and `manifest.csv`), so the copies were not regenerated or re-committed.
+- *Scores:* `results/groundtruth_panel_scores.csv` (200 cases), `results/groundtruth_*.csv`, `results/REALDATA_2X2_tables.md` and all 16 `results/threshold_study/*.csv` regenerate byte-identical.
+- *Why:* this branch was already built on the surface-agreement auditor, which carries the same confidence-gated local pitch and NOT JUDGED regions that PR 28 put on main. On this branch `tools/trace_auditor`, `tools/sheet_switch_finder`, `tools/sheet_spacing_check` and `tools/common` are identical to `origin/main`'s, so the "before" run had already measured v2. The pinned verdicts in `tests/test_groundtruth_negatives.py` therefore needed no change.
+
+Before = after, 2x2 for the CT panel (any of trace_auditor default, trace_auditor `--global-pitch`, sheet_switch_finder) and for panel plus surface prediction
+(FAIL = the call "broken"; broken = 160 copies, 40 per kind; originals = 40 verified patches; Wilson 95 %):
+
+| unit | | shift-half | shift-full | switch-mid | scramble | all 160 broken | false alarms, 40 originals |
+|---|---|---|---|---|---|---|---|
+| CT panel | before | 9/40 | 7/40 | 13/40 | 0/40 | 29/160 = 18.1 % [12.9, 24.8] | 9/40 = 22.5 % [12.3, 37.5] |
+| CT panel | after | 9/40 | 7/40 | 13/40 | 0/40 | 29/160 = 18.1 % [12.9, 24.8] | 9/40 = 22.5 % [12.3, 37.5] |
+| panel + surface prediction | before | 40/40 | 40/40 | 40/40 | 40/40 | 160/160 = 100 % [97.7, 100] | 32/40 = 80.0 % [65.2, 89.5] |
+| panel + surface prediction | after | 40/40 | 40/40 | 40/40 | 40/40 | 160/160 = 100 % [97.7, 100] | 32/40 = 80.0 % [65.2, 89.5] |
+
+The auditor at its v2 default is still NOT JUDGED on all 200 cases (0 FAIL on 160 broken, 0 FAIL on 40 originals), so the panel's detection and false alarms
+come from `--global-pitch` and the switch finder, as before. Cross-check with the Brief 25 re-score (PR 32, "Re-scored after v2" in `docs/REALDATA_GROUNDTRUTH.md`):
+`--global-pitch` on the 40 originals gives 7 FAIL there and here.
+
+Test-suite note (Brief 28): `tests/test_surface_agreement.py::test_real_sample_smoke` was recorded above as failing on this branch before any change. The cause was a stale pin: this branch had edited it to
+expect 628 / 482 / 425 points, while the tool (unchanged) and the same test on `tool/surface-agreement` give 156 / 121 / 105. The test file is restored to the `tool/surface-agreement` version; no tool behaviour or threshold changed.
