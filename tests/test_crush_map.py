@@ -61,6 +61,14 @@ def test_severity_correlates_with_the_true_severity_on_crushed_hard(cells):
     assert abs(est.mean() - tru.mean()) < 0.15                      # and it is on the same scale, not just the same ranking
 
 
+@pytest.mark.parametrize("seed", [1, 2])
+def test_held_out_seeds_are_weaker_but_still_rank_the_crush(seed):
+    """Seeds 1 and 2 were NOT used to tune the constants: Spearman 0.65 / 0.67 there (README table), below the 0.7 of seed 0."""
+    est, tru = _cells("crushed-hard", seed)
+    assert spearmanr(est, tru)[0] > 0.55
+    assert _cells("round", seed)[0].mean() < 0.05
+
+
 def test_severity_is_near_zero_on_the_round_phantom(cells):
     est, tru = cells["round"]
     assert tru.max() == 0.0

@@ -613,9 +613,12 @@ def write_pngs(rep, out_dir, names):
 # ------------------------------------------------------------------------------ CLI
 def build_parser():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0], formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    ap.add_argument("trace_a", help="tifxyz folder: the trace to audit, or the reference when B is given")
+    ap.add_argument("trace_a", nargs="?", help="tifxyz folder: the trace to audit, or the reference when B is given")
     ap.add_argument("trace_b", nargs="?", help="tifxyz folder: the proposed neighbour of A (optional)")
-    g = ap.add_mutually_exclusive_group(required=True)
+    ap.add_argument("--vc3d-folder", help="VC3D project folder: audit every tifxyz patch in it and write verdict.json / verdict.txt into each "
+                    "patch folder plus verdict_summary.txt at the root (see vc3d_handoff.py); --out-dir is not needed")
+    ap.add_argument("--volume", help="with --vc3d-folder: the volume (.zarr folder or PNG folder); default: from the patch's meta.json or PROJECT/volumes/")
+    g = ap.add_mutually_exclusive_group()
     g.add_argument("--zarr")
     g.add_argument("--png-dir")
     ap.add_argument("--zarr-level", type=int, default=0)
@@ -626,7 +629,7 @@ def build_parser():
     ap.add_argument("--transpose", action="store_true", help="grids have z varying along columns")
     ap.add_argument("--umbilicus", help="centre line file (default: estimate with umbilicus_finder on the volume)")
     ap.add_argument("--umbilicus-format", default="auto", choices=["auto", "json", "villa-json", "native-json", "zyx-text", "thaumato"])
-    ap.add_argument("--out-dir", required=True)
+    ap.add_argument("--out-dir", help="required unless --vc3d-folder")
     ap.add_argument("--png", action="store_true", help="write winding plots to <out-dir>/png")
     d = Params()
     for f in dataclasses.fields(Params):
@@ -644,7 +647,14 @@ def build_parser():
 
 
 def main(argv=None):
-    a = build_parser().parse_args(argv)
+    argv = sys.argv[1:] if argv is None else list(argv)
+    if any(t == "--vc3d-folder" or t.startswith("--vc3d-folder=") for t in argv):
+        import vc3d_handoff
+        return vc3d_handoff.run(argv, main)
+    ap = build_parser()
+    a = ap.parse_args(argv)
+    if not a.trace_a or not a.out_dir or not (a.zarr or a.png_dir):
+        ap.error("trace_a, --out-dir and one of --zarr / --png-dir are required (or use --vc3d-folder)")
     p = Params(**{f.name: getattr(a, f.name) for f in dataclasses.fields(Params)})
     try:
         if p.expect_side not in ("either", "outward", "inward"):

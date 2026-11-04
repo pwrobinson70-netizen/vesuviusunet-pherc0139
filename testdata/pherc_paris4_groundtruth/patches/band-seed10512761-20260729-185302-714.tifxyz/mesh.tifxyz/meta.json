@@ -1,0 +1,91 @@
+{
+  "area_cm2": 0.04866048,
+  "area_vx2": 52800.0,
+  "bbox": [
+    [
+      32.50244140625,
+      32.92431640625,
+      14130.57421875
+    ],
+    [
+      305.35302734375,
+      238.93310546875,
+      14369.0380859375
+    ]
+  ],
+  "fitted_poses": [
+    {
+      "inliers": 0,
+      "matrix": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "member_id": "band-seed10512761-20260729-185302-714.tifxyz",
+      "reflected": false,
+      "rms": 0.0
+    }
+  ],
+  "format": "tifxyz",
+  "member_ids": [
+    "band-seed10512761-20260729-185302-714.tifxyz"
+  ],
+  "merge_settings": {
+    "allow_reflection": true,
+    "atlas_agreement_ratio": 0.9,
+    "containment_threshold": 0.9,
+    "dense_spacing": 1.0,
+    "erode_cells": 0,
+    "max_correspondences": 4096,
+    "max_output_area_cm2": 20.0,
+    "max_output_area_vx2": 0.0,
+    "max_refit_rms": 2.0,
+    "min_inliers": 32,
+    "min_major_spread": 20.0,
+    "min_minor_spread": 5.0,
+    "min_overlap_fraction": 0.2,
+    "output_step": 20.0,
+    "ransac_confidence": 0.999,
+    "ransac_max_hypotheses": 512,
+    "thinning_spacing": 2.0,
+    "tolerance": 2.0,
+    "uv_inlier_tolerance": 3.0
+  },
+  "scale": [
+    0.05,
+    0.05
+  ],
+  "seed_id": "band-seed10512761-20260729-185302-714.tifxyz",
+  "seed_metric_origin": [
+    0.0,
+    0.0
+  ],
+  "source": "merge_overlapping_patches",
+  "type": "seg",
+  "uuid": "band-seed10512761-20260729-185302-714.tifxyz",
+  "source_folder": "https://vesuvius-challenge-open-data.s3.amazonaws.com/PHercParis4/representations/spiral/20260411134726-spiral-dataset-20261019084150/verified_patches/band-seed10512761-20260729-185302-714.tifxyz/",
+  "crop_note": "verified patch, 9.6 um grid (level 2 of the 2.4 um scan); x,y shifted by -(3430,5097); z unchanged; invalid cells set to -1 and mask.tif written (255 = valid; source mask applied where it existed); window x 3430:3768 y 5097:5368; heights [14190, 14250, 14309]",
+  "window": {
+    "x0": 3430,
+    "x1": 3768,
+    "y0": 5097,
+    "y1": 5368,
+    "heights": [
+      14190,
+      14250,
+      14309
+    ]
+  }
+}

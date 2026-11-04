@@ -1,0 +1,48 @@
+{
+  "area_cm2": 0.15284861654393225,
+  "area_vx2": 165851.36343742648,
+  "bbox": [
+    [
+      32.9052734375,
+      32.44921875,
+      10661.40234375
+    ],
+    [
+      699.03369140625,
+      643.67236328125,
+      11070.130859375
+    ]
+  ],
+  "constraint_graph": {
+    "coordinate_frame": "patch",
+    "fiber_scale": 0.25,
+    "includes_fiber_ribbons": true,
+    "origin": [
+      -320.0,
+      -60.0
+    ],
+    "patch_scale": 1.0,
+    "spacing": 10.0
+  },
+  "format": "tifxyz",
+  "prototype_fiber_merge": true,
+  "scale": [
+    0.05,
+    0.05
+  ],
+  "type": "seg",
+  "uuid": "anon_20260815T023822297_000032.tifxyz",
+  "source_folder": "https://vesuvius-challenge-open-data.s3.amazonaws.com/PHercParis4/representations/spiral/20260411134726-spiral-dataset-20261019084150/verified_patches/anon_20260815T023822297_000032.tifxyz/",
+  "crop_note": "verified patch, 9.6 um grid (level 2 of the 2.4 um scan); x,y shifted by -(0,0); z unchanged; invalid cells set to -1 and mask.tif written (255 = valid; source mask applied where it existed); window x 0:732 y 0:676; heights [10764, 10866, 10968]",
+  "window": {
+    "x0": 0,
+    "x1": 732,
+    "y0": 0,
+    "y1": 676,
+    "heights": [
+      10764,
+      10866,
+      10968
+    ]
+  }
+}

@@ -65,6 +65,10 @@ def sweep():
     return _run("winding_sweep", "winding_sweep")
 
 
+def groundtruth():
+    return _run("groundtruth_score", "groundtruth_score")
+
+
 def drift():
     return _run("label_drift", "label_drift")
 
@@ -75,3 +79,22 @@ def texture():
 
 def panel():
     return _run("judge_panel", "judge_panel")
+def surface():
+    return _run("surface_agreement", "surface_agreement")
+
+
+def negatives():
+    return _run("groundtruth_score", "make_negatives")
+
+
+def densify():
+    from vun_tools import densify as _d
+    return _d.main()
+
+
+def panel2():
+    return _run("judge_panel", "panel_v2")
+
+
+def umbilicus_pred():
+    return _run("umbilicus_finder", "umbilicus_from_pred")

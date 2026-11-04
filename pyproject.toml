@@ -32,9 +32,15 @@ vun-crush = "vun_tools.cli:crush"
 vun-ink = "vun_tools.cli:ink"
 vun-merge = "vun_tools.cli:merge"
 vun-sweep = "vun_tools.cli:sweep"
+vun-groundtruth = "vun_tools.cli:groundtruth"
 vun-drift = "vun_tools.cli:drift"
 vun-texture = "vun_tools.cli:texture"
 vun-panel = "vun_tools.cli:panel"
+vun-surface = "vun_tools.cli:surface"
+vun-negatives = "vun_tools.cli:negatives"
+vun-densify = "vun_tools.cli:densify"
+vun-panel2 = "vun_tools.cli:panel2"
+vun-umbilicus-pred = "vun_tools.cli:umbilicus_pred"
 
 [tool.setuptools]
 packages = [
@@ -49,11 +55,13 @@ packages = [
     "vun_tools._tools.patch_merger",
     "vun_tools._tools.sheet_tracer",
     "vun_tools._tools.winding_sweep",
+    "vun_tools._tools.groundtruth_score",
     "vun_tools._tools.common",
     "vun_tools._tools.label_drift",
     "vun_tools._tools.texture_judge",
     "vun_tools._tools.judge_panel",
     "vun_tools._tools.crush_map",
+    "vun_tools._tools.surface_agreement",
 ]
 
 [tool.setuptools.package-dir]
@@ -68,8 +76,10 @@ vesuvius_unet = "vesuvius_unet"
 "vun_tools._tools.patch_merger" = "tools/patch_merger"
 "vun_tools._tools.sheet_tracer" = "tools/sheet_tracer"
 "vun_tools._tools.winding_sweep" = "tools/winding_sweep"
+"vun_tools._tools.groundtruth_score" = "tools/groundtruth_score"
 "vun_tools._tools.common" = "tools/common"
 "vun_tools._tools.label_drift" = "tools/label_drift"
 "vun_tools._tools.texture_judge" = "tools/texture_judge"
 "vun_tools._tools.judge_panel" = "tools/judge_panel"
 "vun_tools._tools.crush_map" = "tools/crush_map"
+"vun_tools._tools.surface_agreement" = "tools/surface_agreement"

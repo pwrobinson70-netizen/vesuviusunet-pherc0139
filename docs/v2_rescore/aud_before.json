@@ -1,0 +1,950 @@
+[
+  {
+    "phantom": "round",
+    "centre": "truth",
+    "rows": [
+      [
+        "true",
+        "turn 0 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 1 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 2 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 3 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 1 vs turn 0",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 2 vs turn 1",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 3 vs turn 2",
+        "PASS",
+        []
+      ],
+      [
+        "bad",
+        "switch +1 at col 29 (turn 1)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "switch -1 at col 53 (turn 2)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "switch +1 at col 67 (turn 0)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "pair skipped (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing",
+          "winding_offset"
+        ]
+      ],
+      [
+        "bad",
+        "pair shared (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing",
+          "winding_offset"
+        ]
+      ],
+      [
+        "bad",
+        "pair off_sheet (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing"
+        ]
+      ]
+    ]
+  },
+  {
+    "phantom": "mild",
+    "centre": "truth",
+    "rows": [
+      [
+        "true",
+        "turn 0 alone",
+        "FAIL",
+        [
+          "switch_finder"
+        ]
+      ],
+      [
+        "true",
+        "turn 1 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 2 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 3 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 1 vs turn 0",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 2 vs turn 1",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 3 vs turn 2",
+        "PASS",
+        []
+      ],
+      [
+        "bad",
+        "switch +1 at col 29 (turn 1)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "switch -1 at col 53 (turn 2)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "switch +1 at col 67 (turn 0)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "pair skipped (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing",
+          "winding_offset"
+        ]
+      ],
+      [
+        "bad",
+        "pair shared (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing",
+          "winding_offset"
+        ]
+      ],
+      [
+        "bad",
+        "pair off_sheet (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing"
+        ]
+      ]
+    ]
+  },
+  {
+    "phantom": "crushed",
+    "centre": "truth",
+    "rows": [
+      [
+        "true",
+        "turn 0 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 1 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 2 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 3 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 1 vs turn 0",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 2 vs turn 1",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 3 vs turn 2",
+        "PASS",
+        []
+      ],
+      [
+        "bad",
+        "switch +1 at col 29 (turn 1)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "switch -1 at col 53 (turn 2)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "switch +1 at col 67 (turn 0)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "pair skipped (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing",
+          "winding_offset"
+        ]
+      ],
+      [
+        "bad",
+        "pair shared (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing",
+          "winding_offset"
+        ]
+      ],
+      [
+        "bad",
+        "pair off_sheet (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing"
+        ]
+      ]
+    ]
+  },
+  {
+    "phantom": "merged",
+    "centre": "truth",
+    "rows": [
+      [
+        "true",
+        "turn 0 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 1 alone",
+        "FAIL",
+        [
+          "switch_finder"
+        ]
+      ],
+      [
+        "true",
+        "turn 2 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 3 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 1 vs turn 0",
+        "FAIL",
+        [
+          "switch_finder"
+        ]
+      ],
+      [
+        "true",
+        "turn 2 vs turn 1",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 3 vs turn 2",
+        "PASS",
+        []
+      ],
+      [
+        "bad",
+        "switch +1 at col 29 (turn 1)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "switch -1 at col 53 (turn 2)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "switch +1 at col 67 (turn 0)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "pair skipped (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing",
+          "winding_offset"
+        ]
+      ],
+      [
+        "bad",
+        "pair shared (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing",
+          "switch_finder",
+          "winding_offset"
+        ]
+      ],
+      [
+        "bad",
+        "pair off_sheet (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing"
+        ]
+      ]
+    ]
+  },
+  {
+    "phantom": "crushed-hard",
+    "centre": "truth",
+    "rows": [
+      [
+        "true",
+        "turn 0 alone",
+        "FAIL",
+        [
+          "switch_finder"
+        ]
+      ],
+      [
+        "true",
+        "turn 1 alone",
+        "FAIL",
+        [
+          "switch_finder"
+        ]
+      ],
+      [
+        "true",
+        "turn 2 alone",
+        "FAIL",
+        [
+          "switch_finder"
+        ]
+      ],
+      [
+        "true",
+        "turn 3 alone",
+        "FAIL",
+        [
+          "switch_finder"
+        ]
+      ],
+      [
+        "true",
+        "turn 1 vs turn 0",
+        "FAIL",
+        [
+          "spacing",
+          "switch_finder",
+          "winding_offset"
+        ]
+      ],
+      [
+        "true",
+        "turn 2 vs turn 1",
+        "FAIL",
+        [
+          "spacing",
+          "switch_finder",
+          "winding_offset"
+        ]
+      ],
+      [
+        "true",
+        "turn 3 vs turn 2",
+        "FAIL",
+        [
+          "spacing",
+          "switch_finder",
+          "winding_offset"
+        ]
+      ],
+      [
+        "bad",
+        "switch +1 at col 29 (turn 1)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "switch -1 at col 53 (turn 2)",
+        "FAIL",
+        [
+          "switch_finder"
+        ]
+      ],
+      [
+        "bad",
+        "switch +1 at col 67 (turn 0)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "pair skipped (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing",
+          "switch_finder",
+          "winding_offset"
+        ]
+      ],
+      [
+        "bad",
+        "pair shared (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing",
+          "switch_finder",
+          "winding_offset"
+        ]
+      ],
+      [
+        "bad",
+        "pair off_sheet (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing",
+          "switch_finder",
+          "winding_jumps",
+          "winding_offset"
+        ]
+      ]
+    ]
+  },
+  {
+    "phantom": "folded",
+    "centre": "truth",
+    "rows": [
+      [
+        "true",
+        "turn 0 alone",
+        "FAIL",
+        [
+          "switch_finder"
+        ]
+      ],
+      [
+        "true",
+        "turn 1 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 2 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 3 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 1 vs turn 0",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 2 vs turn 1",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 3 vs turn 2",
+        "PASS",
+        []
+      ],
+      [
+        "bad",
+        "switch +1 at col 29 (turn 1)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "switch -1 at col 53 (turn 2)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "switch +1 at col 67 (turn 0)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "pair skipped (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing",
+          "winding_offset"
+        ]
+      ],
+      [
+        "bad",
+        "pair shared (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing",
+          "winding_offset"
+        ]
+      ],
+      [
+        "bad",
+        "pair off_sheet (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing"
+        ]
+      ]
+    ]
+  },
+  {
+    "phantom": "delaminated",
+    "centre": "truth",
+    "rows": [
+      [
+        "true",
+        "turn 0 alone",
+        "FAIL",
+        [
+          "switch_finder"
+        ]
+      ],
+      [
+        "true",
+        "turn 1 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 2 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 3 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 1 vs turn 0",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 2 vs turn 1",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 3 vs turn 2",
+        "PASS",
+        []
+      ],
+      [
+        "bad",
+        "switch +1 at col 29 (turn 1)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "switch -1 at col 53 (turn 2)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "switch +1 at col 67 (turn 0)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "pair skipped (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing",
+          "winding_offset"
+        ]
+      ],
+      [
+        "bad",
+        "pair shared (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing",
+          "winding_offset"
+        ]
+      ],
+      [
+        "bad",
+        "pair off_sheet (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing"
+        ]
+      ]
+    ]
+  },
+  {
+    "phantom": "torn",
+    "centre": "truth",
+    "rows": [
+      [
+        "true",
+        "turn 0 alone",
+        "FAIL",
+        [
+          "switch_finder"
+        ]
+      ],
+      [
+        "true",
+        "turn 1 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 2 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 3 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 1 vs turn 0",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 2 vs turn 1",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 3 vs turn 2",
+        "PASS",
+        []
+      ],
+      [
+        "bad",
+        "switch +1 at col 29 (turn 1)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "switch -1 at col 53 (turn 2)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "switch +1 at col 67 (turn 0)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "pair skipped (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing",
+          "winding_offset"
+        ]
+      ],
+      [
+        "bad",
+        "pair shared (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing",
+          "winding_offset"
+        ]
+      ],
+      [
+        "bad",
+        "pair off_sheet (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing"
+        ]
+      ]
+    ]
+  },
+  {
+    "phantom": "gappy",
+    "centre": "truth",
+    "rows": [
+      [
+        "true",
+        "turn 0 alone",
+        "FAIL",
+        [
+          "switch_finder"
+        ]
+      ],
+      [
+        "true",
+        "turn 1 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 2 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 3 alone",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 1 vs turn 0",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 2 vs turn 1",
+        "PASS",
+        []
+      ],
+      [
+        "true",
+        "turn 3 vs turn 2",
+        "PASS",
+        []
+      ],
+      [
+        "bad",
+        "switch +1 at col 29 (turn 1)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "switch -1 at col 53 (turn 2)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "switch +1 at col 67 (turn 0)",
+        "FAIL",
+        [
+          "switch_finder",
+          "winding_jumps"
+        ]
+      ],
+      [
+        "bad",
+        "pair skipped (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing",
+          "winding_offset"
+        ]
+      ],
+      [
+        "bad",
+        "pair shared (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing",
+          "winding_offset"
+        ]
+      ],
+      [
+        "bad",
+        "pair off_sheet (B vs turn 1)",
+        "FAIL",
+        [
+          "spacing"
+        ]
+      ]
+    ]
+  }
+]

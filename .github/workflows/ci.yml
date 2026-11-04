@@ -20,3 +20,30 @@ jobs:
           pip install -r tools/sheet_spacing_check/requirements.txt
       - name: Run tests
         run: python -m pytest -q
+
+  verify-windows:
+    runs-on: windows-latest
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify checksums
+        shell: bash
+        run: sha256sum -c SHA256SUMS.txt
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install test dependencies
+        run: |
+          pip install numpy scikit-learn pytest
+          pip install -r tools/sheet_spacing_check/requirements.txt
+      - name: Parse scripts/judge_patch.ps1 (PowerShell 7 and Windows PowerShell 5.1)
+        run: |
+          $f = (Resolve-Path scripts/judge_patch.ps1).Path
+          $tok = $null; $err = $null
+          [System.Management.Automation.Language.Parser]::ParseFile($f, [ref]$tok, [ref]$err) | Out-Null
+          if ($err.Count -gt 0) { $err | ForEach-Object { Write-Host $_.ToString() }; exit 1 }
+          Write-Host "pwsh parse OK: $f"
+          powershell -NoProfile -Command "`$t=`$null; `$e=`$null; [void][System.Management.Automation.Language.Parser]::ParseFile('$f', [ref]`$t, [ref]`$e); if (`$e.Count -gt 0) { `$e | ForEach-Object { `$_.ToString() }; exit 1 }; 'powershell 5.1 parse OK'"
+      - name: Run tests
+        run: python -m pytest -q

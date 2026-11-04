@@ -163,13 +163,13 @@ def broken_mesh(tmp_path_factory, centre_file):
 @pytest.fixture(scope="module")
 def spacing(padded_pair, tmp_path_factory):
     out = tmp_path_factory.mktemp("spacing") / "ssc.json"
-    run_tool("sheet_spacing_check", "sheet_spacing_check.py", *padded_pair, *PNG_ARGS, "--out-json", out)
+    run_tool("sheet_spacing_check", "sheet_spacing_check.py", *padded_pair, *PNG_ARGS, "--global-pitch", "--out-json", out)
     return json.loads(out.read_text())["result"]["heights"]
 
 
 def switch_run(mesh, tmp_path_factory, *extra):
     out = tmp_path_factory.mktemp("switch") / "sw.json"
-    run_tool("sheet_switch_finder", "sheet_switch_finder.py", mesh, *PNG_ARGS, *extra, "--out-json", out)
+    run_tool("sheet_switch_finder", "sheet_switch_finder.py", mesh, *PNG_ARGS, "--global-pitch", *extra, "--out-json", out)
     return json.loads(out.read_text())["result"]
 
 
@@ -185,7 +185,7 @@ def switches_broken(broken_mesh, tmp_path_factory):
 
 def audit_run(mesh, centre_file, tmp_path_factory):
     out = tmp_path_factory.mktemp("audit")
-    run_tool("trace_auditor", "trace_auditor.py", mesh, *PNG_ARGS, "--umbilicus", centre_file, "--out-dir", out)
+    run_tool("trace_auditor", "trace_auditor.py", mesh, *PNG_ARGS, "--global-pitch", "--umbilicus", centre_file, "--out-dir", out)
     return json.loads((out / "audit.json").read_text())["result"]["traces"][0]
 
 
@@ -315,7 +315,7 @@ def test_spacing_ct_pitch_matches_independent_measurement(spacing, i):
 
 @pytest.mark.xfail(strict=True, reason="F1 / P1: adjacent real meshes have different grid shapes and the tool refuses them")
 def test_spacing_accepts_the_real_pair_as_it_is(tmp_path):
-    run_tool("sheet_spacing_check", "sheet_spacing_check.py", A_DIR, B_DIR, *PNG_ARGS,
+    run_tool("sheet_spacing_check", "sheet_spacing_check.py", A_DIR, B_DIR, *PNG_ARGS, "--global-pitch",
              "--out-json", tmp_path / "x.json", ok_codes=(0,))
     assert (tmp_path / "x.json").exists()
 

@@ -1,0 +1,23 @@
+{
+  "area_vx2": 5679923405.8502865,
+  "bbox": [
+    [
+      0.0107421875,
+      0.462646484375,
+      9439.0771484375
+    ],
+    [
+      914.07763671875,
+      1023.962890625,
+      14562.8955078125
+    ]
+  ],
+  "format": "tifxyz",
+  "scale": [
+    0.04999694226691119,
+    0.04999694226691119
+  ],
+  "type": "seg",
+  "uuid": "out",
+  "crop_note": "coordinates divided by 4.000 to the prediction grid; cropped rows 198:2442 cols 3:6760; x,y shifted by -(6625,3274); z unchanged; scale updated; then cells with z outside [9439,14563] dropped, rows 507:1738 cols 0:6707, grid subsampled every 4 cells in both directions (scale divided by 4)"
+}

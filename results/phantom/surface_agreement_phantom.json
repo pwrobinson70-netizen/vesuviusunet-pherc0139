@@ -1,0 +1,37 @@
+[
+ {
+  "case": "true",
+  "broken": false,
+  "on_fraction": 1.0,
+  "fail_at_0p8": false,
+  "fail_at_0p15": false
+ },
+ {
+  "case": "shift-half",
+  "broken": true,
+  "on_fraction": 0.0,
+  "fail_at_0p8": true,
+  "fail_at_0p15": true
+ },
+ {
+  "case": "shift-full",
+  "broken": true,
+  "on_fraction": 1.0,
+  "fail_at_0p8": false,
+  "fail_at_0p15": false
+ },
+ {
+  "case": "switch-mid half",
+  "broken": true,
+  "on_fraction": 0.4167,
+  "fail_at_0p8": true,
+  "fail_at_0p15": false
+ },
+ {
+  "case": "switch-mid full",
+  "broken": true,
+  "on_fraction": 1.0,
+  "fail_at_0p8": false,
+  "fail_at_0p15": false
+ }
+]
