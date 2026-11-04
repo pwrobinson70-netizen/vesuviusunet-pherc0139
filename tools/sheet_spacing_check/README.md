@@ -118,3 +118,28 @@ at known offsets (see `tests/`). I did **not** confirm a documented adjacent pai
 segments (for example a PHerc0139 or PHerc0172 pair), so no real-data run is claimed and no scan
 data is included or downloaded. Do not use this tool's output on real data as evidence until such
 a pair has been checked.
+
+## v0.2: local pitch per point, with a confidence
+
+Evidence: `tools/realdata_run/RESULTS.md` (PR #17) finding 3 / P3: at the old defaults the CT pitch came out 14-17 voxels on the real
+PHerc. Paris 4 slices, 1.5-1.8x the 9-10.5 measured independently along the mesh normals. The pitch is now measured per cut-line
+point by `tools/common/local_pitch.py`: pass 1 finds the peaks of the normal profile (prominence `--pitch-prominence-frac` of
+the profile range), pass 2 keeps the peaks within `--pitch-window-pitches` pass-1 pitches of the point and takes the median gap;
+the confidence (0..1) is `min(1, gaps / 4)` x `max(0, 1 - cv / --pitch-cv-max)` x `min(1, autocorrelation at the pitch /
+--pitch-ac-full)`. Points with fewer than `--min-peaks` local peaks have confidence 0. NaN pitches take the nearest measured one
+on the same run. `--global-pitch` restores the old estimator exactly (peak prominence `--peak-prominence-frac`, 0.25, height
+median as the fallback). Result fields added per height: `pitch_mode`, `pitch_confidence_mean`, `pitch_local_p10`,
+`pitch_local_p90`.
+
+| flag | default | meaning |
+|---|---|---|
+| `--global-pitch` | off | old pitch estimator and fallback |
+| `--pitch-prominence-frac` | 0.05 | local pitch: min peak prominence / profile range (0.05-0.10 gave 9.5-12 vox on real data, 0.25 gave 14-17) |
+| `--pitch-window-pitches` | 3.0 | local pitch: peaks within this many pitches of the point |
+| `--pitch-cv-max` | 0.5 | confidence 0 at this robust scatter of the local gaps |
+| `--pitch-ac-full` | 0.5 | confidence 1 at this autocorrelation at the pitch |
+| `--pitch-smooth-points` | 1 | running median of pitch / confidence along each run (odd; 1 = off) |
+| `--min-pitch-confidence` | 0.0 | points below this have no pitch (counted "no pitch", not clean) |
+
+Limit: on the real data the confidence is low (mean about 0.1) because the periodicity is weak and broad; the pitch is then a
+best guess within +-2 voxels, not a measurement.

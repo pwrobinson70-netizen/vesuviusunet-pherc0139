@@ -49,6 +49,10 @@ def phantom():
     return _run("phantom_scroll", "phantom_scroll")
 
 
+def crush():
+    return _run("crush_map", "crush_map")
+
+
 def ink():
     return _run("ink_infer", "ink_infer")
 
@@ -59,3 +63,11 @@ def merge():
 
 def sweep():
     return _run("winding_sweep", "winding_sweep")
+
+
+def drift():
+    return _run("label_drift", "label_drift")
+
+
+def surface():
+    return _run("surface_agreement", "surface_agreement")

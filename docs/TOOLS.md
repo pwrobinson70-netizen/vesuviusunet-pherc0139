@@ -26,6 +26,8 @@ level-0 voxel coordinates, `-1` = no data; `docs/FORMATS.md`); a CT volume is an
 | `vun-ink` | `tools/ink_infer` | Ink-probability picture of one traced segment from a trained checkpoint |
 | `vun-merge` | `tools/patch_merger` | Merge overlapping tifxyz patches, but only where the overlap is provably one sheet |
 | `vun-sweep` | `tools/winding_sweep` | Every layer of a z band: centre, ray crossings, one patch + audit verdict per winding |
+| `vun-sweep` | `tools/winding_sweep` | Every layer of a z band: centre, ray crossings, one patch + audit verdict per winding |
+| `vun-merge` | `tools/patch_merger` | Merge overlapping tifxyz patches, but only where the overlap is provably one sheet |
 
 ## vun-umbilicus
 - **Input:** OME-Zarr / 3-D zarr / PNG folder; z range in level-0 voxels (`--z-start --z-stop --z-step`).
@@ -103,3 +105,8 @@ tools can fail, not how often, and say nothing about any real scan.
   `seam_report.txt` (every overlap and cut, accepted or refused, with the reason), `overlay.png`.
 - **Limits:** a check that cannot be run (no volume, no centre) refuses the overlap unless `--allow-unjudged`; overlaps
   are judged on the surface, so a leak that stays within half a pitch of a good patch is not seen. Synthetic evidence only.
+
+## surface_agreement (`vun-surface`)
+Does a tifxyz trace lie on a sheet of the organisers' machine-made surface prediction, and does that agree with our CT-peak judge?
+Per point: prediction value, offset to the nearest prediction ridge, ON-PREDICTED-SHEET / OFF / NOT JUDGED; per height a 2x2 table
+(ours x prediction) with the disagreeing points; overlays. See `tools/surface_agreement/README.md`.

@@ -108,3 +108,20 @@ hard jump of more than `--normal-break-factor` (4) times the usual point spacing
 by a known number of sheets at a known column. No real scan data is included or downloaded, no public trace with a
 documented switch was confirmed, and no First Letters scroll was used. Do not treat output on real data as evidence
 until it has been checked by hand on spots found in a documented trace.
+
+## v0.2: steps in LOCAL pitches
+
+Evidence: PR #17 finding 5 (the finder reported steps in units of a 17 voxel pitch where 9.5 was measured) and the crushed
+phantoms (spacing varies up to 3x round one turn). The offset of the mesh from the tracked sheet, the track gate and the step test
+now use the local pitch at each point (`tools/common/local_pitch.py`, measured on the tilt-filtered normals, running median over
+`--pitch-smooth-points` = 9 points along the run, because beside a hop the profile straddles two sheets and reads about 2x). On a
+phantom with a 3x spacing field a planted +1 sheet switch is 1.0 pitch in both the crushed and the wide sector; with one pitch per height
+it was missed (0.35) or read 1.59 with confidence 0. `--global-pitch` restores the old behaviour (identical output). NOT fixed:
+the deliberate real-data break of PR #17 task 6 is still not flagged at confidence >= 0.3 (a break-specific entry appears at z=2600
+col 123 with confidence 0.0; `tests/test_v2_local_pitch.py::test_ssf_real_break_is_flagged_and_the_original_is_not`, xfail).
+
+| flag | default | meaning |
+|---|---|---|
+| `--global-pitch` | off | one CT pitch per height (old) |
+| `--pitch-prominence-frac`, `--pitch-window-pitches`, `--pitch-cv-max`, `--pitch-ac-full`, `--min-pitch-confidence` | as `sheet_spacing_check` | local pitch estimator (see there) |
+| `--pitch-smooth-points` | 9 | running median of the local pitch along each run (odd; 1 = off) |
