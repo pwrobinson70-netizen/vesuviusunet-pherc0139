@@ -18,7 +18,7 @@ headline next to the 17.5 % false-alarm rate. (2) The tool itself says LOW on ev
 coordinate mix-up. (3) At level 4 the sweep finds 0.14 - 0.27 crossings per annotated winding, so it cannot be right; the format matched,
 the resolution does not.
 
-Tests: before any change 320 passed, 3 skipped, 14 xfailed, 2 xpassed (7 min 40 s). After: TESTS_AFTER.
+Tests: before any change 320 passed, 3 skipped, 14 xfailed, 2 xpassed (7 min 40 s). After (adding `tests/test_groundtruth.py`): 357 passed, 3 skipped, 21 xfailed, 2 xpassed (6 min 36 s), i.e. +37 passed and +7 strict xfails (one per recorded FAIL); no other test changed.
 
 ## Part A: the 40 patches
 
