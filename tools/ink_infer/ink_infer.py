@@ -123,11 +123,11 @@ def run_inference(model, vol, surf, *, depth, patch, stride, layer_step_vox, dev
     state = os.path.join(work_dir, "state.npz") if work_dir else None
     cfg = json.dumps(config or {}, sort_keys=True, default=str)
     if state and resume and os.path.isfile(state):
-        z = np.load(state, allow_pickle=False)
-        if str(z["cfg"]) != cfg:
-            raise InputError("--resume: the work-dir state was made with different settings; "
-                             "use a fresh --work-dir (or delete state.npz)")
-        psum, wsum, done = z["psum"], z["wsum"], int(z["done"])
+        with np.load(state, allow_pickle=False) as z:          # closed before save_state replaces the file (Windows)
+            if str(z["cfg"]) != cfg:
+                raise InputError("--resume: the work-dir state was made with different settings; "
+                                 "use a fresh --work-dir (or delete state.npz)")
+            psum, wsum, done = z["psum"].copy(), z["wsum"].copy(), int(z["done"])
         log(f"resumed: {done}/{len(coords)} patches already done")
 
     def save_state(n):
