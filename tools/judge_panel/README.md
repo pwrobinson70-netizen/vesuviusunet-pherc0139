@@ -2,7 +2,9 @@
 
 Two panels live in this folder. `panel_v2.py` (`vun-panel2`) is the one to use: on held-out verified Scroll 1 patches it is the only panel with a measured real-data 2x2 (`docs/PANEL_V2.md`). `judge_panel.py` (`vun-panel`) is the earlier all-judges report from Brief 23, kept for its side-by-side disagreement listing.
 
-## judge_panel.py (`vun-panel`): every judge on one trace, side by side
+Contents: 1. `judge_panel.py` / `vun-panel` (every judge side by side; Judges, Regions and verdicts, Agreement table); 2. `panel_v2.py` / `vun-panel2` (files, Reproduce).
+
+## 1. judge_panel.py (`vun-panel`): every judge on one trace, side by side
 
 One command that runs every available judge on one trace (and optionally a neighbour) and writes a panel report: per region, each judge's
 verdict, a panel verdict, and the disagreements listed explicitly. Needs the requirements of the tools it runs (numpy, scipy, tifffile, pillow, zarr).
@@ -11,7 +13,7 @@ verdict, a panel verdict, and the disagreements listed explicitly. Needs the req
 python tools/judge_panel/judge_panel.py trace.tifxyz [neighbour.tifxyz] --zarr volume.zarr --umbilicus centre.json --heights 60,80,100 --out-dir out/
 ```
 
-## Judges
+### Judges
 
 | column | what | level |
 |---|---|---|
@@ -25,7 +27,7 @@ python tools/judge_panel/judge_panel.py trace.tifxyz [neighbour.tifxyz] --zarr v
 The auditor's own `switch_finder` and the stand-alone finder share code; both are shown on purpose. `label_drift` is not part of the panel.
 Judges run through their own command lines (so they behave exactly as run alone); `--auditor-args`, `--finder-args`, `--spacing-args`, `--texture-args` pass extra flags.
 
-## Regions and verdicts
+### Regions and verdicts
 
 A region is one cut-line height and `--region-cols` (default 16) grid columns. Every judge is mapped onto the same regions: the texture judge by the
 cut-line points of its windows (a BREAK belongs to the region holding its centre; BLURRED majority = FAIL; >= half ON-SHEET-TEXTURED = PASS), the finder and auditor by
@@ -37,12 +39,13 @@ the column of each switch / jump, height-level judges on every region of their h
 * trace: **FAIL** if any region or any whole-trace judge is FAIL; else **NOT JUDGED** if any region is split or nothing could be judged; else **PASS**.
 * exit code 0 PASS, 1 FAIL, 2 bad input, 4 NOT JUDGED. Output: `panel.json`, `panel.txt`, and each judge's own output below `--out-dir`.
 
-## Agreement table
+### Agreement table
 
 `agreement_table.py` runs the texture judge and the auditor on every phantom preset (true trace, planted switch, trace in the gap, trace on the wrong sheet) and on the real samples
 and writes the 2 x 2 table (texture judge vs auditor, NOT JUDGED on the side) plus a truth-labelled score per judge (`agreement.md`, `agreement.json`). The result is in the pull request and in `docs/texture_judge/RESULTS.md`.
 Reproduce: `python tools/judge_panel/agreement_table.py --out-dir out/ --size 128 [--broken-dir DIR]`.
-## panel_v2.py (`vun-panel2`): the prediction-first panel
+
+## 2. panel_v2.py (`vun-panel2`): the prediction-first panel
 
 AI-assisted (Claude Code and Claude), human-directed. Public data only: PHerc. Paris 4 (Scroll 1), CC BY-NC 4.0. Results and the reading of them: `docs/PANEL_V2.md`.
 
@@ -52,6 +55,8 @@ AI-assisted (Claude Code and Claude), human-directed. Public data only: PHerc. P
 | `densify_tree.py` | densified copies (1 voxel cells) of a ground-truth sample and its broken copies (inputs untouched; slices and predictions are symlinked) |
 | `evaluate_v2.py` | chooses T on the tune set only (Youden J of the full panel), reports the held-out 2x2, per-kind detection, misses, AUC |
 | `densify_effect.py` | NOT JUDGED and CT 2x2 on coarse vs densified traces |
+
+### Reproduce the held-out 2x2
 
     vun-negatives testdata/pherc_paris4_groundtruth results/negatives                     # set A copies (committed)
     vun-negatives testdata/pherc_paris4_groundtruth_b results/negatives_b                 # set B copies, same script and default seed (committed)
