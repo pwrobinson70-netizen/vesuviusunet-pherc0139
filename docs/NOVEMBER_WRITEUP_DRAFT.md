@@ -78,21 +78,40 @@ after the switch (AUC 0.55, F0.5 0.00) while the part before it matches the true
 
 ## 4. Honest limits
 
-- Everything above is synthetic. The phantom is smooth; real scrolls have delamination, tears, dust, uneven sheet
-  thickness and brightness, ring artefacts, none of which are modelled. Passing the benchmark does not show a tool
-  works on a scan; failing it shows a tool can fail.
-- One seed, one pitch, one grid step per row; no confidence intervals.
-- umbilicus error is partly definitional on warped phantoms (truth is the deformed axis), so the crushed-phantom
+Rewritten 4 Nov 2026 against the real-data results of section 7. Marked **[kept]**, **[corrected]** or **[new]**.
+
+- **[corrected]** Sections 2, 3 and 6 are synthetic. The phantom is smooth; real scrolls have delamination, tears, dust, uneven sheet
+  thickness and brightness, ring artefacts, none of which are modelled. The real data now shows what that costs: on the phantoms the
+  same checks catch every broken trace (6/6, 6/6, 5/6, 6/6), on real patches the CT panel caught 18% and the auditor abstained on all
+  of them (`docs/REALDATA_2X2.md`). Passing the benchmark did not show a tool works on a scan.
+  (The first draft said that nothing had been measured on real data; section 7 now is.)
+- **[corrected]** The first draft's "one seed, one pitch, one grid step per row; no confidence intervals" holds only for the section 3 tables.
+  Section 6 gives 20 seeds with bootstrap intervals at 192^3; still one pitch per phantom family and phantom seeds that only vary texture, warp and
+  wobble. Section 7 intervals are Wilson 95% on 40 patches (or 160 copies).
+- **[kept]** umbilicus error is partly definitional on warped phantoms (truth is the deformed axis), so the crushed-phantom
   number is an upper bound on the tool's error.
-- The auditor false-FAILs true traces on the crushed phantom (spacing varies about 2x round a turn, read as a
+- **[kept]** The auditor false-FAILs true traces on the crushed phantom (spacing varies about 2x round a turn, read as a
   step) and on the merged phantom (the switch finder follows the neighbour where sheets touch), and it passes
-  nothing it cannot judge.
-- The dark-gap trace on the crushed phantom is still 30% "clean" in the spacing check.
-- The ink test uses a uniform brightening as "ink"; the model most likely learned brightness, not letter shapes;
+  nothing it cannot judge. Section 6 shows this is not a one-seed accident. On real patches it passes nothing either: 0 PASS in 40 (`docs/REALDATA_GROUNDTRUTH.md`).
+- **[kept]** The dark-gap trace on the crushed phantom is still 30% "clean" in the spacing check.
+- **[kept]** The ink test uses a uniform brightening as "ink"; the model most likely learned brightness, not letter shapes;
   the test letters occur in the training words; the off-sheet degradation depends on a window of +-8 voxels.
-- `ink_infer` writes a picture, not a score. Its transfer to any real scan, energy or resolution is unvalidated, and
-  it ships no real checkpoint.
-- Not measured: runtime or memory on full-size scans, GPU behaviour, zarr 2.x (tests ran on zarr 3), Windows.
+- **[kept]** `ink_infer` writes a picture, not a score. Its transfer to any real scan, energy or resolution is unvalidated, and
+  it ships no real checkpoint. Nothing in section 7 involves ink.
+- **[corrected]** "Not measured: runtime or memory on full-size scans, GPU behaviour, zarr 2.x (tests ran on zarr 3), Windows." Still not measured:
+  runtime or memory on full-size scans, GPU behaviour, zarr 2.x. Windows now has a CI job and a script (`CHANGELOG.md`, `docs/WINDOWS.md`); I did not check that job's results, so no Windows claim is made here.
+- **[new]** The threshold T = 0.415 rests on one tune set of 40 patches (plus their 160 copies); it was chosen by Youden's J with a plateau of 0.41 to 0.42 (`docs/PANEL_V2.md`).
+- **[new]** The held-out set is also only 40 patches, so the intervals are wide: detection 78.0 to 89.2%, false alarms 1.4 to 16.5%. Held-out false alarms (2/40) against tune false alarms (6/40) are not distinguishable (`docs/PANEL_V2.md`).
+- **[new]** The broken copies are synthetic breakages of real traces (shifts by one measured pitch, a shuffled z), not real tracing errors (`docs/PANEL_V2.md`).
+  They are also not exactly what they claim: only 0.49 of a verified patch's points lie within 2 voxels of a CT sheet peak, and the one-pitch shift keeps 0.33, a little above the half-pitch shift's 0.30, so `shift-full` is a one-pitch displacement, not strictly a clean sheet switch (`results/groundtruth_negatives_validity.csv` as quoted in `docs/REALDATA_2X2.md`).
+- **[new]** All real-data results are on one scroll (PHerc. Paris 4) at 9.6 um (the centre and winding work on its 38.4 um level 4). Nothing here says how any tool behaves on another scroll, resolution or energy (`docs/PANEL_V2.md`, `docs/REALDATA_GROUNDTRUTH.md`).
+- **[new]** The surface prediction is the organisers' m7 model, so panel_v2 inherits its errors. The 2 false alarms are patches with on-sheet fractions 0.043 and 0.000, where the prediction and the human-verified trace disagree entirely and the tool cannot tell which is wrong. The prediction may also have been used when the verified patches were built (not checked), so the agreement of the originals with it could be partly circular and its AUC is not independent evidence (`docs/PANEL_V2.md`).
+- **[new]** The CT-only checks do not work on short real patches: the auditor is NOT JUDGED on 40 of 40 under v2 defaults. The false-alarm rate of 0 percent there (0 to 8.8 percent) comes from abstaining, not from passing; NOT JUDGED is not a pass (`docs/REALDATA_GROUNDTRUTH.md`).
+- **[new]** The winding-number checks need about 60 degrees of arc and a verified patch spans about 8; only 3 of 40 patches had any height where it was judged before v2, so conclusions about that check come from three patches at most (`docs/REALDATA_GROUNDTRUTH.md`).
+- **[new]** The advisory CT votes in panel_v2 are unproven: 0 net detections. Dropping them would give the same held-out table (`docs/PANEL_V2.md`).
+- **[new]** Whole-trace on-sheet fraction cannot see a half-trace break (20 of 40 `switch-mid` missed). Neither does any geometric z-monotonicity check exist for `scramble` (`docs/PANEL_V2.md`).
+- **[new]** Threshold sweeps on real data are in-sample, and the surface threshold chosen in the two-fold check was not stable (`docs/REALDATA_2X2.md`).
+- **[new]** The centre-line and winding results are on 20 heights and 5 annotated heights of one scroll at one level (`docs/REALDATA_GROUNDTRUTH.md`).
 
 ## 5. Reproduce
 
