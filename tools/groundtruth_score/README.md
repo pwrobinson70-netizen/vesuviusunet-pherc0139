@@ -46,3 +46,9 @@ Runs the unchanged `tools/trace_auditor/score_on_phantoms.py` suite with `trace_
 ## Limits
 Forty patches of one scroll, 3 heights each, narrow windows (about 8 degrees round the centre): conclusions about the winding-number checks
 come from three patches at most. The published centre line is used, so centre-finding errors are not part of Part A.
+
+## Rebuilding a ground-truth sample (`fetch_groundtruth.py`)
+`python tools/groundtruth_score/fetch_groundtruth.py --offset 32 --out testdata/pherc_paris4_groundtruth_b [--verify-against DIR]` rebuilds a verified-patch
+sample from the public bucket with retries and resume; a patch is only ever left on disk with all 11 files. Offset 53 = set A (seed 20261104), 32 = set B
+(seed 20261105); `--verify-against` rebuilds the patches an existing sample already holds and compares meshes, meta and every PNG pixel. Needs `imagecodecs`
+(some source TIFFs are LZW) and `requests`.
