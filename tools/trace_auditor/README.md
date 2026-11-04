@@ -157,3 +157,25 @@ windcheck's exact self-intersection engine (MIT, Josep Carreras, vendored; needs
 normal: is a bright sheet within 0.2 pitch of the trace?). The sheet pitch is `--pitch-vox` if given, else the median pitch the auditor measured. Every threshold is a flag
 with prefix `--wc-` (`--wc-min-crossings`, `--wc-max-off-fraction`, `--wc-off-tol-pitches`, ...; `--help`). It needs a zarr (3-D array access): with a PNG folder the off-sheet part is
 NOT JUDGED. It cannot tell the right sheet from a wrong one. Before / after on a folded phantom with planted defects: `tools/upstream/windcheck/BENCHMARK.md`.
+
+## `--vc3d-folder`: hand-off to a VC3D project
+
+    vun-audit --vc3d-folder PROJECT [--volume VOL] [--umbilicus FILE] [--heights ...] [any other flag above]
+
+Walks `PROJECT` (layout: `docs/FORMATS.md`): every folder holding `meta.json` and `x.tif`/`y.tif`/`z.tif` is a
+tifxyz patch. Each is audited by the ordinary single-trace auditor (same defaults, same automatic grid heights,
+`--heights` and every threshold flag are passed through) and gets, inside its own folder,
+
+- `verdict.json` (verdict, per-check status and reason, heights, judged fraction, auditor version) and
+- `verdict.txt` (the same in words).
+
+One table for the whole project is written to `PROJECT/verdict_summary.txt` and `verdict_summary.csv`.
+`x/y/z.tif`, `mask.tif` and `meta.json` are never opened for writing; the output holds no timestamp, so a re-run
+overwrites the verdict files with the same bytes.
+
+Volume, first match wins: `--volume PATH` (or `--zarr` / `--png-dir`; a folder with `.png` files is read as PNG slices
+and then needs `--png-pixel-um`), the patch's `meta.json` key `volume` / `volume_path` / `volume_name` (a path, or a name
+under `PROJECT/volumes/`), the single entry of `PROJECT/volumes/`. With none of these every patch is NOT JUDGED.
+A patch the auditor cannot read is NOT JUDGED with the error as the reason; the others still run.
+Exit code: 0 all PASS, 1 any FAIL, 4 no FAIL but something NOT JUDGED, 2 bad input. `tools/judge_panel` does not
+exist in this repository, so only the auditor is wired in.

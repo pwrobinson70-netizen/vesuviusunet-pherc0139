@@ -55,8 +55,19 @@ Input / output flags: `--zarr` or `--png-dir` (+ `--png-pixel-um`, `--voxel-size
 
 `phantom_scroll` writes the TRUE per-voxel deformation severity (`severity.npy`: the larger of the feature window and |ln s| / ln 4,
 s = the true local radial stretch). Spearman correlation of the estimate with it over the map cells inside the scroll
-(192^3 phantoms, 3 slices each): see the pull request description for the table (seed 0 and held-out seeds); the test requires
-> 0.7 on `crushed-hard` and a mean below 0.05 on `round`.
+(192^3 phantoms, slices z = 50, 96, 140, 4 voxel cells). Seed 0 is the phantom the constants were tuned on; seeds 1 and 2 were
+built afterwards and not used for tuning:
+
+| preset | seed 0 (tuned) | seed 1 | seed 2 |
+|---|---|---|---|
+| round (true severity 0): mean estimate | 0.017 | 0.018 | 0.019 |
+| crushed: Spearman / mean est. vs mean true | 0.74 / 0.17 vs 0.18 | 0.62 / 0.17 vs 0.17 | 0.72 / 0.14 vs 0.21 |
+| crushed-hard: Spearman / mean est. vs mean true | **0.86** / 0.30 vs 0.34 | **0.65** / 0.18 vs 0.33 | **0.67** / 0.13 vs 0.38 |
+
+So the ranking is good on the tuned phantom and **below 0.7 on both held-out crushed-hard phantoms (0.65, 0.67)**, and the
+estimate then reads about half the true severity: the references (least crushed 20 % / 75 % of the slice) are not nominal when the
+slice is crushed nearly everywhere. The test requires > 0.7 on seed 0 and > 0.55 on the held-out seeds (a regression guard, not
+a claim); on `round` the estimate is near zero on every seed.
 
 ## Limits
 
