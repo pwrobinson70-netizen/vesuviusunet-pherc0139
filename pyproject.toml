@@ -35,6 +35,7 @@ vun-sweep = "vun_tools.cli:sweep"
 vun-groundtruth = "vun_tools.cli:groundtruth"
 vun-drift = "vun_tools.cli:drift"
 vun-surface = "vun_tools.cli:surface"
+vun-negatives = "vun_tools.cli:negatives"
 
 [tool.setuptools]
 packages = [

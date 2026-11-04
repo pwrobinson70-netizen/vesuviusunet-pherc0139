@@ -1,0 +1,8 @@
+unit,fa,n_o,det,n_b
+audit_default,0,40,0,160
+audit_global,7,40,22,160
+switch,4,40,9,160
+spacing,40,40,160,160
+surface,30,40,158,160
+"PANEL (any of trace_auditor default, trace_auditor --global-pitch, sheet_switch_finder)",9,40,29,160
+PANEL + surface_agreement,32,40,160,160

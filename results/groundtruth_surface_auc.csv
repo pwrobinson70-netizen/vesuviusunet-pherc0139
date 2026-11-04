@@ -1,0 +1,6 @@
+comparison,auc,n_original,n_broken
+originals vs ALL broken,0.9378,40,160
+originals vs shift-half,0.9969,40,40
+originals vs shift-full,0.9494,40,40
+originals vs switch-mid,0.8272,40,40
+originals vs scramble,0.9778,40,40
