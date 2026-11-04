@@ -27,7 +27,7 @@ def summarise_json(pairs, csv_path):
     import csv
     rows = []
     for pr in pairs:
-        label, _, path = pr.partition("=")
+        label, _, path = pr.rpartition("=")
         for r in json.load(open(path)):
             t = [x for x in r["rows"] if x[0] == "true"]
             b = [x for x in r["rows"] if x[0] == "bad"]

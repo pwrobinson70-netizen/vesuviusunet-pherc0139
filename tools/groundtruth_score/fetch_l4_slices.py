@@ -72,7 +72,7 @@ def main(argv=None):
     os.makedirs(a.out, exist_ok=True)
     for z in [int(v) for v in a.z.split(",")]:
         img = fetch_plane(z)
-        Image.fromarray(img).save(os.path.join(a.out, f"{z:05d}.png"))
+        Image.fromarray(img).save(os.path.join(a.out, f"{z:05d}.png"), optimize=True, compress_level=9)
         print(z, img.shape, int(img.max()), flush=True)
     return 0
 

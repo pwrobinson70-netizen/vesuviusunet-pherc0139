@@ -58,7 +58,7 @@ def load_or_fetch(z4, slices_dir):
     from fetch_l4_slices import fetch_plane
     img = fetch_plane(z4)
     os.makedirs(slices_dir, exist_ok=True)
-    Image.fromarray(img).save(p, optimize=True)
+    Image.fromarray(img).save(p, optimize=True, compress_level=9)
     return img
 
 
