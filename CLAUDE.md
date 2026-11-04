@@ -1,4 +1,4 @@
-﻿# CLAUDE.md - standing rules for every Claude session on vesuviusunet-pherc0139
+# CLAUDE.md - standing rules for every Claude session on vesuviusunet-pherc0139
 
 Read this before doing anything. These rules override the brief you were given if they conflict; say so and stop rather than break one.
 
@@ -13,11 +13,15 @@ Public CPU tools for checking traced papyrus surfaces (tifxyz meshes) from the V
 5. ONE BRANCH PER SESSION, named `tool/<name>`, `fix/<name>`, `testdata/<name>` or `docs/<name>`, from `origin/main`. Never work on main.
 6. KEEP WORK PUBLIC-SAFE. No private paths, no usernames, no machine names, no screenshots of Pedro's desktop.
 
+7. NO COMMAND MAY WAIT FOR INPUT OR RUN WITHOUT A LIMIT. Prefix every git command with `--no-pager` (`git --no-pager diff`, `git --no-pager log`); export `GIT_PAGER=cat PAGER=cat GIT_TERMINAL_PROMPT=0` at the start of the session; wrap every long command in `timeout` (`timeout 900 python -m pytest -q -p no:cacheprovider -n 4`); never run anything interactive (editors, `git rebase -i`, `less`, `more`, confirmation prompts). If a command has run for more than 10 minutes with no output, kill it and continue with a smaller step. (Two overnight sessions once sat 7.5 hours on a `git diff` that opened a pager.)
+
 ## How to work
-- Python: `python -m pip install -e ".[dev]"` then `python -m pytest -q -p no:cacheprovider -n 4`. All tests must pass before a PR; new behaviour needs new tests.
+- Python: `python -m pip install -e ".[test]" pytest-xdist` then `python -m pytest -q -p no:cacheprovider -n 4`. All tests must pass before a PR; new behaviour needs new tests.
 - Strict xfails in `tests/test_realdata.py` pin known real-data failures. A fix that makes one pass must remove that marker in the same PR and say so in the PR body. An XPASS is a failure, by design.
 - `tests/test_benchmark_ci.py::test_small_run_writes_csv` has a 90 s wall-clock limit and can fail on a slow runner. Report it; do not loosen it unless the brief says to.
 - Windows users run these tools: text files CRLF-safe, paths through `os.path`/`pathlib`, no shell-only tricks in the CLI.
+- Never write repo files with Windows PowerShell `Set-Content` or `Out-File`: they add a byte-order mark and CRLF, and Python's packaging rejects a `pyproject.toml` that starts with one. Write files from Python with `encoding="utf-8", newline="\n"`.
+- Merging main into a branch: additive conflicts (CHANGELOG.md, docs/TOOLS.md, pyproject.toml, vun_tools/cli.py, tool READMEs) keep both sides, then remove any entry point or package listed twice and check `pyproject.toml` still parses (`python -c "import tomllib; tomllib.load(open('pyproject.toml','rb'))"`). Re-scored result files and their pinned tests take the newer side and are re-run, never hand-merged.
 - Changelog: add a line to `CHANGELOG.md` under Unreleased for every user-visible change. Docs: a new tool gets a section in `docs/TOOLS.md` and its format in `docs/FORMATS.md`.
 - Numbers in a PR body must come from a file in the PR (CSV, JSON, md table). Label anything else "illustrative". Phantom results are phantom results; say which phantom and seed.
 - Before opening the PR run `.claude/skills/verify-pr` (or `bash scripts/verify_pr.sh`) and paste its output into the PR body.
