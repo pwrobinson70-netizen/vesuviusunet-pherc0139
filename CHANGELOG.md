@@ -1,7 +1,8 @@
-# Changelog
+﻿# Changelog
 
 ## 0.1.0 (unreleased)
 - `groundtruth_score` / `vun-groundtruth` (brief 25): scores `trace_auditor`, `sheet_switch_finder`, the CT pitch estimate, `umbilicus_finder` and `winding_sweep` against the 40 human-verified PHerc. Paris 4 (Scroll 1) patches, the published centre line and the absolute winding annotations; first real-data false-alarm rate and centre error (`docs/REALDATA_GROUNDTRUTH.md`, `results/`, `tests/test_groundtruth.py`). AI-assisted (Claude Code and Claude), human-directed.
+- `tools/surface_agreement` (`vun-surface`): a second opinion from a learned surface prediction. Per trace point: prediction value, offset to the nearest prediction ridge, ON-PREDICTED-SHEET / OFF / NOT JUDGED; per-height 2x2 table against our CT-peak verdict with the disagreeing points listed; overlay PNGs; `fake_prediction.py` and `break_trace.py` helpers.
 - `vun-audit --vc3d-folder PROJECT [--volume VOL]`: audits every tifxyz patch of a VC3D project folder and writes `verdict.json` / `verdict.txt` into each patch folder plus `verdict_summary.txt/.csv` at the root; nothing else is written (`tools/trace_auditor/vc3d_handoff.py`).
 - Windows: CI job on `windows-latest`, `.gitattributes`, `scripts/judge_patch.ps1`, `docs/WINDOWS.md`.
 - `tools/label_drift` (`vun-drift`): per-pixel signed distance of a label on a tifxyz surface to the nearest CT sheet peak, on-sheet test, sheet thickness, per-component verdicts (OK / SHIFTED / OFF-SHEET / MIXED), drift map, optional corrected surface.

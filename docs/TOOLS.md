@@ -1,4 +1,4 @@
-# Tools
+﻿# Tools
 
 Seven command-line tools for checking traced papyrus surfaces and for running an ink model over one, plus a
 synthetic scroll ("phantom") with known truth to test them on. CPU only. Install from the repository root:
@@ -112,3 +112,7 @@ tools can fail, not how often, and say nothing about any real scan.
 - **Output** (`--out`, default `results/`): `groundtruth_patches.csv/.md` (per patch and mode: verdict, reasons, pitch, jumps, switches; PASS / FAIL / NOT JUDGED counts and the false-alarm rate with a Wilson 95% interval), `centre_error_l4.csv/.md`, `winding_agreement_l4.csv/.md`; `--sweep` adds a one-flag-at-a-time threshold table.
 - **Runs:** `vun-audit` (default and one-pitch mode), `vun-switch`, the CT pitch estimate of `vun-spacing`, optionally `surface_agreement`; `vun-umbilicus` on full slices; the ray-crossing step of `vun-sweep`.
 - **Limits:** every patch is a correct trace, so the FAIL rate is a false-alarm rate, but 40 narrow patches of one scroll say nothing about missed errors. The published centre line is used for Part A. NOT JUDGED is not a pass: the winding checks need about 60 degrees of arc round the centre and these patches span about 8. Numbers: `docs/REALDATA_GROUNDTRUTH.md`.
+## surface_agreement (`vun-surface`)
+Does a tifxyz trace lie on a sheet of the organisers' machine-made surface prediction, and does that agree with our CT-peak judge?
+Per point: prediction value, offset to the nearest prediction ridge, ON-PREDICTED-SHEET / OFF / NOT JUDGED; per height a 2x2 table
+(ours x prediction) with the disagreeing points; overlays. See `tools/surface_agreement/README.md`.
