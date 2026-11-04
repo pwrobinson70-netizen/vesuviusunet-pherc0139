@@ -315,3 +315,9 @@ Our sweep's ray-crossing index against 59 annotated absolute windings at 5 heigh
 
 **Why there is no agreement at level 4:** on the 48-point ray the annotators' sheets are 5.7 level-4 pixels apart; the sweep measures a local pitch of 23 px and finds 0.27 crossings per annotated winding (0.14 on the 8-point ray). At 38.4 um the sheet spacing, about 6 px, is near the resolution limit, the sweep's ray smoothing and prominence threshold merge neighbours, and its pitch estimate locks onto coarser structure. Forcing the right pitch raises crossings per winding to 0.65 to 0.71 but still leaves sheets unseen. Level 2 (67 MB per plane) and smaller steps were not tried. The file format lined up with the sweep output without conversion.
 
+## 8. What we would do next
+
+1. **Switch-mid misses (20 of 40 held out, `docs/PANEL_V2.md`).** Replace the whole-trace on-sheet fraction with a per-column or per-segment vote; the whole-trace fraction of the misses is 0.44 to 0.80 against T = 0.415 because half the trace is unchanged.
+2. **A larger held-out set.** T rests on one set of 40 and the held-out set is another 40 (detection interval 78.0 to 89.2%, false alarms 1.4 to 16.5%); more verified patches would tighten both and show whether 2/40 against 6/40 false alarms is noise.
+3. **A second scroll.** Everything in section 7 is PHerc. Paris 4 at 9.6 um with the organisers' m7 prediction; without a second scroll nothing says the threshold or the prediction's errors transfer.
+
