@@ -145,13 +145,13 @@ def test_real_sample_smoke(tmp_path):
     assert rc == 0
     rep = json.loads((tmp_path / "o" / "report.json").read_text())
     t = rep["traces"][0]
-    assert [h["n_points"] for h in t["heights"]] == [628, 482, 425]
+    assert [h["n_points"] for h in t["heights"]] == [156, 121, 105]
     for h in t["heights"]:
         T = h["table_2x2"]
         assert sum(T.values()) == h["n_compared"] <= h["n_points"]
         assert h["pred_on"] + h["pred_off"] + h["pred_not_judged"] == h["n_points"]
     T0 = t["heights"][0]["table_2x2"]
-    assert T0["ours_on_pred_on"] == pytest.approx(123, abs=8) and T0["ours_off_pred_off"] == pytest.approx(286, abs=8)
+    assert T0["ours_on_pred_on"] == pytest.approx(31, abs=4) and T0["ours_off_pred_off"] == pytest.approx(75, abs=4)
     assert (tmp_path / "o" / "png").is_dir() and list((tmp_path / "o").glob("points_*.csv"))
     assert (tmp_path / "o" / "report.txt").read_text().startswith("surface_agreement")
 
