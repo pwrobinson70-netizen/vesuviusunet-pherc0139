@@ -1,0 +1,13 @@
+data,setting,phantom,centre,true_pass,true_fail,true_not_judged,n_true,bad_fail,bad_pass,bad_not_judged,n_bad,bad_caught_by_switch_finder
+PHANTOM,baseline,round,estimated (8 OK of 8 slices),7,0,0,7,6,0,0,6,3
+PHANTOM,baseline,mild,estimated (8 OK of 8 slices),7,0,0,7,6,0,0,6,3
+PHANTOM,baseline,bad,estimated (4 OK of 8 slices),7,0,0,7,6,0,0,6,3
+PHANTOM,baseline,merged,estimated (8 OK of 8 slices),5,2,0,7,6,0,0,6,4
+PHANTOM,min_switch_confidence=0.5,round,estimated (8 OK of 8 slices),7,0,0,7,6,0,0,6,3
+PHANTOM,min_switch_confidence=0.5,mild,estimated (8 OK of 8 slices),7,0,0,7,6,0,0,6,2
+PHANTOM,min_switch_confidence=0.5,bad,estimated (4 OK of 8 slices),7,0,0,7,6,0,0,6,2
+PHANTOM,min_switch_confidence=0.5,merged,estimated (8 OK of 8 slices),5,2,0,7,6,0,0,6,4
+PHANTOM,wn_jump_pitch=3.0,round,estimated (8 OK of 8 slices),7,0,0,7,6,0,0,6,3
+PHANTOM,wn_jump_pitch=3.0,mild,estimated (8 OK of 8 slices),7,0,0,7,6,0,0,6,3
+PHANTOM,wn_jump_pitch=3.0,bad,estimated (4 OK of 8 slices),7,0,0,7,6,0,0,6,3
+PHANTOM,wn_jump_pitch=3.0,merged,estimated (8 OK of 8 slices),5,2,0,7,6,0,0,6,4

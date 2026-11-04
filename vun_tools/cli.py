@@ -65,6 +65,10 @@ def sweep():
     return _run("winding_sweep", "winding_sweep")
 
 
+def groundtruth():
+    return _run("groundtruth_score", "groundtruth_score")
+
+
 def drift():
     return _run("label_drift", "label_drift")
 
