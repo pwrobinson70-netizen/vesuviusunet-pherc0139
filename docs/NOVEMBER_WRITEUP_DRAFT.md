@@ -123,6 +123,31 @@ python tools/phantom_scroll/benchmark.py --size 256 --json bench.json      # abo
 python tools/trace_auditor/score_on_phantoms.py --size 256 --centre estimated
 ```
 
+Real data (commands copied from `tools/groundtruth_score/README.md` and `tools/judge_panel/README.md`; the data are the `testdata/` folders on main):
+
+```bash
+# 7b  false alarms and abstention on the 40 verified patches
+vun-groundtruth testdata/pherc_paris4_groundtruth --out results                       # Part A (default)
+
+# 7c  broken copies and the 2x2
+vun-negatives testdata/pherc_paris4_groundtruth results/negatives
+python tools/groundtruth_score/score.py testdata/pherc_paris4_groundtruth results/negatives --out results/groundtruth_panel_scores.csv
+python tools/groundtruth_score/analyse.py results/groundtruth_panel_scores.csv --sweeps results/threshold_study --out-dir results
+
+# 7d  panel_v2: both sets, then T on the tune set and the held-out 2x2
+vun-negatives testdata/pherc_paris4_groundtruth results/negatives                     # set A copies (committed)
+vun-negatives testdata/pherc_paris4_groundtruth_b results/negatives_b                 # set B copies, same script and default seed (committed)
+python tools/judge_panel/densify_tree.py testdata/pherc_paris4_groundtruth results/negatives /tmp/dense_a
+python tools/judge_panel/densify_tree.py testdata/pherc_paris4_groundtruth_b results/negatives_b /tmp/dense_b
+vun-panel2 --batch /tmp/dense_a/gt /tmp/dense_a/neg --out results/panel_v2_raw_set_a.csv
+vun-panel2 --batch /tmp/dense_b/gt /tmp/dense_b/neg --out results/panel_v2_raw_set_b.csv
+python tools/judge_panel/evaluate_v2.py --tune results/panel_v2_raw_set_a.csv --heldout results/panel_v2_raw_set_b.csv --out-dir results
+```
+
+7e and 7f (network or cached level-4 slices needed): `vun-groundtruth testdata/pherc_paris4_groundtruth --out results --parts B,C --l4-slices SLICES` (`tools/groundtruth_score/README.md`);
+`vun-umbilicus-pred --z-csv results/centre_l4_slices_sha256.csv --method hole --compare testdata/pherc_paris4_groundtruth/umbilicus_9p6um.json --out-csv out.csv` (`docs/PANEL_V2.md`).
+Per `docs/REALDATA_2X2.md`, `vun-groundtruth` scoring takes about 25 s on 4 cores.
+
 ## 6. Many-seed benchmark with confidence intervals (added 3 Nov 2026)
 
 Section 4 says "one seed ... no confidence intervals". `tools/benchmark_ci` reruns the same tools at their current defaults on 20 phantom seeds (0-19) at 192^3 for each deformation and reports the mean with a 95% percentile-bootstrap CI over seeds (1000 resamples). Phantom seeds only vary texture, warp and wobble of a synthetic scroll; the CI says how far a single-seed number moves with that, not how a real scroll behaves. Full tables, per-metric plots and the per-run CSV: `docs/BENCHMARK_CI.md`, `docs/benchmark_ci/`, `tools/benchmark_ci/results/runs.csv`.
