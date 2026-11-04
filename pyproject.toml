@@ -34,6 +34,8 @@ vun-merge = "vun_tools.cli:merge"
 vun-sweep = "vun_tools.cli:sweep"
 vun-groundtruth = "vun_tools.cli:groundtruth"
 vun-drift = "vun_tools.cli:drift"
+vun-texture = "vun_tools.cli:texture"
+vun-panel = "vun_tools.cli:panel"
 vun-surface = "vun_tools.cli:surface"
 vun-negatives = "vun_tools.cli:negatives"
 vun-densify = "vun_tools.cli:densify"
@@ -56,9 +58,10 @@ packages = [
     "vun_tools._tools.groundtruth_score",
     "vun_tools._tools.common",
     "vun_tools._tools.label_drift",
+    "vun_tools._tools.texture_judge",
+    "vun_tools._tools.judge_panel",
     "vun_tools._tools.crush_map",
     "vun_tools._tools.surface_agreement",
-    "vun_tools._tools.judge_panel",
 ]
 
 [tool.setuptools.package-dir]
@@ -76,6 +79,7 @@ vesuvius_unet = "vesuvius_unet"
 "vun_tools._tools.groundtruth_score" = "tools/groundtruth_score"
 "vun_tools._tools.common" = "tools/common"
 "vun_tools._tools.label_drift" = "tools/label_drift"
+"vun_tools._tools.texture_judge" = "tools/texture_judge"
+"vun_tools._tools.judge_panel" = "tools/judge_panel"
 "vun_tools._tools.crush_map" = "tools/crush_map"
 "vun_tools._tools.surface_agreement" = "tools/surface_agreement"
-"vun_tools._tools.judge_panel" = "tools/judge_panel"

@@ -70,6 +70,19 @@ Limits of the v0.2 features: all radial/arc sizes are in the undeformed frame (t
 coordinate of a feature uses the sheet radius at the window centre; a feature of 0.45 pitch at most; the folded layers of
 a thick sheet (> layer separation) merge into one blob; none of it is a physical model of papyrus.
 
+## Anisotropic fibre texture (v0.3) - for judges that look at texture, not at peaks
+
+`--fibre A` (default `0` = off: the volume, labels and `truth.json` are byte for byte the v0.2 output; `tests/test_texture_judge.py` pins hashes
+taken from `main`) multiplies the sheet brightness by `1 + A * f`, where `f` is two perpendicular families of stripes **in the sheet** (the
+directions are along the spiral and along z): family 1 with amplitude 1 and family 2 with amplitude `--fibre-cross` (default 0.5, so there is a
+dominant direction as on real papyrus; 1 = balanced). `--fibre-period` is the stripe period in voxels (default 5; the render needs >= 2 pixels per period),
+`--fibre-angle` the orientation of family 1 at the start of the spiral (degrees from the arc direction) and `--fibre-drift` the number of degrees the
+orientation turns per full turn of the spiral (default 40, applied in 12 steps per turn: a smooth drift of a stripe phase field cannot keep a constant
+period, so the drift is stepped). The pattern is a function of the position along the spiral, so it is continuous across the angle-0 seam and rides
+along with every deformation. Two neighbouring sheets therefore differ by `--fibre-drift` degrees at the same angle: a planted switch shows as an
+orientation jump of about that size. The old isotropic `--texture` stays as it was (turn it down, e.g. `--texture 0.1`, when testing fibre judges).
+Not a model of real papyrus fibres: a stripe pattern with a known orientation, nothing more.
+
 ## Benchmark
 
 `benchmark.py` builds four phantoms by default (round, mild, bad = badly crushed, merged; `--phantoms` takes any preset name, see above) with three known switches

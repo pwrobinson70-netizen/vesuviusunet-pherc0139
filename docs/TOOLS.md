@@ -26,6 +26,8 @@ level-0 voxel coordinates, `-1` = no data; `docs/FORMATS.md`); a CT volume is an
 | `vun-ink` | `tools/ink_infer` | Ink-probability picture of one traced segment from a trained checkpoint |
 | `vun-merge` | `tools/patch_merger` | Merge overlapping tifxyz patches, but only where the overlap is provably one sheet |
 | `vun-sweep` | `tools/winding_sweep` | Every layer of a z band: centre, ray crossings, one patch + audit verdict per winding |
+| `vun-texture` | `tools/texture_judge` | Does the papyrus fibre texture on the rendered surface stay continuous (a judge independent of the bright-peak tools)? |
+| `vun-panel` | `tools/judge_panel` | Every judge on one trace, region by region, with the disagreements listed |
 | `vun-groundtruth` | `tools/groundtruth_score` | How often do the checkers raise a false alarm on human-verified real traces, and how far off is the centre line? |
 | `vun-sweep` | `tools/winding_sweep` | Every layer of a z band: centre, ray crossings, one patch + audit verdict per winding |
 | `vun-merge` | `tools/patch_merger` | Merge overlapping tifxyz patches, but only where the overlap is provably one sheet |
