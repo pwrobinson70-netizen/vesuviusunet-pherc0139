@@ -5,6 +5,7 @@ that box touches (in parallel, cached). A missing chunk (403/404) is the fill va
 """
 from __future__ import annotations
 
+import collections
 import json
 import urllib.error
 import urllib.request
@@ -51,10 +52,29 @@ def _v3_dtype(dt):
     return np.dtype(names[dt])
 
 
+class _LRU(collections.OrderedDict):
+    """Keeps the `cap` most recently used decoded chunks (a 256^3 uint8 chunk is about 16 MB)."""
+
+    def __init__(self, cap):
+        super().__init__()
+        self.cap = cap
+
+    def __contains__(self, k):
+        hit = super().__contains__(k)
+        if hit:
+            self.move_to_end(k)
+        return hit
+
+    def __setitem__(self, k, v):
+        super().__setitem__(k, v)
+        while len(self) > self.cap:
+            self.popitem(last=False)
+
+
 class HttpZarrArray:
-    def __init__(self, url, jobs=16):
+    def __init__(self, url, jobs=16, max_chunks=64):
         import numcodecs
-        self.url, self.jobs, self.cache = url.rstrip("/"), jobs, {}
+        self.url, self.jobs, self.cache = url.rstrip("/"), jobs, _LRU(max(1, int(max_chunks)))
         za = _json(self.url + "/.zarray")
         if za is not None:                                              # zarr v2
             self.shape, self.chunks = tuple(za["shape"]), tuple(za["chunks"])
@@ -135,6 +155,9 @@ class HttpZarrArray:
             return out
         rngs = [range(l // c, (h - 1) // c + 1) for l, h, c in zip(lo, hi, self.chunks)]
         idxs = [(a, b, c) for a in rngs[0] for b in rngs[1] for c in rngs[2]]
+        if len(idxs) > self.cache.cap:
+            raise HttpZarrError(f"one read needs {len(idxs)} chunks, more than the cache holds ({self.cache.cap}); "
+                                "use a smaller --tile")
         with ThreadPoolExecutor(self.jobs) as ex:
             got = dict(zip(idxs, ex.map(self._chunk, idxs)))
         for idx, ch in got.items():

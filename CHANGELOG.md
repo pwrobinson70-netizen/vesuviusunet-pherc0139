@@ -1,6 +1,7 @@
 # Changelog
 
 ## 0.1.0 (unreleased)
+- Tidy-up: `pyproject.toml` licence as an SPDX string (`license = "MIT"`, `license-files`, setuptools >= 77; removes the deprecation warning), `requires-python >= 3.11` and `zarr >= 3` (what the code already needs); `label_drift.py` f-string that only parsed on Python 3.12; `docs/TOOLS.md` and `CHANGELOG.md` had their content repeated two and three times by earlier merges, now once; `vun-ink-sample` HTTP reader keeps at most 64 decoded chunks in memory. AI-assisted (Claude Code and Claude), human-directed.
 - `tools/ink_sample` (`vun-ink-sample`, brief 30 part B): samples a published 3-D ink zarr along a tifxyz trace's normals (offset range in voxels at the chosen level) and writes max / mean projections (float32 TIFF), a small PNG thumbnail and meta.json, reading only the chunks under each tile; phantom tests (true trace IoU >= 0.9, one sheet away <= 0.2). AI-assisted (Claude Code and Claude), human-directed.
 - `docs/NOVEMBER_WRITEUP_DRAFT.md` rewritten with the real-data results (brief 29): new summary led by the held-out panel_v2 result, section 1 with the tools merged on 3 and 4 Nov, section 4 limits corrected against the real data, section 5 real-data reproduce commands, new section 7 (verified ground truth, 2x2, panel_v2, centre line, windings) and section 8 next steps. Docs only; no tool or threshold changed. AI-assisted (Claude Code and Claude), human-directed.
 - `tools/texture_judge` (`vun-texture`): fibre-texture continuity judge (surface render at 0 / +-k voxels, structure-tensor orientation + coherence, orientation jumps, texture presence, layer agreement; ON-SHEET-TEXTURED / BREAK / BLURRED / NOT JUDGED per window and per cut line). `tools/judge_panel` (`vun-panel`): every judge on one trace aligned to the same cut lines and column windows, panel verdict and explicit disagreements, plus an agreement table (texture judge vs auditor). `phantom_scroll`: optional anisotropic fibre texture (`--fibre`, default off, old output byte-identical).
@@ -13,40 +14,8 @@
 - `tools/label_drift` (`vun-drift`): per-pixel signed distance of a label on a tifxyz surface to the nearest CT sheet peak, on-sheet test, sheet thickness, per-component verdicts (OK / SHIFTED / OFF-SHEET / MIXED), drift map, optional corrected surface.
 - `patch_merger` / `vun-merge`: gated merge of overlapping tifxyz patches with a seam report (`tools/patch_merger`).
 - `tools/winding_sweep` (`vun-sweep`): umbilicus -> ray crossings -> one sheet_tracer patch per winding -> trace_auditor verdict -> manifest.
-- Packaging: `pyproject.toml` with console scripts `vun-spacing`, `vun-switch`, `vun-umbilicus`, `vun-audit`,
-  `vun-phantom`, `vun-ink` (thin wrappers in `vun_tools/cli.py`; no existing file moved or renamed).
-- Docs: `docs/TOOLS.md`, `docs/NOVEMBER_WRITEUP_DRAFT.md`, `CITATION.cff`.
-- Tools collected from earlier branches: `sheet_spacing_check`, `sheet_switch_finder`, `umbilicus_finder`,
-  `ink_infer`, `trace_auditor`, `phantom_scroll` (with benchmark), the tifxyz/umbilicus format check
-  (`docs/FORMATS.md`) and the round-1 review fixes (`docs/REVIEW_ROUND1.md`).
-- Not in this release: the ink end-to-end phantom test and the R3 fix (PR #12, `tool/ink-e2e`).
-﻿# Changelog
-
-## 0.1.0 (unreleased)
-- `tools/groundtruth_score` (`vun-negatives`): four deliberately broken copies (shift-half, shift-full, switch-mid, scramble) of the 40 verified Scroll 1 patches, a minimal panel scorer, and the real-data 2x2 (false alarms x detection) in `docs/REALDATA_2X2.md`. AI-assisted (Claude Code and Claude), human-directed.
-- `tools/surface_agreement` (`vun-surface`): a second opinion from a learned surface prediction. Per trace point: prediction value, offset to the nearest prediction ridge, ON-PREDICTED-SHEET / OFF / NOT JUDGED; per-height 2x2 table against our CT-peak verdict with the disagreeing points listed; overlay PNGs; `fake_prediction.py` and `break_trace.py` helpers.
 - `vun-audit --vc3d-folder PROJECT [--volume VOL]`: audits every tifxyz patch of a VC3D project folder and writes `verdict.json` / `verdict.txt` into each patch folder plus `verdict_summary.txt/.csv` at the root; nothing else is written (`tools/trace_auditor/vc3d_handoff.py`).
 - Windows: CI job on `windows-latest`, `.gitattributes`, `scripts/judge_patch.ps1`, `docs/WINDOWS.md`.
-- `tools/label_drift` (`vun-drift`): per-pixel signed distance of a label on a tifxyz surface to the nearest CT sheet peak, on-sheet test, sheet thickness, per-component verdicts (OK / SHIFTED / OFF-SHEET / MIXED), drift map, optional corrected surface.
-- `patch_merger` / `vun-merge`: gated merge of overlapping tifxyz patches with a seam report (`tools/patch_merger`).
-- `tools/winding_sweep` (`vun-sweep`): umbilicus -> ray crossings -> one sheet_tracer patch per winding -> trace_auditor verdict -> manifest.
-- Packaging: `pyproject.toml` with console scripts `vun-spacing`, `vun-switch`, `vun-umbilicus`, `vun-audit`,
-  `vun-phantom`, `vun-ink` (thin wrappers in `vun_tools/cli.py`; no existing file moved or renamed).
-- Docs: `docs/TOOLS.md`, `docs/NOVEMBER_WRITEUP_DRAFT.md`, `CITATION.cff`.
-- Tools collected from earlier branches: `sheet_spacing_check`, `sheet_switch_finder`, `umbilicus_finder`,
-  `ink_infer`, `trace_auditor`, `phantom_scroll` (with benchmark), the tifxyz/umbilicus format check
-  (`docs/FORMATS.md`) and the round-1 review fixes (`docs/REVIEW_ROUND1.md`).
-- Not in this release: the ink end-to-end phantom test and the R3 fix (PR #12, `tool/ink-e2e`).
-ï»¿# Changelog
-
-## 0.1.0 (unreleased)
-- `groundtruth_score` / `vun-groundtruth` (brief 25): scores `trace_auditor`, `sheet_switch_finder`, the CT pitch estimate, `umbilicus_finder` and `winding_sweep` against the 40 human-verified PHerc. Paris 4 (Scroll 1) patches, the published centre line and the absolute winding annotations; first real-data false-alarm rate and centre error (`docs/REALDATA_GROUNDTRUTH.md`, `results/`, `tests/test_groundtruth.py`). AI-assisted (Claude Code and Claude), human-directed.
-- `tools/surface_agreement` (`vun-surface`): a second opinion from a learned surface prediction. Per trace point: prediction value, offset to the nearest prediction ridge, ON-PREDICTED-SHEET / OFF / NOT JUDGED; per-height 2x2 table against our CT-peak verdict with the disagreeing points listed; overlay PNGs; `fake_prediction.py` and `break_trace.py` helpers.
-- `vun-audit --vc3d-folder PROJECT [--volume VOL]`: audits every tifxyz patch of a VC3D project folder and writes `verdict.json` / `verdict.txt` into each patch folder plus `verdict_summary.txt/.csv` at the root; nothing else is written (`tools/trace_auditor/vc3d_handoff.py`).
-- Windows: CI job on `windows-latest`, `.gitattributes`, `scripts/judge_patch.ps1`, `docs/WINDOWS.md`.
-- `tools/label_drift` (`vun-drift`): per-pixel signed distance of a label on a tifxyz surface to the nearest CT sheet peak, on-sheet test, sheet thickness, per-component verdicts (OK / SHIFTED / OFF-SHEET / MIXED), drift map, optional corrected surface.
-- `patch_merger` / `vun-merge`: gated merge of overlapping tifxyz patches with a seam report (`tools/patch_merger`).
-- `tools/winding_sweep` (`vun-sweep`): umbilicus -> ray crossings -> one sheet_tracer patch per winding -> trace_auditor verdict -> manifest.
 - Packaging: `pyproject.toml` with console scripts `vun-spacing`, `vun-switch`, `vun-umbilicus`, `vun-audit`,
   `vun-phantom`, `vun-ink` (thin wrappers in `vun_tools/cli.py`; no existing file moved or renamed).
 - Docs: `docs/TOOLS.md`, `docs/NOVEMBER_WRITEUP_DRAFT.md`, `CITATION.cff`.

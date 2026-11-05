@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,15 +7,16 @@ name = "vesuviusunet-pherc0139"
 version = "0.1.0"
 description = "Trace-checking and ink-inference tools, with a synthetic phantom scroll benchmark"
 readme = "docs/TOOLS.md"
-requires-python = ">=3.10"
-license = { text = "MIT" }
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [{ name = "Peter Robinson" }]
 dependencies = [
     "numpy>=1.24",
     "scipy>=1.10",
     "tifffile>=2023.7.10",
     "pillow>=10.0",
-    "zarr>=2.16",
+    "zarr>=3",
 ]
 
 [project.optional-dependencies]
