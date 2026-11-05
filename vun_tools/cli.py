@@ -57,6 +57,10 @@ def ink():
     return _run("ink_infer", "ink_infer")
 
 
+def ink_sample():
+    return _run("ink_sample", "ink_sample")
+
+
 def merge():
     return _run("patch_merger", "patch_merger")
 
