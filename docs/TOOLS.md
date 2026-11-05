@@ -24,6 +24,7 @@ level-0 voxel coordinates, `-1` = no data; `docs/FORMATS.md`); a CT volume is an
 | `vun-audit` | `tools/trace_auditor` | One verdict (PASS / FAIL / NOT JUDGED) per trace, combining the checks |
 | `vun-phantom` | `tools/phantom_scroll` | Make a synthetic scroll with exact truth to test any of the above |
 | `vun-ink` | `tools/ink_infer` | Ink-probability picture of one traced segment from a trained checkpoint |
+| `vun-ink-sample` | `tools/ink_sample` | What does a published 3-D ink volume show on this trace (no model run)? |
 | `vun-merge` | `tools/patch_merger` | Merge overlapping tifxyz patches, but only where the overlap is provably one sheet |
 | `vun-sweep` | `tools/winding_sweep` | Every layer of a z band: centre, ray crossings, one patch + audit verdict per winding |
 | `vun-texture` | `tools/texture_judge` | Does the papyrus fibre texture on the rendered surface stay continuous (a judge independent of the bright-peak tools)? |
@@ -143,6 +144,12 @@ Scoring, the 2x2 and the threshold study: `tools/groundtruth_score/README.md`, `
 - **Input:** `--z` heights (or `--z-csv`) on the 38.4 um grid; reads the public m7 prediction zarr over HTTP, choosing the level from its multiscale metadata (level 2 of that zarr).
 - **Output:** per height the estimated centre (y, x) and, with `--compare umbilicus_9p6um.json`, the error against the published line. Two estimators: `hole` (enclosed background component of the closed prediction) and `ring` (most circular innermost ring).
 - **Limits:** needs network; 20 heights of one scroll; mean error 100 voxels (3.9 mm), no better than `vun-umbilicus` on average (`docs/PANEL_V2.md`).
+
+## vun-ink-sample (`tools/ink_sample`)
+- **Input:** `--trace` tifxyz folder, `--ink-zarr` OME-Zarr of a 3-D ink prediction (local folder, or an http(s) URL read chunk by chunk with the standard library: zarr v2 or unsharded v3), `--level L`, normal offset range `--lo/--hi/--offset-step` in voxels at level L (default -4..+4, step 1), optional `--step` (output pixel spacing, level-0 voxels; default 2**L), `--flip-normal`, `--trace-offset DX DY DZ` / `--window-offset` (crop origin from meta.json `window`) and `--trace-scale S` to put the trace in the zarr's level-0 voxels, `--profile R` (mean ink at each offset -R..R, `profile.csv`).
+- **Output:** `ink_max.tif` and `ink_mean.tif` (float32 on the trace grid, 0..1, NaN = no trace), `ink_max_thumb.png` (long side <= `--thumb-max`, default 512), `meta.json`. Reads only the zarr chunks under each 128 x 128 output tile.
+- **Tests:** phantom with a planted 3-D ink volume: the true ink trace recovers the mask (IoU 1.0 measured, test needs >= 0.9, levels 0 and 1); the traces one sheet in and out give IoU 0.0 (test needs <= 0.2); widening the offsets past one pitch makes the neighbour see the ink; the HTTP reader gives the same image as the local read (zarr v2 and v3, partial edge chunks); a shifted half-resolution copy of the trace lands back on the ink with `--trace-offset/--trace-scale`; the profile peaks on the trace.
+- **Limits:** no model is run; the picture is only as good as the published ink volume and as the trace's normal. Pixels finer than the mask grid sit between planted cells, where the phantom truth is ambiguous, so the tests sample on the mask grid.
 
 ﻿# Tools
 
