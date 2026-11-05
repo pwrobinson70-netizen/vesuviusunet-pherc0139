@@ -1,0 +1,22 @@
+window,trace,pearson_r,iou90,pixels,window_cover,run,log_time
+letter1,original,0.590,0.422,4338889,1.000,laptop A (letter1+blank),12:09:42
+letter1,shift-full,0.048,0.069,4338889,1.000,laptop A (letter1+blank),12:11:58
+letter1,shift-half,0.292,0.199,4338889,1.000,laptop A (letter1+blank),12:14:27
+letter1,scramble,0.031,0.063,4338889,1.000,laptop A (letter1+blank),12:28:13
+blank,original,0.301,0.145,4338889,1.000,laptop A (letter1+blank),12:31:33
+blank,shift-full,0.070,0.100,4338889,1.000,laptop A (letter1+blank),12:33:39
+blank,shift-half,0.174,0.129,4338889,1.000,laptop A (letter1+blank),12:35:45
+blank,scramble,0.019,0.064,4338889,1.000,laptop A (letter1+blank),12:49:09
+letter2,original,0.640,0.447,4338889,1.000,pod (letter2+letter3),13:05:42
+letter2,shift-full,0.154,0.113,4338889,1.000,pod (letter2+letter3),13:08:06
+letter2,shift-half,0.388,0.240,4338889,1.000,pod (letter2+letter3),13:10:44
+letter2,scramble,0.022,0.060,4338889,1.000,pod (letter2+letter3),13:20:24
+letter3,original,0.700,0.480,4338889,1.000,pod (letter2+letter3),13:24:01
+letter3,shift-full,0.093,0.094,4338889,1.000,pod (letter2+letter3),13:26:26
+letter3,shift-half,0.476,0.306,4338889,1.000,pod (letter2+letter3),13:28:47
+letter3,scramble,0.031,0.064,4338889,1.000,laptop C (letter3 scramble only),15:34:02
+letter2,original,0.640,0.447,4338889,1.000,laptop B check (letter2+letter3; shift-full only),13:12:18
+letter2,shift-full,0.154,0.113,4338889,1.000,laptop B check (letter2+letter3; shift-full only),13:14:50
+letter3,original,0.700,0.480,4338889,1.000,laptop B check (letter2+letter3; shift-full only),13:18:28
+letter3,shift-full,0.093,0.094,4338889,1.000,laptop B check (letter2+letter3; shift-full only),13:20:51
+letter3,original,0.700,0.480,4338889,1.000,laptop C (letter3 scramble only),15:20:22
