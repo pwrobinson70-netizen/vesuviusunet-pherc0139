@@ -249,3 +249,21 @@ def test_http_chunk_cache_is_bounded():
     assert 8 in c and list(c) == [7, 9, 8]
     c[10] = 10
     assert list(c) == [9, 8, 10]
+
+
+def test_sample_capped_matches_unsplit_and_splits():
+    """Bounded reads give the same values as one big read, for points scattered like a scrambled trace."""
+    import ink_sample as isp2
+    from surface import CTVolume
+    rng = np.random.default_rng(5)
+    data = rng.integers(0, 255, (60, 70, 80)).astype(np.uint8)
+    vol = CTVolume(data, 0)
+    pts = np.stack([rng.uniform(0, 79, (4, 500)), rng.uniform(0, 69, (4, 500)), rng.uniform(0, 59, (4, 500))], axis=-1)
+    pts[0, :7] = np.nan
+    calls = []
+    orig = vol.sample
+    vol.sample = lambda p: (calls.append(len(p.reshape(-1, 3))), orig(p))[1]
+    got = isp2.sample_capped(vol, pts, max_vox=2000)
+    want = orig(pts)
+    np.testing.assert_allclose(got, want, atol=1e-6)
+    assert len(calls) > 10                      # it really split

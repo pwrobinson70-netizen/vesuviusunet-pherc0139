@@ -66,6 +66,37 @@ def transform_mesh(mesh, offset=None, scale=1.0):
     return mesh
 
 
+MAX_BLOCK_VOX = 64_000_000   # largest bounding block read at once (a scrambled trace can otherwise span the whole volume)
+
+
+def sample_capped(vol: CTVolume, pts, max_vox=MAX_BLOCK_VOX):
+    """vol.sample(pts) for (..., 3) level-0 xyz points, splitting the points (sorted by z) so that no single read's
+    bounding block exceeds max_vox voxels at the volume's level. Same values as vol.sample; bounded memory."""
+    shp = pts.shape[:-1]
+    flat = pts.reshape(-1, 3)
+    out = np.zeros(len(flat), np.float32)
+    ok = np.isfinite(flat).all(axis=1)
+    idx = np.nonzero(ok)[0]
+    if len(idx) == 0:
+        return out.reshape(shp)
+    idx = idx[np.argsort(flat[idx, 2], kind="stable")]
+
+    def vox(sel):
+        q = vol.to_px(flat[sel])
+        ext = np.ceil(q.max(axis=0)) - np.floor(q.min(axis=0)) + 3
+        return float(np.prod(ext))
+
+    stack = [idx]
+    while stack:
+        sel = stack.pop()
+        if len(sel) > 1 and vox(sel) > max_vox:
+            h = len(sel) // 2
+            stack += [sel[:h], sel[h:]]
+            continue
+        out[sel] = vol.sample(flat[sel])
+    return out.reshape(shp)
+
+
 def sample_projections(vol: CTVolume, surf, offsets, tile=128, log=None, profile=None):
     """(max, mean) float32 images on the surface grid; NaN where the surface is invalid.
 
@@ -90,13 +121,13 @@ def sample_projections(vol: CTVolume, surf, offsets, tile=128, log=None, profile
             P = surf.P[y0:y0 + tile, x0:x0 + tile][v]               # (n, 3)
             N = surf.N[y0:y0 + tile, x0:x0 + tile][v]
             pts = P[None] + offsets[:, None, None] * N[None]          # (D, n, 3)
-            s = vol.sample(pts)                                        # (D, n)
+            s = sample_capped(vol, pts)                                # (D, n)
             bm = mx[y0:y0 + tile, x0:x0 + tile]
             ba = mn[y0:y0 + tile, x0:x0 + tile]
             bm[v] = s.max(axis=0)
             ba[v] = s.mean(axis=0)
             if profile is not None:
-                psum += vol.sample(P[None] + profile[:, None, None] * N[None]).sum(axis=1)
+                psum += sample_capped(vol, P[None] + profile[:, None, None] * N[None]).sum(axis=1)
                 pn += len(P)
             if log and (done % 50 == 0 or done == n_t):
                 log(f"tile {done}/{n_t}  {time.time() - t0:.0f}s")

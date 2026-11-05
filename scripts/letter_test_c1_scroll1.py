@@ -28,6 +28,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
+import zlib
 
 import numpy as np
 
@@ -276,7 +277,9 @@ for wi, w in enumerate(wins):
     with open(os.path.join(td, "meta.json"), "w", encoding="utf-8", newline="\n") as f:
         json.dump(m2, f, indent=2)
     log(f"[{role}] trace crop {gc1 - gc0} x {gr1 - gr0} cells written ({total_bytes() / 1e6:.0f} MB so far)")
-    sign = 1.0 if np.random.default_rng([mn.DEFAULT_SEED, wi]).random() < 0.5 else -1.0
+    # sign from the window's NAME (not its run order), so a window gets the same shift whatever else runs with it.
+    # The 5 Nov 2026 runs used run order; every window then drew -35 (docs/SCROLL1_LETTER_TEST.md).
+    sign = 1.0 if np.random.default_rng([mn.DEFAULT_SEED, zlib.crc32(role.encode())]).random() < 0.5 else -1.0
     bd = os.path.join(wd, "broken")
     done = mn.make_one(td, bd, sign * pitch24, mn.DEFAULT_SEED, kinds=tuple(kinds))
     log(f"[{role}] broken copies {done}, signed pitch {sign * pitch24:+.1f}")
