@@ -238,3 +238,14 @@ def test_profile_peaks_on_the_trace(phantom, tmp_path):
     assert len(off) == 25 and abs(off[np.argmax(val)]) <= 1
     assert val[np.abs(off) >= 8].max() < 0.25 * val.max()
     assert "profile" in json.load(open(os.path.join(out, "meta.json")))
+
+
+def test_http_chunk_cache_is_bounded():
+    import http_zarr
+    c = http_zarr._LRU(3)
+    for i in range(10):
+        c[i] = i
+    assert list(c) == [7, 8, 9]
+    assert 8 in c and list(c) == [7, 9, 8]
+    c[10] = 10
+    assert list(c) == [9, 8, 10]

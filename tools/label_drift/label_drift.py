@@ -378,7 +378,7 @@ def text_summary(report):
             continue
         L.append(f"component {c['component']:>3}  {c['verdict']:<9} {c['n_measured']:>5}/{c['n_pixels']:<5} px  "
                  f"drift mean {_f(c['mean_drift_vox'])} vox ({_f(c['mean_drift_pitch'])} pitch), max |{_f(c['max_abs_drift_vox'])}| vox, "
-                 f"off-sheet {100 * c['off_sheet_fraction']:.0f}%, thickness {c["mean_thickness_vox"]:.2f} vox, "
+                 f"off-sheet {100 * c['off_sheet_fraction']:.0f}%, thickness {c['mean_thickness_vox']:.2f} vox, "
                  f"recommended offset {_f(c['recommended_offset_vox'])} vox ({_f(c['recommended_offset_pitch'])} pitch)"
                  if c["off_sheet_fraction"] is not None else f"component {c['component']:>3}  {c['verdict']}")
     cnt = {v: sum(c["verdict"] == v for c in t) for v in VERDICTS}
