@@ -326,13 +326,24 @@ print()
 print(f"[fable] Part C stage C1 - Scroll 1 letter test - {time.strftime('%d %b %Y %H:%M')}")
 print(f"segment {seg}; 3-D ink {a.ink3d} level 1 (9.6 um); published picture {ink_key.rsplit('/', 1)[-1]}")
 print(f"downloaded {total_bytes() / 1e9:.2f} GB")
+def role_kind(role):
+    """'ink' for windows expected to hold ink (letter1..3, true-blank test 'labelink'), 'blank' for windows expected to
+    hold none ('blank', true-blank test 'trueblank'), otherwise 'other' (printed without a rule)."""
+    if role.startswith("letter") or role == "labelink":
+        return "ink"
+    if role in ("blank", "trueblank"):
+        return "blank"
+    return "other"
+
+
 passes = 0
 for role, rows in results:
     o = rows.get("original", {})
     br = [v["r"] if np.isfinite(v["r"]) else 0.0 for k, v in rows.items() if k in ("shift-full", "scramble")]
     best = max(br) if br else float("nan")      # no agreement (nan) counts as 0
-    line = f"{role:8s} original r {o.get('r', float('nan')):+.3f} IoU {o.get('iou', float('nan')):.3f}; best broken (shift-full/scramble) r {best:+.3f}"
-    if role.startswith("letter"):
+    line = f"{role:9s} original r {o.get('r', float('nan')):+.3f} IoU {o.get('iou', float('nan')):.3f}; best broken (shift-full/scramble) r {best:+.3f}"
+    kind = role_kind(role)
+    if kind == "ink":
         ro = o.get("r", float("nan"))
         okr = np.isfinite(ro) and ro >= 0.5 and np.isfinite(best) and ro >= 2 * best
         passes += int(okr)
@@ -340,10 +351,11 @@ for role, rows in results:
         if "shift-half" in rows:
             hr = rows["shift-half"]["r"]
             line += f"  [diagnostic, not the rule: shift-half r {hr:+.3f}]"
-    else:
+    elif kind == "blank":
         okb = o.get("r", 1) < 0.2 or o.get("iou", 1) < 0.1
         line += f"  -> blank r<0.2 or IoU<0.1: {'YES' if okb else 'no'}"
     print(line)
-print(f"letter windows meeting the ink part of the rule: {passes} of {sum(1 for r, _ in results if r.startswith('letter'))}"
-      " (PASS also needs the blank condition and panel_v2, stage C2)")
+print(f"ink windows (letter / labelink) meeting the ink part of the rule: {passes} of "
+      f"{sum(1 for r, _ in results if role_kind(r) == 'ink')} (the C1 PASS also needs the blank condition and panel_v2, "
+      "stage C2; the true-blank test is read by docs/SCROLL1_TRUE_BLANK.md)")
 print(f"written {out_csv}; per-trace ink images and thumbnails under {a.out} (private)")
