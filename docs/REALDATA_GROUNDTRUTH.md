@@ -51,7 +51,11 @@ Only 3 of 40 patches have any height where the winding check was judged. The swi
 
 ### Other tools on the same patches
 - `sheet_switch_finder` standalone (its own defaults, CSV columns `ssf_switches_*`): 38 switches over 40 patches, 5 with confidence >= 0.3, one in each of the 5 switch FAIL patches. All 38 are on correct traces.
-- CT pitch (`sheet_spacing_check.ct_pitches`, columns `pitch_h1..3`): 120 estimates, median 12.6 voxels (121 um), range 9.4 - 28.5.
+- CT pitch (`sheet_spacing_check.ct_pitches`, columns `pitch_h1..3`), default mode: 120 estimates, median 8.75 voxels (84 um), range 6.9 - 23.5; median of the per-patch medians 9.0.
+  The figure first written here, median 12.6 voxels (121 um), range 9.4 - 28.5, is the `alt-global-pitch` rows (the
+  `tool/surface-agreement` auditor with `--global-pitch`), not the default mode. The two estimators disagree by about 40 %;
+  which is closer to the true sheet gap is not settled. The Scroll 1 letter test uses the default-mode 8.75
+  (corrected 5 Nov 2026 by recomputing from `results/groundtruth_patches.csv`).
 - `sheet_spacing_check` proper compares two traces; one verified patch has no neighbour, so its pair verdict was **not run**. Only the pitch estimate above is reported.
 - `surface_agreement` (run from a checkout of `origin/tool/surface-agreement`, commit `0bf61a3`, with `surfpred/` as the prediction and `slices/` as the CT): **ON rate 1314 / 1949 judged points = 67.4 %**; per patch median 73 %, 10 of 40 patches at or above the 80 % PASS line; height verdicts PASS 38 / FAIL 62 / NOT JUDGED 20 of 120. Our CT-peak judge and the prediction agree on 965 / 1949 = 49.5 % of compared points. On correct traces the prediction judge fails 62 of 120 patch-heights, so it is no better a checker here than the auditor is. Columns `sa_*`.
 
