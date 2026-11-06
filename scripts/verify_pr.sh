@@ -8,9 +8,18 @@ echo "verify-pr  $branch @ $sha"
 
 if sha256sum -c SHA256SUMS.txt --quiet >/dev/null 2>&1; then echo "checksums   PASS"; else echo "checksums   FAIL"; sha256sum -c SHA256SUMS.txt 2>/dev/null | grep -v ': OK$'; ok=0; fi
 
-pat='PHerc0175A|PHerc 0175A|0175A|PHerc0483A|PHerc 0483A|0483A|20250521115057|20250521140913|S1 seed|S2 seed'
-hits=$(grep -rIlE "$pat" --exclude-dir=.git --exclude=verify_pr.sh --exclude=SKILL.md --exclude=CLAUDE.md . | wc -l)
-if [ "$hits" -eq 0 ]; then echo "forbidden   PASS"; else echo "forbidden   FAIL ($hits files)"; grep -rIlE "$pat" --exclude-dir=.git --exclude=verify_pr.sh --exclude=SKILL.md --exclude=CLAUDE.md .; ok=0; fi
+# Forbidden strings come from a LOCAL, git-ignored list, never from a tracked file.
+# .private_forbidden.txt: one string per line (blank lines and lines starting with # ignored), or VUN_FORBIDDEN="a|b|c".
+pat="${VUN_FORBIDDEN:-}"
+if [ -z "$pat" ] && [ -f .private_forbidden.txt ]; then
+  pat=$(grep -vE '^\s*(#|$)' .private_forbidden.txt | sed 's/[][\.*^$(){}+?|/]/\\&/g' | paste -sd'|' -)
+fi
+if [ -z "$pat" ]; then
+  echo "forbidden   FAIL (no list: create .private_forbidden.txt or set VUN_FORBIDDEN; this check fails closed)"; ok=0
+else
+  hits=$(git ls-files -z | xargs -0 grep -IlE "$pat" 2>/dev/null | wc -l)
+  if [ "$hits" -eq 0 ]; then echo "forbidden   PASS"; else echo "forbidden   FAIL ($hits tracked files; names not printed)"; git ls-files -z | xargs -0 grep -IlE "$pat" 2>/dev/null; ok=0; fi
+fi
 
 out=$(python -m pytest -q -p no:cacheprovider -n 4 2>&1 | tail -n 3)
 p=$(echo "$out" | grep -oE '[0-9]+ passed' | head -1 | cut -d' ' -f1); f=$(echo "$out" | grep -oE '[0-9]+ failed' | head -1 | cut -d' ' -f1)

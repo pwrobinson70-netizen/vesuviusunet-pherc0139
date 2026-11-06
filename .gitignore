@@ -3,3 +3,6 @@ __pycache__/
 build/
 *.egg-info/
 tools/calibration/cache/
+
+# local list of private strings (CLAUDE.md rule 1); never commit
+.private_forbidden.txt
