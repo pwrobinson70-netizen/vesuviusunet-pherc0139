@@ -9,7 +9,7 @@ Run from the repository root on the branch under test. Use `bash scripts/verify_
 
 1. Branch and head: `git rev-parse --abbrev-ref HEAD` and `git rev-parse HEAD`. The branch must not be `main`.
 2. Frozen files: `sha256sum -c SHA256SUMS.txt`. Every line must say OK. Any FAILED means a 30 October file was edited: stop, revert that file, report.
-3. Forbidden strings: grep the whole tree (excluding `.git`) for the private target names and scan ids listed in CLAUDE.md rule 1. Any hit is a FAIL and must be removed before anything else.
+3. Forbidden strings: grep every tracked file for the strings in the local, git-ignored `.private_forbidden.txt` (or `VUN_FORBIDDEN`), see CLAUDE.md rule 1. No list = FAIL (fails closed). Any hit is a FAIL and must be removed before anything else. Never print the matched strings in a report.
 4. Tests: `python -m pytest -q -p no:cacheprovider -n 4`. Record passed / failed / xfailed / xpassed. XPASS counts as FAIL unless the PR removes that marker on purpose and says so.
 5. Changelog: `git diff origin/main -- CHANGELOG.md` must be non-empty for any user-visible change.
 6. Docs: if a new `vun-*` entry point was added to `pyproject.toml`, `docs/TOOLS.md` must mention it.
