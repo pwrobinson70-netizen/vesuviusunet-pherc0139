@@ -61,8 +61,10 @@ def score_case(job):
     import sheet_switch_finder as ssf
     import sheet_spacing_check as ssc
     import surface_agreement as sa
-    signal.signal(signal.SIGALRM, _alarm)
-    signal.alarm(CASE_TIMEOUT_S)
+    has_alarm = hasattr(signal, "SIGALRM")       # Unix only; on Windows the case runs without the 600 s guard
+    if has_alarm:
+        signal.signal(signal.SIGALRM, _alarm)
+        signal.alarm(CASE_TIMEOUT_S)
     row = dict(patch=job["patch"], kind=job["kind"])
     hs = ",".join(str(h) for h in job["heights"])
     ct = ["--png-dir", job["ct"], "--png-pixel-um", VOX, "--voxel-size-um", VOX, "--heights", hs]
@@ -134,7 +136,8 @@ def score_case(job):
     except TimeoutError:
         row["error"] = "timeout"
     finally:
-        signal.alarm(0)
+        if has_alarm:
+            signal.alarm(0)
         import shutil
         shutil.rmtree(tmp, ignore_errors=True)
     return row
