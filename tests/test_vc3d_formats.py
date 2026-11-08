@@ -90,8 +90,6 @@ def test_written_bbox_order_is_xyz(tmp_path, xyz):
     assert lo[2] >= 2980                            # third entry is z
 
 
-@pytest.mark.xfail(strict=False, reason="BUG-A1: mask.tif (255=valid, 0=invalid) is ignored by ssc_io; "
-                                       "VC3D keeps real coordinates under masked-out cells")
 def test_ssc_mask_tif_invalidates(tmp_path, xyz):
     mask = np.full((H, W), 255, np.uint8)
     mask[1, 1] = 0
@@ -138,7 +136,6 @@ def test_ink_invalid_points_propagate(tmp_path, xyz):
     assert s.valid[0, 0]
 
 
-@pytest.mark.xfail(strict=False, reason="BUG-A1: mask.tif is ignored by ink_infer surface.load_mesh")
 def test_ink_mask_tif_invalidates(tmp_path, xyz):
     S = _ink_surface()
     mask = np.full((H, W), 255, np.uint8)

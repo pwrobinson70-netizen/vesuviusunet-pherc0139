@@ -17,8 +17,8 @@ fi
 if [ -z "$pat" ]; then
   echo "forbidden   FAIL (no list: create .private_forbidden.txt or set VUN_FORBIDDEN; this check fails closed)"; ok=0
 else
-  hits=$(git ls-files -z | xargs -0 grep -IlE "$pat" 2>/dev/null | wc -l)
-  if [ "$hits" -eq 0 ]; then echo "forbidden   PASS"; else echo "forbidden   FAIL ($hits tracked files; names not printed)"; git ls-files -z | xargs -0 grep -IlE "$pat" 2>/dev/null; ok=0; fi
+  hits=$(git ls-files -z | xargs -0 grep -IilE "$pat" 2>/dev/null | wc -l)
+  if [ "$hits" -eq 0 ]; then echo "forbidden   PASS"; else echo "forbidden   FAIL ($hits tracked files; names not printed)"; git ls-files -z | xargs -0 grep -IilE "$pat" 2>/dev/null; ok=0; fi
 fi
 
 out=$(python -m pytest -q -p no:cacheprovider -n 4 2>&1 | tail -n 3)
